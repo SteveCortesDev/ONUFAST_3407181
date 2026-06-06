@@ -1,130 +1,134 @@
+/* VARIABLES GLOBALES Y CONFIGURACIÓN BASE */
 :root {
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
   --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --accent: #c9252c; /* Rojo corporativo de Onufast */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18px;
+  line-height: 145%;
   background: var(--bg);
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
 }
 
 body {
   margin: 0;
+  padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
   margin: 0;
-  text-align: center;
-  min-height: 100svh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
+.onufast-container {
+  width: 100%;
+  background-color: #ededed;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. HEADER STYLES */
+.onufast-header {
+  background-color: #1a191f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  box-sizing: border-box;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 35px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.onufast-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  margin: 0 20px;
+  font-size: 16px;
   font-weight: 500;
-  color: var(--text-h);
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-
-/* LINEAS A AGREGAR AL FINAL DE src/App.css */
-
-.arrow-left, .arrow-right, .dot {
+.btn-login {
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 12px 28px;
+  font-size: 16px;
+  border-radius: 8px;
   cursor: pointer;
-  user-select: none;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  font-weight: 500;
 }
 
-.arrow-left:hover, .arrow-right:hover {
-  transform: translateY(-50%) scale(1.2);
-  color: #c9252c; /* Resalta las flechas con el color corporativo al pasar el mouse */
+/* 2. HERO SECTION STYLES */
+.onufast-hero {
+  display: flex;
+  background-color: #ededed;
+  padding: 60px 50px;
+  box-sizing: border-box;
+  align-items: center;
 }
 
-/* El punto con la clase 'active' (inyectada por React) se pintará oscuro */
-.dot.active {
-  background-color: #08060d;
-  transform: scale(1.2);
+.hero-content {
+  flex: 1;
+  padding-right: 30px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.hero-title {
+  color: var(--accent);
+  font-size: 46px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.hero-description {
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 30px 0;
+}
+
+.btn-start {
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 12px 35px;
+  font-size: 18px;
+  border-radius: 12px;
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Estructura y control de desbordamiento del Carrusel */
+.hero-carousel-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .carousel-placeholder {
@@ -137,13 +141,290 @@ code {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* OBLIGATORIO: Corta cualquier desbordamiento de la imagen */
+  overflow: hidden; /* Evita que las imágenes se salgan del recuadro */
 }
 
 .carousel-img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Cambiar 'cover' por 'contain' si no quiere que se corte la imagen, o mantenga 'cover' según prefiera */
+  object-fit: contain;
   max-width: 100%;
   max-height: 100%;
+}
+
+/* Controles del Carrusel */
+.arrow-left, .arrow-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 36px;
+  color: #08060d;
+  cursor: pointer;
+  user-select: none;
+  background-color: rgba(255, 255, 255, 0.6);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.arrow-left { left: 15px; }
+.arrow-right { right: 15px; }
+
+.arrow-left:hover, .arrow-right:hover {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 15px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dot.active {
+  background-color: var(--text-h);
+  transform: scale(1.2);
+}
+
+/* 3. SERVICES SECTION STYLES */
+.onufast-services {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: #ededed;
+  border-top: 1px solid #cccccc;
+}
+
+.service-card {
+  padding: 50px 25px;
+  text-align: center;
+  border-right: 1px solid #cccccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.service-card:last-child {
+  border-right: none;
+}
+
+.service-icon {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.service-card h3 {
+  font-size: 18px;
+  color: var(--text-h);
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.service-card p {
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* 4. ESTILOS DE LA VENTANA EMERGENTE (MODAL) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ededed;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header-black {
+  background-color: #000000;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.modal-logo {
+  height: 30px;
+  object-fit: contain;
+}
+
+.modal-close-btn {
+  position: absolute;
+  right: 15px;
+  color: white;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-tabs {
+  display: flex;
+  justify-content: space-around;
+  background-color: #ededed;
+  padding-top: 10px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333333;
+  position: relative;
+  font-weight: 500;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+  width: 70%;
+  height: 3px;
+  background-color: #d33233;
+}
+
+.modal-form {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-size: 14px;
+  color: #333333;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  padding: 8px 12px;
+  border: 1px solid #ababab;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 35px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #333333;
+}
+
+.form-link {
+  font-size: 12px;
+  color: #666666;
+  text-align: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #666666;
+  text-align: center;
+  margin: 15px 0 8px 0;
+}
+
+.btn-submit {
+  background-color: #d33233;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  text-align: center;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.social-icon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+/* RESPONSIVE DESIGN BÁSICO */
+@media (max-width: 1024px) {
+  .onufast-hero {
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+  .hero-content {
+    padding-right: 0;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .btn-start {
+    margin: 0 auto;
+  }
+  .onufast-services {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .service-card {
+    border-bottom: 1px solid #cccccc;
+  }
 }

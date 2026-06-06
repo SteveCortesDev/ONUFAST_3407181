@@ -1,20 +1,23 @@
 import { useState } from 'react';
 import './App.css';
+import AuthModal from './AuthModal';
 
-// 1. Arreglo de imágenes alojadas en la carpeta 'public'
+// Arreglo de imágenes alojadas en la carpeta 'public'
 const imagenesCarrusel = [
-  "/LOGO_ONUFAST.jpg",
+  "/carrusel_img1.jpg",
   "/carrusel_img2.jpg",
   "/carrusel_img3.jpg",
-  "/correo-electronico.png",
-  "/icono-de-la-tienda-web.png"
+  "/carrusel_img4.jpg",
+  "/carrusel_img5.jpg"
 ];
 
 function App() {
-  // 2. Estado para controlar el índice de la imagen visible
+  // Estado para el carrusel de la landing page
   const [indiceActivo, setIndiceActivo] = useState(0);
+  
+  // Estado para controlar la visibilidad del modal de autenticación
+  const [mostrarModal, setMostrarModal] = useState(false);
 
-  // 3. Funciones de navegación del carrusel
   const siguienteImagen = () => {
     setIndiceActivo((prev) => (prev === imagenesCarrusel.length - 1 ? 0 : prev + 1));
   };
@@ -33,8 +36,11 @@ function App() {
         <nav className="onufast-nav">
           <a href="#inicio">Inicio</a>
           <a href="#ubicanos">Ubícanos</a>
+          <a href="#quienes-somos">Quienes Somos</a>
         </nav>
-        <button className="btn-login">Iniciar Sesión</button>
+        <button className="btn-login" onClick={() => setMostrarModal(true)}>
+          Iniciar Sesión
+        </button>
       </header>
 
       {/* 2. HERO SECTION */}
@@ -52,7 +58,6 @@ function App() {
         
         <div className="hero-carousel-container">
           <div className="carousel-placeholder">
-            {/* Controles de flechas con eventos onClick */}
             <span className="arrow-left" onClick={anteriorImagen}>‹</span>
             
             <img 
@@ -63,7 +68,6 @@ function App() {
 
             <span className="arrow-right" onClick={siguienteImagen}>›</span>
             
-            {/* Renderizado dinámico de los puntos indicadores */}
             <div className="carousel-dots">
               {imagenesCarrusel.map((_, indice) => (
                 <span 
@@ -103,6 +107,9 @@ function App() {
           <p>Proveemos las siguientes operaciones especializadas para el manejo de su mercancía recibida en nuestro centro logístico.</p>
         </div>
       </section>
+
+      {/* COMPONENTE EMERGENTE DE AUTENTICACIÓN */}
+      <AuthModal isOpen={mostrarModal} onClose={() => setMostrarModal(false)} />
     </div>
   );
 }
