@@ -1,17 +1,16 @@
-# 🚀 ONUFAST — Elevando el nivel de tus envíos
+ONUFAST — Elevando el nivel de tus envíos
 
 <div align="center">
 
 ![ONUFAST](https://img.shields.io/badge/ONUFAST-Sistema_Logístico-cc0000?style=for-the-badge&logo=box&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-En_Desarrollo-orange?style=for-the-badge)
 ![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react)
-![MySQL](https://img.shields.io/badge/Database-MariaDB-003545?style=for-the-badge&logo=mariadb)
+
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 **La plataforma digital que revoluciona la logística en Colombia**
 
-[Documentación](#documentación) • [Características](#características) • [Instalación](#instalación) • [Arquitectura](#arquitectura)
-
+[Documentación](#documentación) • [Características](#características) • [Instalación](#instalación) 
 </div>
 
 ---
@@ -44,14 +43,14 @@ Gestión Completa de Flota
 - Controla disponibilidad de conductores
 - Optimiza rutas automáticamente
 
-### 💳 Facturación Automática
+Facturación Automática
 Cada pedido genera automáticamente una factura con:
 - Subtotal y IVA separados
 - Cálculo automático por peso y volumen
 - Múltiples métodos de pago
 - Notas crédito y débito
 
-### 📊 Reportes y Análisis
+Reportes y Análisis
 - Estadísticas de entregas
 - Reportes financieros consolidados
 - Indicadores KPI en tiempo real
