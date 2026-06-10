@@ -6,7 +6,6 @@
 ![Status](https://img.shields.io/badge/Status-En_Desarrollo-orange?style=for-the-badge)
 ![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react)
 
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 **La plataforma digital que revoluciona la logística en Colombia**
 
