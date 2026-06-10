@@ -31,7 +31,7 @@ function App() {
       {/* 1. HEADER / NAVBAR */}
       <header className="onufast-header">
         <div className="logo-container">
-          <img src="/LOGO_ONUFAST.jpg" alt="Logo Onufast" className="logo-img" />
+          <img src="/logo_con_nombre.jpg" alt="Logo Onufast" className="logo-img" />
         </div>
         <nav className="onufast-nav">
           <a href="#inicio">Inicio</a>
