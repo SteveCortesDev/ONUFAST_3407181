@@ -1,15 +1,16 @@
 /* VARIABLES GLOBALES Y CONFIGURACIÓN BASE */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
+  --text-light: #e5e4e7;
+  --text-muted: #9ca3af;
+  --text-dark: #08060d;
+  --bg-dark: #0a0a0a;
+  --bg-card: #16171d;
   --accent: #c9252c; /* Rojo corporativo de Onufast */
 
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   font-size: 18px;
   line-height: 145%;
-  background: var(--bg);
+  background: #ededed;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -21,7 +22,6 @@ body {
   overflow-x: hidden;
 }
 
-/* CONTENEDOR RAÍZ DE REACT (PANTALLA COMPLETA) */
 #root {
   width: 100%;
   margin: 0;
@@ -31,10 +31,8 @@ body {
   box-sizing: border-box;
 }
 
-/* CONTENEDOR PRINCIPAL DE LA PÁGINA */
 .onufast-container {
   width: 100%;
-  background-color: #ededed;
   display: flex;
   flex-direction: column;
 }
@@ -47,6 +45,7 @@ body {
   align-items: center;
   padding: 15px 50px;
   box-sizing: border-box;
+  border-bottom: 1px solid #2e303a;
 }
 
 .logo-container {
@@ -54,8 +53,9 @@ body {
   align-items: center;
 }
 
+/* Logo optimizado y más grande */
 .logo-img {
-  height: 35px;
+  height: 45px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -67,6 +67,11 @@ body {
   margin: 0 20px;
   font-size: 16px;
   font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.onufast-nav a:hover {
+  color: var(--accent);
 }
 
 .btn-login {
@@ -78,56 +83,126 @@ body {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
-/* 2. HERO SECTION STYLES */
+.btn-login:hover {
+  background-color: #a31d22;
+}
+
+/* 2. HERO SECTION STYLES (Fondo oscuro aplicado) */
 .onufast-hero {
   display: flex;
-  background-color: #ededed;
-  padding: 60px 50px;
+  background-color: var(--bg-dark);
+  padding: 80px 50px;
   box-sizing: border-box;
   align-items: center;
+  gap: 40px;
 }
 
 .hero-content {
-  flex: 1;
-  padding-right: 30px;
+  flex: 1.1;
   display: flex;
   flex-direction: column;
   text-align: left;
 }
 
 .hero-title {
-  color: var(--accent);
-  font-size: 46px;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: #ffffff;
+  font-size: 52px;
+  font-family: system-ui, sans-serif;
   margin: 0 0 20px 0;
-  line-height: 1.2;
-  font-weight: 500;
+  line-height: 1.15;
+  font-weight: 700;
 }
 
 .hero-description {
-  color: #555555;
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0 0 30px 0;
+  color: var(--text-muted);
+  font-size: 17px;
+  line-height: 1.6;
+  margin: 0 0 35px 0;
 }
 
+.hero-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Efecto hover llamativo solicitado en botón Comenzar */
 .btn-start {
   background-color: var(--accent);
   color: #ffffff;
-  border: none;
-  padding: 12px 35px;
+  border: 2px solid var(--accent);
+  padding: 14px 40px;
   font-size: 18px;
-  border-radius: 12px;
+  border-radius: 8px;
   width: fit-content;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-start:hover {
+  background-color: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Estilos de la nueva barra de Rastreo Rápido */
+.rastreo-rapido-box {
+  background-color: #16171d;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #2e303a;
+  max-width: 450px;
+}
+
+.rastreo-rapido-box h3 {
+  color: white;
+  margin: 0 0 12px 0;
+  font-size: 16px;
   font-weight: 500;
+}
+
+.rastreo-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.rastreo-input-group input {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: 1px solid #3a3d4a;
+  background-color: #0a0a0a;
+  color: white;
+  font-size: 14px;
+}
+
+.rastreo-input-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-rastrear {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-rastrear:hover {
+  background-color: #a31d22;
 }
 
 /* Estructura del Área del Carrusel */
 .hero-carousel-container {
-  flex: 1;
+  flex: 0.9;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -135,9 +210,9 @@ body {
 
 .carousel-placeholder {
   width: 100%;
-  height: 350px;
-  background-color: #e5e5e5;
-  border: 1px dashed #cccccc;
+  height: 380px;
+  background-color: #16171d;
+  border: 1px solid #2e303a;
   border-radius: 15px;
   position: relative;
   display: flex;
@@ -149,21 +224,23 @@ body {
 .carousel-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  max-width: 90%;
+  max-height: 90%;
 }
 
-/* Controles del Carrusel */
+/* Controles e Indicadores Visibles del Carrusel */
 .arrow-left, .arrow-right {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   font-size: 36px;
-  color: #08060d;
+  color: white;
   cursor: pointer;
   user-select: none;
-  background-color: rgba(255, 255, 255, 0.6);
-  width: 40px;
-  height: 40px;
+  background-color: rgba(201, 37, 44, 0.8); /* Fondo rojo visible */
+  width: 45px;
+  height: 45px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -176,8 +253,9 @@ body {
 .arrow-right { right: 15px; }
 
 .arrow-left:hover, .arrow-right:hover {
-  background-color: var(--accent);
-  color: #ffffff;
+  background-color: white;
+  color: var(--accent);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .carousel-dots {
@@ -191,79 +269,249 @@ body {
 .dot {
   width: 10px;
   height: 10px;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .dot.active {
-  background-color: var(--text-h);
-  transform: scale(1.2);
+  background-color: var(--accent);
+  transform: scale(1.3);
 }
 
-/* 3. SERVICES SECTION STYLES */
+/* 3. SECCIÓN DE SERVICIOS (Estilo Premium con fondo oscuro) */
 .onufast-services {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background-color: #ededed;
-  border-top: 1px solid #cccccc;
+  background-color: #111217;
+  border-top: 1px solid #2e303a;
+  border-bottom: 1px solid #2e303a;
 }
 
 .service-card {
-  padding: 50px 25px;
+  padding: 60px 30px;
   text-align: center;
-  border-right: 1px solid #cccccc;
+  border-right: 1px solid #2e303a;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  background-color: #111217;
+  transition: all 0.3s ease;
 }
 
 .service-card:last-child {
   border-right: none;
 }
 
+/* Efecto hover solicitado: levanta ligeramente con sombra roja */
+.service-card:hover {
+  transform: translateY(-5px);
+  background-color: #16171d;
+  box-shadow: 0 10px 20px rgba(201, 37, 44, 0.15);
+}
+
+/* Contenedor circular elegante para los iconos */
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  background-color: #0a0a0a;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
 .service-icon {
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
   object-fit: contain;
-  margin-bottom: 20px;
-  display: inline-block;
+  /* Aplica filtro blanco para contrastar sobre el fondo negro */
+  filter: invert(1) brightness(2); 
 }
 
 .service-card h3 {
-  font-size: 18px;
-  color: var(--text-h);
+  font-size: 19px;
+  color: white;
   margin: 0 0 15px 0;
   font-weight: 600;
 }
 
 .service-card p {
-  font-size: 13px;
-  color: #666666;
-  line-height: 1.4;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
   margin: 0;
 }
 
-/* RESPONSIVE DESIGN BÁSICO */
+/* 4. SECCIÓN CÓMO FUNCIONA STYLES */
+.como-funciona-section {
+  background-color: var(--bg-dark);
+  padding: 80px 50px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.section-title-light {
+  color: white;
+  font-size: 38px;
+  margin: 0 0 10px 0;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin: 0 0 50px 0;
+}
+
+.pasos-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}
+
+.paso-card {
+  background-color: var(--bg-card);
+  border: 1px solid #2e303a;
+  padding: 40px 25px;
+  border-radius: 12px;
+  position: relative;
+  text-align: center;
+}
+
+.paso-numero {
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0 auto 20px auto;
+}
+
+.paso-card h3 {
+  color: white;
+  font-size: 18px;
+  margin: 0 0 12px 0;
+}
+
+.paso-card p {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 5. FOOTER STYLES */
+.onufast-footer {
+  background-color: #000000;
+  color: white;
+  padding: 60px 50px 20px 50px;
+  border-top: 1px solid #2e303a;
+  box-sizing: border-box;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.footer-brand {
+  flex: 1.5;
+}
+
+.footer-logo {
+  height: 35px;
+  margin-bottom: 15px;
+}
+
+.footer-brand p {
+  color: var(--text-muted);
+  font-size: 14px;
+  max-width: 300px;
+}
+
+.footer-links, .footer-contact {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-links h4, .footer-contact h4 {
+  color: white;
+  font-size: 16px;
+  margin: 0 0 20px 0;
+  font-weight: 600;
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 12px;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+.footer-contact p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 12px 0;
+}
+
+.footer-bottom {
+  border-top: 1px solid #2e303a;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  color: #555555;
+  font-size: 13px;
+}
+
+/* RESPONSIVE DESIGN */
 @media (max-width: 1024px) {
   .onufast-hero {
     flex-direction: column;
     padding: 40px 20px;
   }
   .hero-content {
-    padding-right: 0;
-    margin-bottom: 40px;
     text-align: center;
+    align-items: center;
   }
   .btn-start {
     margin: 0 auto;
   }
-  .onufast-services {
+  .rastreo-rapido-box {
+    margin: 0 auto;
+    width: 100%;
+  }
+  .onufast-services, .pasos-container {
     grid-template-columns: repeat(2, 1fr);
   }
   .service-card {
-    border-bottom: 1px solid #cccccc;
+    border-bottom: 1px solid #2e303a;
+  }
+  .footer-content {
+    flex-direction: column;
+    gap: 30px;
+  }
+}
+@media (max-width: 600px) {
+  .onufast-services, .pasos-container {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import './App.css';
-import AuthModal from './AuthModal';
+import AuthModal from './components/AuthModal';
+import RastreoRapido from './components/RastreoRapido';
+import ComoFunciona from './components/ComoFunciona';
+import Footer from './components/Footer';
 
-// Arreglo de imágenes alojadas en la carpeta 'public'
 const imagenesCarrusel = [
   "/carrusel_img1.jpg",
   "/carrusel_img2.jpg",
@@ -12,10 +14,7 @@ const imagenesCarrusel = [
 ];
 
 function App() {
-  // Estado para el carrusel de la landing page
   const [indiceActivo, setIndiceActivo] = useState(0);
-  
-  // Estado para controlar la visibilidad del modal de autenticación
   const [mostrarModal, setMostrarModal] = useState(false);
 
   const siguienteImagen = () => {
@@ -27,33 +26,40 @@ function App() {
   };
 
   return (
-    <div className="onufast-container">
+    <div className="onufast-container" id="inicio">
       {/* 1. HEADER / NAVBAR */}
       <header className="onufast-header">
         <div className="logo-container">
-          <img src="/LOGO_ONUFAST.jpg" alt="Logo Onufast" className="logo-img" />
+          <img src="/logo_con_nombre.jpg" alt="Logo Onufast" className="logo-img" />
         </div>
         <nav className="onufast-nav">
           <a href="#inicio">Inicio</a>
+          <a href="#servicios">Servicios</a>
+          <a href="#quiénessomos">Quiénes Somos</a>
+          <a href="#rastrearenvío">Rastrear Envío</a>
           <a href="#ubicanos">Ubícanos</a>
-          <a href="#quienes-somos">Quienes Somos</a>
         </nav>
         <button className="btn-login" onClick={() => setMostrarModal(true)}>
           Iniciar Sesión
         </button>
       </header>
 
-      {/* 2. HERO SECTION */}
+      {/* 2. HERO SECTION (Identidad oscura aplicada) */}
       <main className="onufast-hero">
         <div className="hero-content">
           <h1 className="hero-title">
-            El Mejor Sitio Seguro <br /> Para Tus pedidos
+            El Mejor Sitio Seguro <br /> Para Tus Pedidos
           </h1>
           <p className="hero-description">
             Enviando felicidad a tu puerta, rápido, seguro y hasta <br />
-            tu hogar, tu paquete, nuestra prioridad
+            tu hogar, tu paquete, nuestra prioridad.
           </p>
-          <button className="btn-start">Comenzar</button>
+          
+          <div className="hero-actions-container">
+            <button className="btn-start">Comenzar</button>
+            {/* Inyección del buscador de rastreo rápido debajo del botón */}
+            <RastreoRapido />
+          </div>
         </div>
         
         <div className="hero-carousel-container">
@@ -81,32 +87,46 @@ function App() {
         </div>
       </main>
 
-      {/* 3. SERVICES SECTION */}
-      <section className="onufast-services">
+      {/* 3. SECCIÓN DE SERVICIOS (Texto corregido e identidad unificada) */}
+      <section className="onufast-services" id="servicios">
         <div className="service-card">
-          <img src="/avion.png" alt="Icono Avión" className="service-icon" />
-          <h3>Envíos Nacionales e internacionales</h3>
-          <p>Recogemos, transportamos y entregamos tus encomiendas o paquetes a Colombia y el resto del mundo.</p>
+          <div className="icon-wrapper">
+            <img src="/avion.png" alt="Icono Avión" className="service-icon" />
+          </div>
+          <h3>Envíos Nacionales e Internacionales</h3>
+          <p>Recogemos, transportamos y entregamos tus encomiendas o paquetes a nivel nacional e internacional con total seguridad.</p>
         </div>
 
         <div className="service-card">
-          <img src="/correo-electronico.png" alt="Icono Sobre" className="service-icon" />
+          <div className="icon-wrapper">
+            <img src="/correo-electronico.png" alt="Icono Sobre" className="service-icon" />
+          </div>
           <h3>Envíos de Documentos</h3>
-          <p>Envíos de documentos en nuestra red a los diferentes destinos que ofrecemos en Colombia y en el resto del mundo.</p>
+          <p>Transporte especializado de documentos y mensajería expresa con confirmación de entrega en tiempo real.</p>
         </div>
 
         <div className="service-card">
-          <img src="/camion.png" alt="Icono Camión" className="service-icon" />
-          <h3>Exportaciones</h3>
-          <p>Servientrega International Inc. es un Freight Forwarder autorizado que provee servicios de exportación para mercancías.</p>
+          <div className="icon-wrapper">
+            <img src="/camion.png" alt="Icono Camión" className="service-icon" />
+          </div>
+          <h3>Exportaciones ONUFAST</h3>
+          <p>ONUFAST opera como tu aliado estratégico de carga, proveyendo servicios integrales de exportación para tus mercancías.</p>
         </div>
 
         <div className="service-card">
-          <img src="/icono-de-la-tienda-web.png" alt="Icono Carrito" className="service-icon" />
-          <h3>E-commerce</h3>
-          <p>Proveemos las siguientes operaciones especializadas para el manejo de su mercancía recibida en nuestro centro logístico.</p>
+          <div className="icon-wrapper">
+            <img src="/icono-de-la-tienda-web.png" alt="Icono Carrito" className="service-icon" />
+          </div>
+          <h3>E-commerce Dedicado</h3>
+          <p>Proveemos soluciones de almacenamiento y despacho optimizado para potenciar las ventas y entregas de tu tienda virtual.</p>
         </div>
       </section>
+
+      {/* 4. SECCIÓN DE CÓMO FUNCIONA */}
+      <ComoFunciona />
+
+      {/* 5. FOOTER COMPLETO */}
+      <Footer />
 
       {/* COMPONENTE EMERGENTE DE AUTENTICACIÓN */}
       <AuthModal isOpen={mostrarModal} onClose={() => setMostrarModal(false)} />
