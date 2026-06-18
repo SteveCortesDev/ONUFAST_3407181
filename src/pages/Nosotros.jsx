@@ -26,4 +26,4 @@ export default function Nosotros() {
       </section>
     </div>
   );
-}
+}// Prueba de commit
