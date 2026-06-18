@@ -37,34 +37,250 @@
 }
 
 /* ========== NOSOTROS ========== */
-.about-grid {
+
+/* Estadísticas */
+.nosotros-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 50px;
 }
 
-.about-card {
+.nosotros-stat-card {
   background: white;
-  padding: 30px;
+  padding: 35px 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.nosotros-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(201, 37, 44, 0.15);
+}
+
+.nosotros-stat-number {
+  display: block;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.nosotros-stat-label {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Tarjetas de Historia/Misión/Visión con imágenes */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.nosotros-about-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+  padding: 0 !important;
+}
+
+.nosotros-about-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(201, 37, 44, 0.15);
+}
+
+.nosotros-card-img {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.nosotros-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.nosotros-about-card:hover .nosotros-card-img img {
+  transform: scale(1.05);
+}
+
+.nosotros-card-emoji {
+  font-size: 64px;
+  line-height: 1;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.nosotros-card-body {
+  padding: 28px 25px 30px;
+}
+
+.nosotros-card-body h2 {
+  color: var(--text-h);
+  font-size: 24px;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+}
+
+.nosotros-card-body h2::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.nosotros-card-body p {
+  color: #555;
+  line-height: 1.7;
+  margin: 0;
+  font-size: 15px;
+}
+
+/* Valores - Píldoras */
+.nosotros-values {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 40px 0 50px 0;
+}
+
+.nosotros-value-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 14px 28px;
+  border-radius: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.nosotros-value-pill:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(201, 37, 44, 0.15);
+  border-color: var(--accent);
+}
+
+.nosotros-value-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.nosotros-value-text {
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+/* Equipo */
+.nosotros-team-section {
+  margin-top: 10px;
+}
+
+.nosotros-section-title {
+  text-align: center;
+  font-size: 32px;
+  color: var(--text-h);
+  margin: 0 0 35px 0;
+  font-weight: 700;
+  position: relative;
+}
+
+.nosotros-section-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--accent);
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+.nosotros-team-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 25px;
+}
+
+.nosotros-team-card {
+  background: white;
+  padding: 30px 20px 25px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.nosotros-team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(201, 37, 44, 0.12);
+  border-color: var(--accent);
+}
+
+.nosotros-avatar {
+  width: 85px;
+  height: 85px;
+  background: linear-gradient(135deg, var(--accent), #a31d22);
+  border-radius: 50%;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 4px 12px rgba(201, 37, 44, 0.3);
   transition: transform 0.3s ease;
 }
 
-.about-card:hover {
-  transform: translateY(-5px);
+.nosotros-team-card:hover .nosotros-avatar {
+  transform: scale(1.08) rotate(-5deg);
 }
 
-.about-card h2 {
-  color: var(--accent);
-  font-size: 24px;
-  margin-bottom: 15px;
+.nosotros-team-name {
+  font-weight: 600;
+  color: #1a191f;
+  margin: 8px 0 4px;
+  font-size: 16px;
 }
 
-.about-card p {
-  color: #555;
-  line-height: 1.6;
+.nosotros-team-role {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
 }
+
 
 /* ========== RASTREO ========== */
 .rastreo-form-container {
