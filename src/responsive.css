@@ -1,0 +1,405 @@
+/* ============================================
+   SISTEMA DE RESPONSIVE DESIGN PARA ONUFAST
+   ============================================ */
+
+/* BREAKPOINTS:
+   - Mobile: 320px - 480px
+   - Tablet: 481px - 768px  
+   - Desktop: 769px - 1024px
+   - Wide: 1025px+
+*/
+
+/* ========== MOBILE FIRST (320px - 480px) ========== */
+@media (max-width: 480px) {
+  /* HEADER */
+  .onufast-header {
+    flex-direction: column;
+    padding: 10px 15px;
+    gap: 10px;
+  }
+
+  .logo-img {
+    height: 30px;
+  }
+
+  .onufast-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .onufast-nav a {
+    font-size: 12px;
+    margin: 0 8px;
+  }
+
+  .btn-login {
+    padding: 8px 20px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  /* HERO SECTION */
+  .onufast-hero {
+    flex-direction: column;
+    padding: 30px 15px;
+    gap: 25px;
+  }
+
+  .hero-title {
+    font-size: 28px !important;
+    text-align: center;
+  }
+
+  .hero-description {
+    font-size: 14px !important;
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  .hero-actions-container {
+    width: 100%;
+    align-items: center;
+  }
+
+  .btn-start {
+    width: 100%;
+    max-width: 250px;
+    text-align: center;
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  /* RASTREO RÁPIDO */
+  .rastreo-rapido-box {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .rastreo-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rastreo-input-group input {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .btn-rastrear {
+    width: 100%;
+    padding: 12px;
+  }
+
+  /* CARRUSEL */
+  .hero-carousel-container {
+    width: 100%;
+  }
+
+  .carousel-placeholder {
+    height: 200px;
+  }
+
+  .carousel-img {
+    object-fit: cover;
+  }
+
+  .arrow-left, .arrow-right {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+  }
+
+  .arrow-left { left: 5px; }
+  .arrow-right { right: 5px; }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* SERVICIOS */
+  .onufast-services {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .service-card {
+    padding: 30px 20px;
+    border-right: none;
+    border-bottom: 1px solid #2e303a;
+  }
+
+  .service-card:last-child {
+    border-bottom: none;
+  }
+
+  .icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+
+  .service-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .service-card h3 {
+    font-size: 16px;
+  }
+
+  .service-card p {
+    font-size: 13px;
+  }
+
+  /* CÓMO FUNCIONA */
+  .como-funciona-section {
+    padding: 40px 15px;
+  }
+
+  .section-title-light {
+    font-size: 28px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  .pasos-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .paso-card {
+    padding: 25px 20px;
+  }
+
+  .paso-numero {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .paso-card h3 {
+    font-size: 16px;
+  }
+
+  .paso-card p {
+    font-size: 13px;
+  }
+
+  /* FOOTER */
+  .onufast-footer {
+    padding: 30px 15px 15px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .footer-brand {
+    text-align: center;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .footer-links, .footer-contact {
+    text-align: center;
+  }
+
+  .footer-links a {
+    display: block;
+    margin: 8px 0;
+  }
+
+  .footer-logo {
+    height: 30px;
+  }
+
+  /* MODAL */
+  .modal-content {
+    max-width: 95%;
+    margin: 0 10px;
+  }
+
+  .modal-header-black {
+    padding: 12px;
+  }
+
+  .modal-logo {
+    height: 25px;
+  }
+
+  .modal-close-btn {
+    font-size: 20px;
+    right: 10px;
+  }
+
+  .tab-btn {
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+
+  .modal-form {
+    padding: 20px;
+  }
+
+  .input-group input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .btn-submit {
+    padding: 14px;
+    font-size: 16px;
+  }
+}
+
+/* ========== TABLET (481px - 768px) ========== */
+@media (min-width: 481px) and (max-width: 768px) {
+  /* HEADER */
+  .onufast-header {
+    padding: 12px 25px;
+    flex-wrap: wrap;
+  }
+
+  .onufast-nav a {
+    font-size: 14px;
+    margin: 0 12px;
+  }
+
+  /* HERO */
+  .onufast-hero {
+    flex-direction: column;
+    padding: 40px 25px;
+  }
+
+  .hero-title {
+    font-size: 36px !important;
+    text-align: center;
+  }
+
+  .hero-description {
+    text-align: center;
+  }
+
+  .hero-actions-container {
+    align-items: center;
+  }
+
+  .btn-start {
+    margin: 0 auto;
+  }
+
+  .rastreo-rapido-box {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* CARRUSEL */
+  .carousel-placeholder {
+    height: 280px;
+  }
+
+  /* SERVICIOS */
+  .onufast-services {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .service-card {
+    padding: 35px 20px;
+  }
+
+  /* CÓMO FUNCIONA */
+  .pasos-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .como-funciona-section {
+    padding: 50px 25px;
+  }
+
+  /* FOOTER */
+  .footer-content {
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+
+  .footer-brand {
+    flex: 100%;
+  }
+}
+
+/* ========== DESKTOP PEQUEÑO (769px - 1024px) ========== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .onufast-hero {
+    padding: 60px 30px;
+    gap: 30px;
+  }
+
+  .hero-title {
+    font-size: 40px !important;
+  }
+
+  .onufast-services {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pasos-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .service-card {
+    padding: 40px 25px;
+  }
+
+  .carousel-placeholder {
+    height: 300px;
+  }
+}
+
+/* ========== AJUSTES DE SEGURIDAD ========== */
+/* Evitar desbordamiento horizontal */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mejorar touch targets en móviles */
+@media (max-width: 768px) {
+  button, 
+  .btn-login, 
+  .btn-start, 
+  .btn-rastrear, 
+  .btn-submit,
+  .tab-btn,
+  .modal-close-btn,
+  .arrow-left,
+  .arrow-right,
+  .dot,
+  .service-card,
+  .paso-card {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input, select, textarea {
+    font-size: 16px !important; /* Evitar zoom en iOS */
+  }
+}

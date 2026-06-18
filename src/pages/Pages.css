@@ -1,0 +1,329 @@
+/* ============================================
+   ESTILOS COMPARTIDOS PARA PÁGINAS
+   ============================================ */
+
+.page-container {
+  width: 100%;
+  min-height: 70vh;
+  background-color: #ededed;
+}
+
+/* HERO DE PÁGINA */
+.page-hero {
+  background: linear-gradient(135deg, #1a191f 0%, #2d2a35 100%);
+  color: white;
+  padding: 60px 50px;
+  text-align: center;
+  border-bottom: 3px solid var(--accent);
+}
+
+.page-hero h1 {
+  font-size: 42px;
+  margin: 0 0 15px 0;
+  color: white;
+}
+
+.page-hero p {
+  font-size: 18px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* CONTENIDO DE PÁGINA */
+.page-content {
+  padding: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========== NOSOTROS ========== */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.about-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-5px);
+}
+
+.about-card h2 {
+  color: var(--accent);
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.about-card p {
+  color: #555;
+  line-height: 1.6;
+}
+
+/* ========== RASTREO ========== */
+.rastreo-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.rastreo-form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rastreo-form .input-group {
+  margin-bottom: 20px;
+}
+
+.rastreo-form .input-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: #333;
+}
+
+.rastreo-form .input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e5e4e7;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.rastreo-form .input-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-rastrear-full {
+  width: 100%;
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-rastrear-full:hover {
+  background-color: #a31d22;
+}
+
+.rastreo-resultado {
+  margin-top: 30px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid var(--accent);
+}
+
+.rastreo-resultado h3 {
+  color: var(--accent);
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+.rastreo-resultado p {
+  margin: 8px 0;
+  color: #555;
+}
+
+/* ========== SERVICIOS ========== */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.servicio-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.servicio-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(201, 37, 44, 0.15);
+}
+
+.servicio-card .icon-wrapper {
+  width: 70px;
+  height: 70px;
+  background-color: #f5f5f5;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+}
+
+.servicio-card .service-icon {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+}
+
+.servicio-card h3 {
+  font-size: 20px;
+  color: #1a191f;
+  margin: 0 0 15px 0;
+}
+
+.servicio-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* ========== UBICACIÓN ========== */
+.ubicacion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.mapa-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
+}
+
+.mapa-placeholder {
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(135deg, #f5f5f5, #e5e4e7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #555;
+}
+
+.mapa-placeholder p {
+  font-size: 20px;
+  margin: 5px 0;
+}
+
+.mapa-direccion {
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.contacto-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.info-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3 {
+  color: var(--accent);
+  font-size: 18px;
+  margin: 0 0 12px 0;
+}
+
+.info-card p {
+  color: #555;
+  margin: 5px 0;
+  line-height: 1.6;
+}
+
+/* ========== RESPONSIVE PARA PÁGINAS ========== */
+@media (max-width: 768px) {
+  .page-hero {
+    padding: 40px 20px;
+  }
+
+  .page-hero h1 {
+    font-size: 30px;
+  }
+
+  .page-hero p {
+    font-size: 16px;
+  }
+
+  .page-content {
+    padding: 25px 15px;
+  }
+
+  /* Ubicación */
+  .ubicacion-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .mapa-placeholder {
+    height: 250px;
+  }
+
+  .contacto-info {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* About */
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Servicios */
+  .servicios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Rastreo */
+  .rastreo-form {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-hero h1 {
+    font-size: 24px;
+  }
+
+  .page-hero p {
+    font-size: 14px;
+  }
+
+  .about-card h2 {
+    font-size: 20px;
+  }
+
+  .servicio-card h3 {
+    font-size: 18px;
+  }
+
+  .rastreo-resultado {
+    padding: 20px;
+  }
+
+  .rastreo-resultado h3 {
+    font-size: 18px;
+  }
+}
