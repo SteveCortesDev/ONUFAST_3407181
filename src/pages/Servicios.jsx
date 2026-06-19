@@ -3,24 +3,14 @@ import './Pages.css';
 export default function Servicios() {
   const servicios = [
     {
-      icono: '/avion.png',
-      titulo: 'Envíos Nacionales e Internacionales',
-      desc: 'Recogemos, transportamos y entregamos tus encomiendas o paquetes a nivel nacional e internacional con total seguridad.'
-    },
-    {
-      icono: '/correo-electronico.png',
-      titulo: 'Envíos de Documentos',
-      desc: 'Transporte especializado de documentos y mensajería expresa con confirmación de entrega en tiempo real.'
-    },
-    {
       icono: '/camion.png',
-      titulo: 'Exportaciones ONUFAST',
-      desc: 'ONUFAST opera como tu aliado estratégico de carga, proveyendo servicios integrales de exportación para tus mercancías.'
+      titulo: 'Estándar',
+      desc: 'El envío estándar es nuestro servicio normal, ideal para quienes buscan una entrega confiable a un costo regular.'
     },
     {
-      icono: '/icono-de-la-tienda-web.png',
-      titulo: 'E-commerce Dedicado',
-      desc: 'Proveemos soluciones de almacenamiento y despacho optimizado para potenciar las ventas y entregas de tu tienda virtual.'
+      icono: '/avion.png',
+      titulo: 'Express',
+      desc: 'El envío express va con mayor velocidad logística, priorizando tu envío para que llegue lo más rápido posible.'
     }
   ];
 
