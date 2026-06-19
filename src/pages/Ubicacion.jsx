@@ -1,6 +1,10 @@
 import './Pages.css';
 
 export default function Ubicacion() {
+  // Cambia esta dirección por la real de tus oficinas
+  const direccion = "Calle 123 %2345-67, Bogotá, Colombia";
+  const mapaSrc = `https://www.google.com/maps?q=${direccion}&output=embed`;
+
   return (
     <div className="page-container">
       <section className="page-hero">
@@ -11,11 +15,14 @@ export default function Ubicacion() {
       <section className="page-content">
         <div className="ubicacion-grid">
           <div className="mapa-container">
-            {/* Aquí puedes integrar Google Maps o Leaflet */}
-            <div className="mapa-placeholder">
-              <p>🗺️ Mapa interactivo</p>
-              <p className="mapa-direccion">Bogotá, Colombia</p>
-            </div>
+            <iframe
+              src={mapaSrc}
+              className="mapa-iframe"
+              title="Ubicación ONUFAST"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            ></iframe>
           </div>
 
           <div className="contacto-info">

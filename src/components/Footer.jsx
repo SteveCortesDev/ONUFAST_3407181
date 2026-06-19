@@ -10,11 +10,11 @@ export default function Footer() {
         
         <div className="footer-links">
           <h4>Navegación</h4>
-          <a href="#inicio">Inicio</a>
-          <a href="#servicios">Servicios</a>
-          <a href="#quiénessomos">Quiénes Somos</a>
-          <a href="#rastrearenvío">Rastrear Envío</a>
-          <a href="#ubicanos">Ubícanos</a>
+          <a href="/Inicio">Inicio</a>
+          <a href="/Servicios">Servicios</a>
+          <a href="/Nosotros">Quiénes Somos</a>
+          <a href="/Rastreo">Rastrear Envío</a>
+          <a href="/Ubicacion">Ubícanos</a>
         </div>
         
         <div className="footer-contact">

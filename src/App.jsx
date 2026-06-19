@@ -22,6 +22,7 @@ const imagenesCarrusel = [
 function App() {
   const [indiceActivo, setIndiceActivo] = useState(0);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   const siguienteImagen = () => {
     setIndiceActivo((prev) => (prev === imagenesCarrusel.length - 1 ? 0 : prev + 1));
@@ -31,24 +32,57 @@ function App() {
     setIndiceActivo((prev) => (prev === 0 ? imagenesCarrusel.length - 1 : prev - 1));
   };
 
+  const cerrarMenu = () => setMenuAbierto(false);
+
   return (
     <BrowserRouter>
       <div className="onufast-container" id="inicio">
         {/* 1. HEADER / NAVBAR */}
         <header className="onufast-header">
           <div className="logo-container">
-            <Link to="/">
+            <Link to="/" onClick={cerrarMenu}>
               <img src="/logo_con_nombre.jpg" alt="Logo Onufast" className="logo-img" />
             </Link>
           </div>
-          <nav className="onufast-nav">
-            <Link to="/">Inicio</Link>
-            <Link to="/servicios">Servicios</Link>
-            <Link to="/nosotros">Quiénes Somos</Link>
-            <Link to="/rastreo">Rastrear Envío</Link>
-            <Link to="/ubicacion">Ubícanos</Link>
+
+          {/* BOTÓN HAMBURGUESA */}
+          <button
+            className={`btn-hamburguesa ${menuAbierto ? 'abierto' : ''}`}
+            onClick={() => setMenuAbierto(!menuAbierto)}
+            aria-label="Abrir menú de navegación"
+            aria-expanded={menuAbierto}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          {/* OVERLAY para cerrar el menú tocando fuera */}
+          {menuAbierto && (
+            <div className="nav-overlay" onClick={cerrarMenu}></div>
+          )}
+
+          <nav className={`onufast-nav ${menuAbierto ? 'nav-abierto' : ''}`}>
+            <Link to="/" onClick={cerrarMenu}>Inicio</Link>
+            <Link to="/servicios" onClick={cerrarMenu}>Servicios</Link>
+            <Link to="/nosotros" onClick={cerrarMenu}>Quiénes Somos</Link>
+            <Link to="/rastreo" onClick={cerrarMenu}>Rastrear Envío</Link>
+            <Link to="/ubicacion" onClick={cerrarMenu}>Ubícanos</Link>
+
+            {/* Botón login duplicado, visible solo dentro del menú mobile */}
+            <button
+              className="btn-login btn-login-mobile"
+              onClick={() => { setMostrarModal(true); cerrarMenu(); }}
+            >
+              Iniciar Sesión
+            </button>
           </nav>
-          <button className="btn-login" onClick={() => setMostrarModal(true)}>
+
+          {/* Botón login original, visible solo en desktop */}
+          <button
+            className="btn-login btn-login-desktop"
+            onClick={() => setMostrarModal(true)}
+          >
             Iniciar Sesión
           </button>
         </header>
@@ -68,29 +102,29 @@ function App() {
                     Enviando felicidad a tu puerta, rápido, seguro y hasta <br />
                     tu hogar, tu paquete, nuestra prioridad.
                   </p>
-                  
+
                   <div className="hero-actions-container">
-                    <button className="btn-start">Comenzar</button>
+                    <button className="btn-start" onClick={() => setMostrarModal(true)}>Comenzar</button>
                     <RastreoRapido />
                   </div>
                 </div>
-                
+
                 <div className="hero-carousel-container">
                   <div className="carousel-placeholder">
                     <span className="arrow-left" onClick={anteriorImagen}>‹</span>
-                    
-                    <img 
-                      src={imagenesCarrusel[indiceActivo]} 
-                      alt={`Carrusel entrega ${indiceActivo + 1}`} 
-                      className="carousel-img" 
+
+                    <img
+                      src={imagenesCarrusel[indiceActivo]}
+                      alt={`Carrusel entrega ${indiceActivo + 1}`}
+                      className="carousel-img"
                     />
 
                     <span className="arrow-right" onClick={siguienteImagen}>›</span>
-                    
+
                     <div className="carousel-dots">
                       {imagenesCarrusel.map((_, indice) => (
-                        <span 
-                          key={indice} 
+                        <span
+                          key={indice}
                           className={`dot ${indice === indiceActivo ? 'active' : ''}`}
                           onClick={() => setIndiceActivo(indice)}
                         ></span>

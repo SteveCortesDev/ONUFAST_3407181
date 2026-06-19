@@ -10,17 +10,17 @@ const aboutCards = [
   {
     title: 'Nuestra Historia',
     text: 'ONUFAST nace con la misión de revolucionar la logística en Colombia, conectando personas y negocios con rapidez y seguridad.',
-    image: 'public/Nosotros - Historia.jpg',
+    image: 'public/logo_calidad_onufast.jpg',
   },
   {
     title: 'Nuestra Misión',
     text: 'Entregar felicidad a tu puerta: rápido, seguro y confiable. Cada paquete es una promesa que cumplimos.',
-    image: 'public/Nosotros - Misión.jpg',
+    image: 'public/nuestra_mision.jpg',
   },
   {
     title: 'Nuestra Visión',
     text: 'Ser la empresa de logística más confiable de Latinoamérica, expandiendo fronteras sin perder el toque humano.',
-    image: 'public/Nosotros - Vision.jpg',
+    image: 'public/vision_onufast.jpg',
   },
 ];
 

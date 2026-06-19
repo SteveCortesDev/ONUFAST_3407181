@@ -46,6 +46,7 @@ body {
   padding: 15px 50px;
   box-sizing: border-box;
   border-bottom: 1px solid #2e303a;
+  position: relative;
 }
 
 .logo-container {
@@ -59,6 +60,11 @@ body {
   width: auto;
   object-fit: contain;
   display: block;
+}
+
+.onufast-nav {
+  display: flex;
+  align-items: center;
 }
 
 .onufast-nav a {
@@ -88,6 +94,20 @@ body {
 
 .btn-login:hover {
   background-color: #a31d22;
+}
+
+/* Por defecto (desktop): el botón mobile dentro del nav no se muestra,
+   y el botón hamburguesa tampoco. Esto se invierte en responsive.css */
+.btn-login-mobile {
+  display: none;
+}
+
+.btn-hamburguesa {
+  display: none;
+}
+
+.nav-overlay {
+  display: none;
 }
 
 /* 2. HERO SECTION STYLES (Fondo oscuro aplicado) */
@@ -330,7 +350,7 @@ body {
   height: 35px;
   object-fit: contain;
   /* Aplica filtro blanco para contrastar sobre el fondo negro */
-  filter: invert(1) brightness(2); 
+  filter: invert(1) brightness(2);
 }
 
 .service-card h3 {
@@ -480,38 +500,4 @@ body {
 .footer-bottom p {
   color: #555555;
   font-size: 13px;
-}
-
-/* RESPONSIVE DESIGN */
-@media (max-width: 1024px) {
-  .onufast-hero {
-    flex-direction: column;
-    padding: 40px 20px;
-  }
-  .hero-content {
-    text-align: center;
-    align-items: center;
-  }
-  .btn-start {
-    margin: 0 auto;
-  }
-  .rastreo-rapido-box {
-    margin: 0 auto;
-    width: 100%;
-  }
-  .onufast-services, .pasos-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .service-card {
-    border-bottom: 1px solid #2e303a;
-  }
-  .footer-content {
-    flex-direction: column;
-    gap: 30px;
-  }
-}
-@media (max-width: 600px) {
-  .onufast-services, .pasos-container {
-    grid-template-columns: 1fr;
-  }
 }

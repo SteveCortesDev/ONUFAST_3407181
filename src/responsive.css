@@ -1,44 +1,115 @@
 /* ============================================
    SISTEMA DE RESPONSIVE DESIGN PARA ONUFAST
+   Este archivo es el ÚNICO lugar con @media queries.
+   App.css e index.css NO deben tener breakpoints
+   para evitar conflictos de cascada.
    ============================================ */
 
 /* BREAKPOINTS:
-   - Mobile: 320px - 480px
-   - Tablet: 481px - 768px  
-   - Desktop: 769px - 1024px
-   - Wide: 1025px+
+   - Mobile:  hasta 480px
+   - Tablet:  481px - 768px
+   - Desktop pequeño: 769px - 1024px
+   - Wide: 1025px+ (estilos base de App.css)
 */
 
-/* ========== MOBILE FIRST (320px - 480px) ========== */
-@media (max-width: 480px) {
-  /* HEADER */
-  .onufast-header {
+/* ========== MENÚ HAMBURGUESA (compartido 481px-1024px) ========== */
+@media (max-width: 1024px) {
+  .btn-hamburguesa {
+    display: flex;
     flex-direction: column;
-    padding: 10px 15px;
-    gap: 10px;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    z-index: 1100;
+    padding: 0;
   }
 
-  .logo-img {
-    height: 30px;
+  .btn-hamburguesa span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    border-radius: 2px;
+    transition: all 0.25s ease;
+  }
+
+  /* Animación a "X" cuando está abierto */
+  .btn-hamburguesa.abierto span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  .btn-hamburguesa.abierto span:nth-child(2) {
+    opacity: 0;
+  }
+  .btn-hamburguesa.abierto span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  .btn-login-desktop {
+    display: none;
+  }
+
+  .btn-login-mobile {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .nav-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
   }
 
   .onufast-nav {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1a191f;
+    padding: 10px 20px 20px;
+    gap: 5px;
+    border-top: 1px solid #2e303a;
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .onufast-nav.nav-abierto {
+    max-height: 80vh;
+    opacity: 1;
   }
 
   .onufast-nav a {
-    font-size: 12px;
-    margin: 0 8px;
+    margin: 0;
+    font-size: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #2e303a;
+  }
+}
+
+/* ========== MOBILE (hasta 480px) ========== */
+@media (max-width: 480px) {
+  /* HEADER */
+  .onufast-header {
+    padding: 12px 15px;
   }
 
-  .btn-login {
-    padding: 8px 20px;
-    font-size: 14px;
-    width: 100%;
-    max-width: 200px;
+  .logo-img {
+    height: 32px;
   }
 
   /* HERO SECTION */
@@ -49,14 +120,19 @@
   }
 
   .hero-title {
-    font-size: 28px !important;
+    font-size: 28px;
     text-align: center;
   }
 
   .hero-description {
-    font-size: 14px !important;
+    font-size: 14px;
     text-align: center;
     padding: 0 10px;
+  }
+
+  .hero-content {
+    text-align: center;
+    align-items: center;
   }
 
   .hero-actions-container {
@@ -70,6 +146,7 @@
     text-align: center;
     padding: 12px 20px;
     font-size: 16px;
+    margin: 0 auto;
   }
 
   /* RASTREO RÁPIDO */
@@ -77,6 +154,7 @@
     width: 100%;
     max-width: 100%;
     padding: 15px;
+    margin: 0 auto;
   }
 
   .rastreo-input-group {
@@ -125,7 +203,6 @@
   /* SERVICIOS */
   .onufast-services {
     grid-template-columns: 1fr;
-    gap: 0;
   }
 
   .service-card {
@@ -268,13 +345,7 @@
 @media (min-width: 481px) and (max-width: 768px) {
   /* HEADER */
   .onufast-header {
-    padding: 12px 25px;
-    flex-wrap: wrap;
-  }
-
-  .onufast-nav a {
-    font-size: 14px;
-    margin: 0 12px;
+    padding: 14px 25px;
   }
 
   /* HERO */
@@ -284,8 +355,13 @@
   }
 
   .hero-title {
-    font-size: 36px !important;
+    font-size: 36px;
     text-align: center;
+  }
+
+  .hero-content {
+    text-align: center;
+    align-items: center;
   }
 
   .hero-description {
@@ -317,6 +393,7 @@
 
   .service-card {
     padding: 35px 20px;
+    border-bottom: 1px solid #2e303a;
   }
 
   /* CÓMO FUNCIONA */
@@ -337,18 +414,34 @@
 
   .footer-brand {
     flex: 100%;
+    text-align: center;
   }
 }
 
 /* ========== DESKTOP PEQUEÑO (769px - 1024px) ========== */
 @media (min-width: 769px) and (max-width: 1024px) {
   .onufast-hero {
+    flex-direction: column;
     padding: 60px 30px;
     gap: 30px;
   }
 
+  .hero-content {
+    text-align: center;
+    align-items: center;
+  }
+
   .hero-title {
-    font-size: 40px !important;
+    font-size: 40px;
+  }
+
+  .btn-start {
+    margin: 0 auto;
+  }
+
+  .rastreo-rapido-box {
+    margin: 0 auto;
+    width: 100%;
   }
 
   .onufast-services {
@@ -362,14 +455,20 @@
 
   .service-card {
     padding: 40px 25px;
+    border-bottom: 1px solid #2e303a;
   }
 
   .carousel-placeholder {
     height: 300px;
   }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 30px;
+  }
 }
 
-/* ========== AJUSTES DE SEGURIDAD ========== */
+/* ========== AJUSTES DE SEGURIDAD (todos los tamaños) ========== */
 /* Evitar desbordamiento horizontal */
 * {
   max-width: 100%;
@@ -381,12 +480,12 @@ img, video, iframe {
   height: auto;
 }
 
-/* Mejorar touch targets en móviles */
-@media (max-width: 768px) {
-  button, 
-  .btn-login, 
-  .btn-start, 
-  .btn-rastrear, 
+/* Mejorar touch targets en móviles/tablet */
+@media (max-width: 1024px) {
+  button,
+  .btn-login,
+  .btn-start,
+  .btn-rastrear,
   .btn-submit,
   .tab-btn,
   .modal-close-btn,
@@ -396,7 +495,6 @@ img, video, iframe {
   .service-card,
   .paso-card {
     min-height: 44px;
-    min-width: 44px;
   }
 
   input, select, textarea {
