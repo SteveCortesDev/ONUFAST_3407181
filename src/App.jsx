@@ -41,7 +41,7 @@ function App() {
         <header className="onufast-header">
           <div className="logo-container">
             <Link to="/" onClick={cerrarMenu}>
-              <img src="/logo_con_nombre.jpg" alt="Logo Onufast" className="logo-img" />
+              <img src="/logo_calidad_onufast.jpg" alt="Logo Onufast" className="logo-img" />
             </Link>
           </div>
 

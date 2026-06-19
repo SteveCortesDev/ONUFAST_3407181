@@ -4,14 +4,18 @@ export default function Servicios() {
   const servicios = [
     {
       icono: '/camion.png',
-      titulo: 'Estándar',
-      desc: 'El envío estándar es nuestro servicio normal, ideal para quienes buscan una entrega confiable a un costo regular.'
+      titulo: 'Servicio Estándar',
+      desc: 'El envío estándar es nuestro servicio regular, ideal para quienes buscan una entrega confiable a un costo accesible. Perfecto para envíos que no requieren urgencia extrema.',
+      tiempo: '2-5 días hábiles',
+      precio: 'Desde $15.000 COP'
     },
     {
       icono: '/avion.png',
-      titulo: 'Express',
-      desc: 'El envío express va con mayor velocidad logística, priorizando tu envío para que llegue lo más rápido posible.'
-    }
+      titulo: 'Servicio Express',
+      desc: 'El envío express prioriza tu paquete con nuestra red logística más rápida. Ideal para documentos urgentes y entregas que no pueden esperar.',
+      tiempo: '24-48 horas',
+      precio: 'Desde $35.000 COP'
+    },
   ];
 
   return (
@@ -30,6 +34,10 @@ export default function Servicios() {
               </div>
               <h3>{servicio.titulo}</h3>
               <p>{servicio.desc}</p>
+              <div className="service-details">
+                <p><strong>Tiempo de Entrega:</strong> {servicio.tiempo}</p>
+                <p><strong>Precio:</strong> {servicio.precio}</p>
+              </div>
             </div>
           ))}
         </div>
