@@ -48,15 +48,19 @@ Cada pedido genera automáticamente una factura con:
 - Múltiples métodos de pago
 - Notas crédito y débito
 
-### Reportes y Análisis
-- Estadísticas de entregas
-- Reportes financieros consolidados
-- Indicadores KPI en tiempo real
-- Análisis de desempeño por conductor
 
-### Sistema de Seguridad Empresarial
-- Autenticación con roles y permisos
-- Auditoría completa de cada acción
-- Historial de cambios de estado
-- Encriptación de datos sensibles
+### Como ejecutar un codigo Python/FastAPI
+1. Llamar carpeta
+    - Abrir terminal y escribir cd..
+    - Ejecutar el codigo cd nombre_tu_carpeta
+    - Ejecutar el codigo cd nombre_archivo\nomb_carpeta
 
+2. Instalar las bibliotecas de FastAPI:
+    - Ejecutar el codigo en la terminal Pip install "fastapi[standard]"
+    - Una vez instalado se debe verificar que todas las bubliotecas se instalaron con el comando pip list
+    - Si no se instalo todo cerrar proceso con ctrl + c y luego instalar otra vez
+
+3. Activar la terminal deseada
+    - Ejecutar el siguiente codigo en la terminal cd onufast_api\onufast uvicorn main:app --reload
+    - Una vez ejecutador aparecera una serie de informacion y un enlace
+    - Copiar el link , pegar en un navegador y al final agregar /docs
