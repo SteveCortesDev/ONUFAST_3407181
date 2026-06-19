@@ -32,8 +32,8 @@ const values = [
 
 const team = [
   { initials: 'YM', name: 'Yahir Moran', role: 'Backend Developer' },
-  { initials: 'SR', name: 'Sofia Ramirez', role: 'Base de Datos' },
-  { initials: 'DP', name: 'Daniel Pulidp', role: 'Frontend Developer' },
+  { initials: 'SR', name: 'Sofia Ramirez', role: 'Base de Datos Developer' },
+  { initials: 'DP', name: 'Daniel Pulido', role: 'Frontend Developer' },
   { initials: 'EA', name: 'Esteban Angulo', role: 'Backend Developer' },
   { initials: 'DT', name: 'David Torres', role: 'Frontend Developer' },
 ];
