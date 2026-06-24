@@ -88,3 +88,32 @@ def mis_pedidos(current_user: TokenData = Depends(get_current_user)):
         "total_pedidos": len(resultado),
         "pedidos":       resultado,
     }
+
+# ─────────────────────────────────────────────────────────────
+#  DELETE /envios/pedido/{id_pedido}
+# ─────────────────────────────────────────────────────────────
+@router.delete(
+    "/pedido/{id_pedido}",
+    status_code=status.HTTP_200_OK,
+    summary="Eliminar un pedido"
+)
+def eliminar_pedido(
+    id_pedido: int,
+    current_user: TokenData = Depends(get_current_user)
+):
+    pedido = store.pedidos.get(id_pedido)
+    if not pedido or pedido["id_cliente"] != current_user.id_usuario:
+        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+
+    # Como no hay llaves foráneas reales (es memoria), limpiamos
+    # los paquetes asociados a mano para no dejar datos huérfanos
+    ids_paquetes = [pid for pid, pk in store.paquetes.items() if pk["id_pedido"] == id_pedido]
+    for pid in ids_paquetes:
+        del store.paquetes[pid]
+
+    del store.pedidos[id_pedido]
+
+    return {
+        "mensaje": f"Pedido {id_pedido} eliminado exitosamente",
+        "paquetes_eliminados": len(ids_paquetes)
+    }
