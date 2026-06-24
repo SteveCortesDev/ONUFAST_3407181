@@ -14,6 +14,28 @@ CREATE TABLE USUARIO (
     direccion    VARCHAR(200) NOT NULL
 );
 
+CREATE TABLE JORNADA (
+    id_jornada INT AUTO_INCREMENT PRIMARY KEY,
+    tipo_jornada VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE REMITENTE (
+    id_remitente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    direccion VARCHAR(200) NOT NULL,
+    correo VARCHAR(100)
+);
+
+CREATE TABLE DESTINATARIO (
+    id_destinatario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    direccion VARCHAR(200) NOT NULL,
+    correo VARCHAR(100)
+);
+
+
 CREATE TABLE DOCUMENTO (
     id_documento INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -23,19 +45,6 @@ CREATE TABLE DOCUMENTO (
     REFERENCES USUARIO(id_usuario)
 );
 
-CREATE TABLE JORNADA (
-    id_jornada INT AUTO_INCREMENT PRIMARY KEY,
-    tipo_jornada VARCHAR(30) NOT NULL
-);
-
-CREATE TABLE USUARIO_JORNADA (
-    id_user_jornada INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_jornada INT NOT NULL,
-
-    FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario),
-    FOREIGN KEY (id_jornada) REFERENCES JORNADA(id_jornada)
-);
 
 CREATE TABLE USUARIO_ROLES (
     id_usuario_rol  INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,54 +55,80 @@ CREATE TABLE USUARIO_ROLES (
 );
 
 
+CREATE TABLE USUARIO_JORNADA (
+    id_user_jornada INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_jornada INT NOT NULL,
 
-CREATE TABLE ESTADO_PEDIDO (
-    id_espedido  INT AUTO_INCREMENT PRIMARY KEY,
-    estado varchar(50) NOT NULL
+    FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario),
+    FOREIGN KEY (id_jornada) REFERENCES JORNADA(id_jornada)
 );
 
+
+CREATE TABLE ESTADO_ENVIO (
+    id_esenvio INT AUTO_INCREMENT PRIMARY KEY,
+    estado VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE TIPO_ENVIO (
     id_tipenvio INT AUTO_INCREMENT PRIMARY KEY,
     descripcion VARCHAR(100) NOT NULL
 );
 
-
-CREATE TABLE PEDIDO (
-    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE ENVIO (
+    id_envio INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_tipenvio INT NOT NULL,
-    id_espedido INT NOT NULL,
+    id_esenvio INT NOT NULL,
+    id_remitente INT NOT NULL,
+    id_destinatario INT NOT NULL,
     codigo_rastreo VARCHAR(100) NOT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     cantidad INT DEFAULT 1 NOT NULL,
-    FOREIGN KEY (id_usuario)  REFERENCES USUARIO(id_usuario),
-    FOREIGN KEY (id_tipenvio) REFERENCES TIPO_ENVIO(id_tipenvio),
-    FOREIGN KEY (id_espedido) REFERENCES ESTADO_PEDIDO(id_espedido)
+
+    FOREIGN KEY (id_usuario)
+    REFERENCES USUARIO(id_usuario),
+
+    FOREIGN KEY (id_tipenvio)
+    REFERENCES TIPO_ENVIO(id_tipenvio),
+
+    FOREIGN KEY (id_esenvio)
+    REFERENCES ESTADO_ENVIO(id_esenvio),
+
+    FOREIGN KEY (id_remitente)
+    REFERENCES REMITENTE(id_remitente),
+
+    FOREIGN KEY (id_destinatario)
+    REFERENCES DESTINATARIO(id_destinatario)
 );
 
 
 CREATE TABLE PAQUETE (
-    id_paquete    INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido     INT NOT NULL,
-    cod_rastreo   VARCHAR(100) NOT NULL,
-    peso          DECIMAL(8,2) NOT NULL,
-    alto          DECIMAL(8,2) NOT NULL,
-    largo         DECIMAL(8,2) NOT NULL,
-    ancho         DECIMAL(8,2) NOT NULL,
-    descripcion   VARCHAR(200) ,
-    FOREIGN KEY (id_pedido) REFERENCES PEDIDO(id_pedido)
-);
+    id_paquete INT AUTO_INCREMENT PRIMARY KEY,
+    id_envio INT NOT NULL,
+    num_guia VARCHAR(50) UNIQUE NOT NULL,
+    cod_rastreo VARCHAR(100) NOT NULL,
+    peso DECIMAL(8,2) NOT NULL,
+    alto DECIMAL(8,2) NOT NULL,
+    largo DECIMAL(8,2) NOT NULL,
+    ancho DECIMAL(8,2) NOT NULL,
+    descripcion VARCHAR(200),
 
+    FOREIGN KEY (id_envio)
+    REFERENCES ENVIO(id_envio)
+);
 
 CREATE TABLE ESTADO_PAQUETE (
     id_estpaquete INT AUTO_INCREMENT PRIMARY KEY,
-    id_paquete   INT NOT NULL,
-    id_espedido INT NOT NULL,
-    FOREIGN KEY (id_espedido) REFERENCES ESTADO_PEDIDO(id_espedido),
-    FOREIGN KEY (id_paquete) REFERENCES PAQUETE(id_paquete)
-);
+    id_paquete INT NOT NULL,
+    id_esenvio INT NOT NULL,
 
+    FOREIGN KEY (id_paquete)
+    REFERENCES PAQUETE(id_paquete),
+
+    FOREIGN KEY (id_esenvio)
+    REFERENCES ESTADO_ENVIO(id_esenvio)
+);
 
 CREATE TABLE FACTURA (
     id_factura      INT AUTO_INCREMENT PRIMARY KEY,
@@ -103,10 +138,9 @@ CREATE TABLE FACTURA (
     iva             DECIMAL(12,2) NOT NULL,
     total_pago      DECIMAL(12,2) NOT NULL,
     metodo_pago     VARCHAR(50) NOT NULL,
-    id_pedido       INT NOT NULL UNIQUE,
-    FOREIGN KEY (id_pedido) REFERENCES PEDIDO(id_pedido)
+    id_envio       INT NOT NULL UNIQUE,
+    FOREIGN KEY (id_envio) REFERENCES envio(id_envio)
 );
-
 
 CREATE TABLE DETALLE_FACTURA (
     id_detalle      INT AUTO_INCREMENT PRIMARY KEY,
