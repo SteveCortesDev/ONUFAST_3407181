@@ -69,3 +69,27 @@ def listar_paquetes(
         "total_paquetes":  len(lista),
         "paquetes":        lista,
     }
+
+# ─────────────────────────────────────────────────────────────
+#  DELETE /paquetes/{id_paquete}
+# ─────────────────────────────────────────────────────────────
+@router.delete(
+    "/{id_paquete}",
+    status_code=status.HTTP_200_OK,
+    summary="Eliminar un paquete registrado"
+)
+def eliminar_paquete(
+    id_paquete: int,
+    current_user: TokenData = Depends(get_current_user)
+):
+    paquete = store.paquetes.get(id_paquete)
+    if not paquete:
+        raise HTTPException(status_code=404, detail="Paquete no encontrado")
+
+    pedido = store.pedidos.get(paquete["id_pedido"])
+    if not pedido or pedido["id_cliente"] != current_user.id_usuario:
+        raise HTTPException(status_code=404, detail="Paquete no encontrado")
+
+    del store.paquetes[id_paquete]
+
+    return {"mensaje": f"Paquete {id_paquete} eliminado exitosamente"}

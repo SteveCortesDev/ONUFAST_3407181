@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from schemas.schemas import RegistroRequest, RegistroResponse, LoginRequest, LoginResponse
-from core.security import hash_password, verify_password, create_token
+from core.security import hash_password, verify_password, create_token, get_current_user, TokenData
+from fastapi import Depends
 import store
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
@@ -83,3 +84,19 @@ def login(payload: LoginRequest):
         id_usuario=usuario["id_usuario"],
         nombre=usuario["nombre"],
     )
+
+# ─────────────────────────────────────────────────────────────
+#  DELETE /auth/cuenta
+# ─────────────────────────────────────────────────────────────
+@router.delete(
+    "/cuenta",
+    status_code=status.HTTP_200_OK,
+    summary="Eliminar la cuenta del usuario autenticado"
+)
+def eliminar_cuenta(current_user: TokenData = Depends(get_current_user)):
+    if current_user.id_usuario not in store.usuarios:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    del store.usuarios[current_user.id_usuario]
+
+    return {"mensaje": f"Cuenta de {current_user.nombre} eliminada exitosamente"}
