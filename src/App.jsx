@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import './responsive.css';
 import AuthModal from './components/AuthModal';
@@ -212,3 +212,30 @@ export default function App() {
         </BrowserRouter>
     );
 }
+
+
+
+
+
+
+
+import api from './api';
+
+function App() {
+  const [dbStatus, setDbStatus] = useState(null);
+
+  useEffect(() => {
+    api.get('/test-db')
+      .then(res => setDbStatus(res.data.conexion))
+      .catch(err => console.error(err));
+  }, []);
+
+  return (
+    <div>
+      <p>Estado de la BD: {dbStatus}</p>
+
+      {/* aquí va TODO tu contenido actual de App */}
+    </div>
+  );
+}
+
