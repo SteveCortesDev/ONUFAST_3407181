@@ -1,0 +1,682 @@
+/* ============================================
+   ESTILOS COMPARTIDOS PARA PÁGINAS
+   ============================================ */
+
+.page-container {
+  width: 100%;
+  min-height: 70vh;
+  background-color: #ededed;
+}
+
+/* HERO DE PÁGINA */
+.page-hero {
+  background: linear-gradient(135deg, #1a191f 0%, #2d2a35 100%);
+  color: white;
+  padding: 60px 50px;
+  text-align: center;
+  border-bottom: 3px solid var(--accent);
+}
+
+.page-hero h1 {
+  font-size: 42px;
+  margin: 0 0 15px 0;
+  color: white;
+}
+
+.page-hero p {
+  font-size: 18px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* CONTENIDO DE PÁGINA */
+.page-content {
+  padding: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========== NOSOTROS ========== */
+
+/* Estadísticas */
+.nosotros-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 50px;
+}
+
+.nosotros-stat-card {
+  background: white;
+  padding: 35px 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.nosotros-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(201, 37, 44, 0.15);
+}
+
+.nosotros-stat-number {
+  display: block;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.nosotros-stat-label {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Tarjetas de Historia/Misión/Visión con imágenes */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.nosotros-about-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #f0f0f0;
+  padding: 0 !important;
+}
+
+.nosotros-about-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(201, 37, 44, 0.15);
+}
+
+.nosotros-card-img {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.nosotros-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.nosotros-about-card:hover .nosotros-card-img img {
+  transform: scale(1.05);
+}
+
+.nosotros-card-emoji {
+  font-size: 64px;
+  line-height: 1;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.nosotros-card-body {
+  padding: 28px 25px 30px;
+}
+
+.nosotros-card-body h2 {
+  color: var(--text-h);
+  font-size: 24px;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+}
+
+.nosotros-card-body h2::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.nosotros-card-body p {
+  color: #555;
+  line-height: 1.7;
+  margin: 0;
+  font-size: 15px;
+}
+
+/* Valores - Píldoras */
+.nosotros-values {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 40px 0 50px 0;
+}
+
+.nosotros-value-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 14px 28px;
+  border-radius: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.nosotros-value-pill:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(201, 37, 44, 0.15);
+  border-color: var(--accent);
+}
+
+.nosotros-value-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.nosotros-value-text {
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+/* Equipo */
+.nosotros-team-section {
+  margin-top: 10px;
+}
+
+.nosotros-section-title {
+  text-align: center;
+  font-size: 32px;
+  color: var(--text-h);
+  margin: 0 0 35px 0;
+  font-weight: 700;
+  position: relative;
+}
+
+.nosotros-section-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--accent);
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+.nosotros-team-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 25px;
+}
+
+.nosotros-team-card {
+  background: white;
+  padding: 30px 20px 25px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.nosotros-team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(201, 37, 44, 0.12);
+  border-color: var(--accent);
+}
+
+.nosotros-avatar {
+  width: 85px;
+  height: 85px;
+  background: linear-gradient(135deg, var(--accent), #a31d22);
+  border-radius: 50%;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 4px 12px rgba(201, 37, 44, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.nosotros-team-card:hover .nosotros-avatar {
+  transform: scale(1.08) rotate(-5deg);
+}
+
+.nosotros-team-name {
+  font-weight: 600;
+  color: #1a191f;
+  margin: 8px 0 4px;
+  font-size: 16px;
+}
+
+.nosotros-team-role {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+}
+
+
+/* ========== RASTREO ========== */
+.rastreo-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.rastreo-form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rastreo-form .input-group {
+  margin-bottom: 20px;
+}
+
+.rastreo-form .input-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: #333;
+}
+
+.rastreo-form .input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e5e4e7;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.rastreo-form .input-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-rastrear-full {
+  width: 100%;
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-rastrear-full:hover {
+  background-color: #a31d22;
+}
+
+.rastreo-resultado {
+  margin-top: 30px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid var(--accent);
+}
+
+.rastreo-resultado h3 {
+  color: var(--accent);
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+.rastreo-resultado p {
+  margin: 8px 0;
+  color: #555;
+}
+
+/* ========== SERVICIOS ========== */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.servicio-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.servicio-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(201, 37, 44, 0.15);
+}
+
+.servicio-card .icon-wrapper {
+  width: 70px;
+  height: 70px;
+  background-color: #f5f5f5;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+}
+
+.servicio-card .service-icon {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+}
+
+.servicio-card h3 {
+  font-size: 20px;
+  color: #1a191f;
+  margin: 0 0 15px 0;
+}
+
+.servicio-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* ========== UBICACIÓN ========== */
+.ubicacion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.mapa-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
+}
+
+.mapa-placeholder {
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(135deg, #f5f5f5, #e5e4e7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #555;
+}
+
+.mapa-iframe {
+  width: 100%;
+  height: 400px;
+  border: none;
+  display: block;
+}
+
+.mapa-placeholder p {
+  font-size: 20px;
+  margin: 5px 0;
+}
+
+.mapa-direccion {
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.contacto-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.info-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3 {
+  color: var(--accent);
+  font-size: 18px;
+  margin: 0 0 12px 0;
+}
+
+.info-card p {
+  color: #555;
+  margin: 5px 0;
+  line-height: 1.6;
+}
+
+/* ========== RESPONSIVE PARA PÁGINAS ========== */
+@media (max-width: 768px) {
+  .page-hero {
+    padding: 40px 20px;
+  }
+
+  .page-hero h1 {
+    font-size: 30px;
+  }
+
+  .page-hero p {
+    font-size: 16px;
+  }
+
+  .page-content {
+    padding: 25px 15px;
+  }
+
+  /* Ubicación */
+  .ubicacion-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .mapa-placeholder,
+  .mapa-iframe {
+    height: 250px;
+  }
+
+  .contacto-info {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* About */
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Equipo */
+  .nosotros-team-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  /* Estadísticas */
+  .nosotros-stats {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* Servicios */
+  .servicios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Rastreo */
+  .rastreo-form {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-hero h1 {
+    font-size: 24px;
+  }
+
+  .page-hero p {
+    font-size: 14px;
+  }
+
+  .about-card h2 {
+    font-size: 20px;
+  }
+
+  .servicio-card h3 {
+    font-size: 18px;
+  }
+
+  .rastreo-resultado {
+    padding: 20px;
+  }
+
+  .rastreo-resultado h3 {
+    font-size: 18px;
+  }
+
+  /* Equipo: 1 columna, tarjetas centradas y avatar un poco más chico */
+  .nosotros-team-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .nosotros-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
+  }
+
+  .nosotros-team-name {
+    font-size: 15px;
+  }
+
+  .nosotros-stat-number {
+    font-size: 32px;
+  }
+}
+/* ===== MEJORAS PARA RASTREO ===== */
+.input-help {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #888;
+}
+
+.rastreo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.rastreo-codigo {
+  font-size: 14px;
+  color: #666;
+  background: #f5f5f5;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.rastreo-estado {
+  margin: 15px 0;
+}
+
+.estado-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rastreo-mensaje {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #333;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.rastreo-timeline {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e4e7;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0 10px 15px;
+  border-left: 3px solid #ddd;
+  margin-left: 10px;
+  opacity: 0.4;
+}
+
+.timeline-item.completado {
+  opacity: 1;
+  border-left-color: #28a745;
+}
+
+.timeline-item.activo {
+  opacity: 1;
+  border-left-color: var(--accent);
+}
+
+.timeline-item.pendiente {
+  opacity: 0.5;
+  border-left-color: #ccc;
+}
+
+.timeline-item .timeline-icon {
+  font-size: 20px;
+  min-width: 28px;
+}
+
+.timeline-item strong {
+  display: block;
+  font-size: 14px;
+  color: #1a191f;
+}
+
+.timeline-item p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
