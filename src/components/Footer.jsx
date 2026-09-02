@@ -10,7 +10,6 @@ export default function Footer() {
         
         <div className="footer-links">
           <h4>Navegación</h4>
-          <a href="/Inicio">Inicio</a>
           <a href="/Servicios">Servicios</a>
           <a href="/Nosotros">Quiénes Somos</a>
           <a href="/Rastreo">Rastrear Envío</a>

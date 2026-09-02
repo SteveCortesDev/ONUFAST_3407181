@@ -31,11 +31,11 @@ const values = [
 ];
 
 const team = [
-  { initials: 'YM', name: 'Yahir Moran', role: 'Backend Developer' },
-  { initials: 'SR', name: 'Sofia Ramirez', role: 'Data Base Developer' },
-  { initials: 'DP', name: 'Daniel Pulido', role: 'Frontend Developer' },
-  { initials: 'EA', name: 'Esteban Angulo', role: 'Backend Developer' },
-  { initials: 'DT', name: 'David Torres', role: 'Frontend Developer' },
+  { initials: 'YM', name: 'Yahir Moran', role: 'Full Stack Developer' },
+  { initials: 'SR', name: 'Sofia Ramirez', role: 'Full Stack Developer' },
+  { initials: 'DP', name: 'Daniel Pulido', role: 'Full Stack Developer' },
+  { initials: 'EA', name: 'Esteban Angulo', role: 'Full Stack Developer' },
+  { initials: 'DT', name: 'David Torres', role: 'Full Stack Developer' },
 ];
 
 export default function Nosotros() {
