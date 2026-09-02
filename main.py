@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import auth, paquetes, envios, rutas
+from sqlalchemy import text
+from core.database import engine
+import webbrowser
+import threading
 
 app = FastAPI(
     title="ONUFAST API",
@@ -40,3 +44,20 @@ def root():
         "modo":    "memoria (sin base de datos)",
         "docs":    "/docs",
     }
+
+
+##prueba
+@app.get("/test-db", tags=["Root"])
+def test_db():
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return {"conexion": "exitosa ✅"}
+    except Exception as e:
+        return {"conexion": "fallida ❌", "error": str(e)}
+
+
+
+@app.on_event("startup")
+def abrir_navegador():
+    threading.Timer(1.5, lambda: webbrowser.open("http://127.0.0.1:8000/docs")).start()
