@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import './App.css';
 import './responsive.css';
@@ -13,6 +13,7 @@ import Rastreo from './pages/Rastreo';
 import Servicios from './pages/Servicios';
 import Ubicacion from './pages/Ubicacion';
 import Admin from './pages/Admin';
+import Usuario from './pages/Usuario';
 
 import api from './api';
 
@@ -50,6 +51,9 @@ function AppContent() {
     const [dbStatus, setDbStatus] = useState(null);
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const esPanelUsuario = location.pathname === '/usuario';
 
 
     // ─────────────────────────────────────────
@@ -75,8 +79,12 @@ function AppContent() {
     // LOGIN
     // ─────────────────────────────────────────
 
-    const handleLogin = () => {
-        navigate('/admin');
+    const handleLogin = (usuario) => {
+
+        console.log('Usuario autenticado:', usuario);
+
+        navigate('/usuario');
+
     };
 
 
@@ -127,25 +135,25 @@ function AppContent() {
             {/* ═══════════════════════════════════
                 HEADER / NAVBAR
             ═══════════════════════════════════ */}
+            {!esPanelUsuario && (
 
-            <header className="onufast-header">
+    <header className="onufast-header">
 
-                <div className="logo-container">
+        <div className="logo-container">
 
-                    <Link to="/" onClick={cerrarMenu}>
+            <Link to="/" onClick={cerrarMenu}>
 
-                        <img
-                            src="/logo_calidad_onufast.jpg"
-                            alt="Logo Onufast"
-                            className="logo-img"
-                        />
+                <img
+                    src="/logo_calidad_onufast.jpg"
+                    alt="Logo Onufast"
+                    className="logo-img"
+                />
 
-                    </Link>
+            </Link>
 
-                </div>
+        </div>
 
-
-                {/* BOTÓN HAMBURGUESA */}
+         {/* BOTÓN HAMBURGUESA */}
 
                 <button
                     className={`btn-hamburguesa ${menuAbierto ? 'abierto' : ''}`}
@@ -229,6 +237,14 @@ function AppContent() {
                 </button>
 
             </header>
+
+   
+)}
+
+            
+
+
+               
 
 
             {/* ═══════════════════════════════════
@@ -552,6 +568,11 @@ function AppContent() {
                     element={<Admin />}
                 />
 
+                <Route
+                    path="/usuario"
+                    element={<Usuario />}
+                /> 
+
             </Routes>
 
 
@@ -559,18 +580,22 @@ function AppContent() {
                 FOOTER
             ═══════════════════════════════════ */}
 
-            <Footer />
+            {/* FOOTER */}
+
+            {!esPanelUsuario && <Footer />}
 
 
             {/* ═══════════════════════════════════
                 MODAL DE AUTENTICACIÓN
             ═══════════════════════════════════ */}
 
-            <AuthModal
-                isOpen={mostrarModal}
-                onClose={() => setMostrarModal(false)}
-                onLogin={handleLogin}
-            />
+            {!esPanelUsuario && (
+                <AuthModal
+                    isOpen={mostrarModal}
+                    onClose={() => setMostrarModal(false)}
+                    onLogin={handleLogin}
+                />
+)}
 
         </div>
 

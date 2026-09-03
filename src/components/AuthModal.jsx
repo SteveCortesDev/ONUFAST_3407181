@@ -1,106 +1,281 @@
 import { useState } from 'react';
+import api from '../api';
 
 export default function AuthModal({ isOpen, onClose, onLogin }) {
-    // Estado para alternar entre pestañas: 'login' o 'register'
+
     const [activeTab, setActiveTab] = useState('login');
 
-    // Si el modal está cerrado, no renderiza nada en el DOM
+    const [nombre, setNombre] = useState('');
+    const [contrasena, setContrasena] = useState('');
+    const [direccion, setDireccion] = useState('');
+
+    const [error, setError] = useState('');
+    const [cargando, setCargando] = useState(false);
+
+
     if (!isOpen) return null;
 
-    // MODIFICADO: Manejar el submit del formulario
-    const handleSubmit = (e) => {
+
+    // ═══════════════════════════════════════════════
+    // LOGIN
+    // ═══════════════════════════════════════════════
+
+    const handleLogin = async (e) => {
+
         e.preventDefault();
-        onLogin(); // Llamamos a la función que viene desde App.jsx
-        onClose(); // Cerramos el modal
+
+        setError('');
+        setCargando(true);
+
+        try {
+
+            const response = await api.post('/auth/login', {
+
+                nombre: nombre,
+                contrasena: contrasena,
+                direccion: direccion
+
+            });
+
+
+            const data = response.data;
+
+
+            // Guardar token
+
+            localStorage.setItem(
+                'token',
+                data.access_token
+            );
+
+
+            // Guardar información del usuario
+
+            localStorage.setItem(
+                'id_usuario',
+                data.id_usuario
+            );
+
+            localStorage.setItem(
+                'nombre_usuario',
+                data.nombre
+            );
+
+
+            // Avisar a App.jsx que el login fue exitoso
+
+            onLogin(data);
+
+            onClose();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            setError(
+                error.response?.data?.detail ||
+                'No se pudo iniciar sesión.'
+            );
+
+        } finally {
+
+            setCargando(false);
+
+        }
     };
 
+
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                
-                {/* Cabecera negra con el logotipo superior */}
+
+        <div
+            className="modal-overlay"
+            onClick={onClose}
+        >
+
+            <div
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
+            >
+
+                {/* HEADER */}
+
                 <div className="modal-header-black">
-                    <img src="/LOGO_ONUFAST.jpg" alt="Onufast Logo" className="modal-logo" />
-                    <button className="modal-close-btn" onClick={onClose}>&times;</button>
+
+                    <img
+                        src="/LOGO_ONUFAST.jpg"
+                        alt="Onufast Logo"
+                        className="modal-logo"
+                    />
+
+                    <button
+                        className="modal-close-btn"
+                        onClick={onClose}
+                    >
+                        &times;
+                    </button>
+
                 </div>
 
-                {/* Selector de pestañas interactivas */}
+
+                {/* TABS */}
+
                 <div className="modal-tabs">
-                    <button 
-                        className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('register')}
+
+                    <button
+                        className={`tab-btn ${
+                            activeTab === 'register'
+                                ? 'active'
+                                : ''
+                        }`}
+                        onClick={() => {
+                            setActiveTab('register');
+                            setError('');
+                        }}
                     >
                         Registrarse
                     </button>
-                    <button 
-                        className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('login')}
+
+
+                    <button
+                        className={`tab-btn ${
+                            activeTab === 'login'
+                                ? 'active'
+                                : ''
+                        }`}
+                        onClick={() => {
+                            setActiveTab('login');
+                            setError('');
+                        }}
                     >
                         Iniciar Sesión
                     </button>
+
                 </div>
 
-                {/* CONTENIDO DINÁMICO SEGÚN LA PESTAÑA SELECCIONADA */}
+
+                {/* ═══════════════════════════════════
+                    LOGIN
+                ═══════════════════════════════════ */}
+
                 {activeTab === 'login' ? (
-                    /* Formulario de Iniciar Sesión */
-                    <form className="modal-form" onSubmit={handleSubmit}>
+
+                    <form
+                        className="modal-form"
+                        onSubmit={handleLogin}
+                    >
+
                         <div className="input-group">
-                            <label>Correo electrónico:</label>
-                            <input type="email" placeholder="Correo electrónico" required />
-                        </div>
-                        <div className="input-group">
-                            <label>Contraseña:</label>
-                            <div className="password-wrapper">
-                                <input type="password" placeholder="Contraseña" required />
-                                <span className="toggle-password">👁️</span>
-                            </div>
-                        </div>
-                        <span className="form-link">Olvide mi contraseña</span>
-                        
-                        <button type="submit" className="btn-submit">Iniciar</button>
-                        
-                        <span className="sub-text">Acceso Rápido</span>
-                        <div className="social-login">
-                            <img src="/chrome-icon.png" alt="Google" className="social-icon-img" />
-                        </div>
-                    </form>
-                ) : (
-                    /* Formulario de Registrarse */
-                    <form className="modal-form" onSubmit={handleSubmit}>
-                        <div className="input-group">
-                            <label>Nombre</label>
-                            <input type="text" placeholder="Nombre" required />
-                        </div>
-                        <div className="input-group">
-                            <label>Usuario</label>
-                            <input type="text" placeholder="Usuario" required />
-                        </div>
-                        <div className="input-group">
-                            <label>Correo Electrónico</label>
-                            <input type="email" placeholder="Correo Electronico" required />
-                        </div>
-                        <div className="input-group">
-                            <label>Contraseña</label>
-                            <div className="password-wrapper">
-                                <input type="password" placeholder="Contraseña" required />
-                                <span className="toggle-password">👁️</span>
-                            </div>
-                        </div>
-                        <div className="input-group">
-                            <label>Confirma Contraseña</label>
-                            <input type="password" placeholder="Confirma Contraseña" required />
-                        </div>
-                        
-                        <span className="sub-text">Registro Rápido</span>
-                        <div className="social-login">
-                            <img src="/chrome-icon.png" alt="Google" className="social-icon-img" />
+
+                            <label>
+                                Nombre completo
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Ej: María López"
+                                value={nombre}
+                                onChange={(e) =>
+                                    setNombre(e.target.value)
+                                }
+                                required
+                            />
+
                         </div>
 
-                        <button type="submit" className="btn-submit">Registrar</button>
+
+                        <div className="input-group">
+
+                            <label>
+                                Contraseña
+                            </label>
+
+                            <input
+                                type="password"
+                                placeholder="Contraseña"
+                                value={contrasena}
+                                onChange={(e) =>
+                                    setContrasena(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+
+                        <div className="input-group">
+
+                            <label>
+                                Dirección
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Dirección de entrega"
+                                value={direccion}
+                                onChange={(e) =>
+                                    setDireccion(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+
+                        {/* ERROR */}
+
+                        {error && (
+
+                            <div className="auth-error">
+                                {error}
+                            </div>
+
+                        )}
+
+
+                        <button
+                            type="submit"
+                            className="btn-submit"
+                            disabled={cargando}
+                        >
+
+                            {cargando
+                                ? 'Iniciando...'
+                                : 'Iniciar'
+                            }
+
+                        </button>
+
                     </form>
+
+                ) : (
+
+                    /* ═══════════════════════════════════
+                       REGISTRO
+                    ═══════════════════════════════════ */
+
+                    <div className="modal-form">
+
+                        <p>
+                            El registro lo conectaremos
+                            con tu endpoint `/auth/registro`.
+                        </p>
+
+                        <button
+                            type="button"
+                            className="btn-submit"
+                            onClick={() => setActiveTab('login')}
+                        >
+                            Ir a iniciar sesión
+                        </button>
+
+                    </div>
+
                 )}
 
             </div>
+
         </div>
+
     );
 }
