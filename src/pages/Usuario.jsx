@@ -401,26 +401,8 @@ const enviarPaquete = async (e) => {
                     </button>
 
 
-                    <button
-                        className={`sidebar-item ${
-                            menuActivo === "direcciones" ? "activo" : ""
-                        }`}
-                        onClick={() => cambiarMenu("direcciones")}
-                    >
-                        <span>⌖</span>
-                        Direcciones
-                    </button>
 
-
-                    <button
-                        className={`sidebar-item ${
-                            menuActivo === "notificaciones" ? "activo" : ""
-                        }`}
-                        onClick={() => cambiarMenu("notificaciones")}
-                    >
-                        <span>♧</span>
-                        Notificaciones
-                    </button>
+                    
 
 
                     {/* CERRAR SESIÓN */}
@@ -1036,76 +1018,6 @@ const enviarPaquete = async (e) => {
 
 
                     {menuActivo === "rastreo" && <Rastreo />}
-
-
-                    {menuActivo === "direcciones" && (
-
-                        <section className="usuario-bienvenida">
-
-                            <div className="bienvenida-texto">
-
-                                <h1>
-                                    Direcciones
-                                </h1>
-
-                                <p>
-                                    Aquí podrás administrar tus direcciones
-                                    de envío.
-                                </p>
-
-                                <p>
-                                    Esta sección la conectaremos con
-                                    FastAPI posteriormente.
-                                </p>
-
-                            </div>
-
-                            <div className="bienvenida-imagen">
-
-                                <div className="paquete-imagen">
-                                    📍
-                                </div>
-
-                            </div>
-
-                        </section>
-
-                    )}
-
-
-                    {menuActivo === "notificaciones" && (
-
-                        <section className="usuario-bienvenida">
-
-                            <div className="bienvenida-texto">
-
-                                <h1>
-                                    Notificaciones
-                                </h1>
-
-                                <p>
-                                    Aquí aparecerán las notificaciones
-                                    relacionadas con tus envíos.
-                                </p>
-
-                                <p>
-                                    Esta sección la conectaremos con
-                                    FastAPI posteriormente.
-                                </p>
-
-                            </div>
-
-                            <div className="bienvenida-imagen">
-
-                                <div className="paquete-imagen">
-                                    🔔
-                                </div>
-
-                            </div>
-
-                        </section>
-
-                    )}
 
                 </main>
 
