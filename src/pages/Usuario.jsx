@@ -1,63 +1,188 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './Usuarios.css';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api";
+import "./Usuarios.css";
 
 export default function Usuario() {
 
-    const [menuActivo, setMenuActivo] = useState('panel');
+    // ============================================
+    // ESTADOS
+    // ============================================
 
-    // Datos de prueba
-    const usuario = {
-        nombre: 'María López'
+    const [menuActivo, setMenuActivo] = useState("panel");
+
+    const navigate = useNavigate();
+
+    // Usuario obtenido desde FastAPI
+    const [usuario, setUsuario] = useState(null);
+
+    // Envíos obtenidos desde FastAPI
+    const [envios, setEnvios] = useState([]);
+
+    // Estados de carga
+    const [cargandoPerfil, setCargandoPerfil] = useState(true);
+    const [cargandoEnvios, setCargandoEnvios] = useState(true);
+
+    // Estados de error
+    const [errorPerfil, setErrorPerfil] = useState("");
+    const [errorEnvios, setErrorEnvios] = useState("");
+
+
+    // ============================================
+    // CARGAR INFORMACIÓN AL ABRIR EL PANEL
+    // ============================================
+
+    useEffect(() => {
+        cargarPerfil();
+        cargarEnvios();
+    }, []);
+
+
+    // ============================================
+    // OBTENER PERFIL DESDE FASTAPI
+    // GET /usuarios/perfil
+    // ============================================
+
+    const cargarPerfil = async () => {
+
+        try {
+
+            setCargandoPerfil(true);
+            setErrorPerfil("");
+
+            const response = await api.get("/usuarios/perfil");
+
+            setUsuario(response.data);
+
+        } catch (error) {
+
+            console.error("Error al cargar perfil:", error);
+
+            if (error.response?.status === 401) {
+
+                localStorage.removeItem("token");
+                localStorage.removeItem("nombre_usuario");
+                localStorage.removeItem("id_usuario");
+
+                navigate("/");
+
+            } else {
+
+                setErrorPerfil(
+                    error.response?.data?.detail ||
+                    "No se pudo cargar la información del perfil."
+                );
+            }
+
+        } finally {
+
+            setCargandoPerfil(false);
+
+        }
     };
+
+
+    // ============================================
+    // OBTENER ENVÍOS DESDE FASTAPI
+    // GET /envios/mis-pedidos
+    // ============================================
+
+    const cargarEnvios = async () => {
+
+        try {
+
+            setCargandoEnvios(true);
+            setErrorEnvios("");
+
+            const response = await api.get("/envios/mis-pedidos");
+
+            setEnvios(response.data.pedidos || []);
+
+        } catch (error) {
+
+            console.error("Error al cargar envíos:", error);
+
+            if (error.response?.status === 401) {
+
+                localStorage.removeItem("token");
+                localStorage.removeItem("nombre_usuario");
+                localStorage.removeItem("id_usuario");
+
+                navigate("/");
+
+            } else {
+
+                setErrorEnvios(
+                    error.response?.data?.detail ||
+                    "No se pudieron cargar tus envíos."
+                );
+            }
+
+        } finally {
+
+            setCargandoEnvios(false);
+
+        }
+    };
+
+
+    // ============================================
+    // ESTADÍSTICAS REALES
+    // ============================================
 
     const estadisticas = {
-        total: 12,
-        camino: 3,
-        entregados: 8,
-        pendientes: 1
+
+        total: envios.length,
+
+        camino: envios.filter(
+            (envio) =>
+                envio.estado?.toUpperCase() === "EN CAMINO" ||
+                envio.estado?.toUpperCase() === "EN_CAMINO"
+        ).length,
+
+        entregados: envios.filter(
+            (envio) =>
+                envio.estado?.toUpperCase() === "ENTREGADO"
+        ).length,
+
+        pendientes: envios.filter(
+            (envio) =>
+                envio.estado?.toUpperCase() === "PENDIENTE"
+        ).length
     };
 
 
-    //panel ultimos envios
-
-    const envios = [
-        {
-            codigo: 'ONF-2026-001',
-            destino: 'Bogotá, Colombia',
-            fecha: '01/09/2026',
-            estado: 'En camino',
-            progreso: 60
-        },
-        {
-            codigo: 'ONF-2026-002',
-            destino: 'Medellín, Colombia',
-            fecha: '30/08/2026',
-            estado: 'Entregado',
-            progreso: 100
-        },
-        {
-            codigo: 'ONF-2026-003',
-            destino: 'Cali, Colombia',
-            fecha: '28/08/2026',
-            estado: 'En camino',
-            progreso: 30
-        },
-        {
-            codigo: 'ONF-2026-004',
-            destino: 'Bucaramanga, Colombia',
-            fecha: '27/08/2026',
-            estado: 'Pendiente',
-            progreso: 0
-        }
-    ];
+    // ============================================
+    // CERRAR SESIÓN
+    // ============================================
 
     const cerrarSesion = () => {
-        console.log('Cerrar sesión');
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("nombre_usuario");
+        localStorage.removeItem("id_usuario");
+
+        navigate("/");
     };
 
+
+    // ============================================
+    // FUNCIÓN PARA CAMBIAR DE SECCIÓN
+    // ============================================
+
+    const cambiarMenu = (seccion) => {
+        setMenuActivo(seccion);
+    };
+
+
+    // ============================================
+    // RENDER
+    // ============================================
+
     return (
+
         <div className="usuario-panel">
+
 
             {/* ═══════════════════════════════════════
                 HEADER DEL PANEL
@@ -65,15 +190,18 @@ export default function Usuario() {
 
             <header className="usuario-header">
 
+
                 {/* LOGO */}
 
                 <div className="usuario-logo">
 
                     <Link to="/">
+
                         <img
                             src="/logo_calidad_onufast.jpg"
                             alt="ONUFAST"
                         />
+
                     </Link>
 
                 </div>
@@ -117,8 +245,15 @@ export default function Usuario() {
                         </div>
 
                         <div>
-                            <strong>{usuario.nombre}</strong>
-                            <small>Mi cuenta</small>
+
+                            <strong>
+                                {usuario?.nombre || "Cargando..."}
+                            </strong>
+
+                            <small>
+                                Mi cuenta
+                            </small>
+
                         </div>
 
                     </div>
@@ -141,11 +276,12 @@ export default function Usuario() {
 
                 <aside className="usuario-sidebar">
 
+
                     <button
                         className={`sidebar-item ${
-                            menuActivo === 'panel' ? 'activo' : ''
+                            menuActivo === "panel" ? "activo" : ""
                         }`}
-                        onClick={() => setMenuActivo('panel')}
+                        onClick={() => cambiarMenu("panel")}
                     >
                         <span>⌂</span>
                         Panel de Usuario
@@ -154,9 +290,9 @@ export default function Usuario() {
 
                     <button
                         className={`sidebar-item ${
-                            menuActivo === 'paquete' ? 'activo' : ''
+                            menuActivo === "paquete" ? "activo" : ""
                         }`}
-                        onClick={() => setMenuActivo('paquete')}
+                        onClick={() => cambiarMenu("paquete")}
                     >
                         <span>▣</span>
                         Registrar Paquete
@@ -165,9 +301,9 @@ export default function Usuario() {
 
                     <button
                         className={`sidebar-item ${
-                            menuActivo === 'envios' ? 'activo' : ''
+                            menuActivo === "envios" ? "activo" : ""
                         }`}
-                        onClick={() => setMenuActivo('envios')}
+                        onClick={() => cambiarMenu("envios")}
                     >
                         <span>▱</span>
                         Mis Envíos
@@ -176,9 +312,9 @@ export default function Usuario() {
 
                     <button
                         className={`sidebar-item ${
-                            menuActivo === 'rastreo' ? 'activo' : ''
+                            menuActivo === "rastreo" ? "activo" : ""
                         }`}
-                        onClick={() => setMenuActivo('rastreo')}
+                        onClick={() => cambiarMenu("rastreo")}
                     >
                         <span>⌕</span>
                         Rastrear Envío
@@ -187,9 +323,9 @@ export default function Usuario() {
 
                     <button
                         className={`sidebar-item ${
-                            menuActivo === 'perfil' ? 'activo' : ''
+                            menuActivo === "perfil" ? "activo" : ""
                         }`}
-                        onClick={() => setMenuActivo('perfil')}
+                        onClick={() => cambiarMenu("perfil")}
                     >
                         <span>♙</span>
                         Mi Perfil
@@ -198,9 +334,9 @@ export default function Usuario() {
 
                     <button
                         className={`sidebar-item ${
-                            menuActivo === 'direcciones' ? 'activo' : ''
+                            menuActivo === "direcciones" ? "activo" : ""
                         }`}
-                        onClick={() => setMenuActivo('direcciones')}
+                        onClick={() => cambiarMenu("direcciones")}
                     >
                         <span>⌖</span>
                         Direcciones
@@ -209,9 +345,9 @@ export default function Usuario() {
 
                     <button
                         className={`sidebar-item ${
-                            menuActivo === 'notificaciones' ? 'activo' : ''
+                            menuActivo === "notificaciones" ? "activo" : ""
                         }`}
-                        onClick={() => setMenuActivo('notificaciones')}
+                        onClick={() => cambiarMenu("notificaciones")}
                     >
                         <span>♧</span>
                         Notificaciones
@@ -240,354 +376,777 @@ export default function Usuario() {
                 <main className="usuario-contenido">
 
 
-                    {/* ═══════════════════════════════
-                        BIENVENIDA
-                    ═══════════════════════════════ */}
+                    {/* ==================================================
+                        PANEL PRINCIPAL
+                    ================================================== */}
 
-                    <section className="usuario-bienvenida">
+                    {menuActivo === "panel" && (
 
-                        <div className="bienvenida-texto">
+                        <>
 
-                            <h1>
-                                ¡Hola, {usuario.nombre.split(' ')[0]}! 
-                            </h1>
+                            {/* BIENVENIDA */}
 
-                            <p>
-                                Bienvenido al panel de usuario de ONUFAST, tu aliado confiable en envíos
-                            </p>
+                            <section className="usuario-bienvenida">
 
-                            <p>
-                                Desde aquí puedes gestionar tus envíos
-                                de forma rápida y segura.
-                            </p>
+                                <div className="bienvenida-texto">
 
-                        </div>
+                                    <h1>
+                                        ¡Hola,{" "}
+                                        {usuario?.nombre?.split(" ")[0] || "usuario"}!
+                                    </h1>
+
+                                    <p>
+                                        Bienvenido al panel de usuario de ONUFAST,
+                                        tu aliado confiable en envíos
+                                    </p>
+
+                                    <p>
+                                        Desde aquí puedes gestionar tus envíos
+                                        de forma rápida y segura.
+                                    </p>
+
+                                </div>
 
 
-                        <div className="bienvenida-imagen">
+                                <div className="bienvenida-imagen">
 
-                            <div className="paquete-imagen">
-                                📦
+                                    <div className="paquete-imagen">
+                                        📦
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+
+                            {/* RESUMEN DE ENVÍOS */}
+
+                            <section className="resumen">
+
+                                <div className="seccion-titulo">
+
+                                    <h2>
+                                        Resumen de tus envíos
+                                    </h2>
+
+                                </div>
+
+
+                                <div className="estadisticas-grid">
+
+
+                                    {/* TOTAL */}
+
+                                    <div className="estadistica-card">
+
+                                        <div className="estadistica-icono">
+                                            📦
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                {estadisticas.total}
+                                            </strong>
+
+                                            <span>
+                                                Total enviados
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {/* EN CAMINO */}
+
+                                    <div className="estadistica-card">
+
+                                        <div className="estadistica-icono">
+                                            🚚
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                {estadisticas.camino}
+                                            </strong>
+
+                                            <span>
+                                                En camino
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {/* ENTREGADOS */}
+
+                                    <div className="estadistica-card">
+
+                                        <div className="estadistica-icono">
+                                            ✓
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                {estadisticas.entregados}
+                                            </strong>
+
+                                            <span>
+                                                Entregados
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {/* PENDIENTES */}
+
+                                    <div className="estadistica-card">
+
+                                        <div className="estadistica-icono">
+                                            ◷
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                {estadisticas.pendientes}
+                                            </strong>
+
+                                            <span>
+                                                Pendientes
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+
+                            {/* ACCIONES RÁPIDAS */}
+
+                            <section className="acciones">
+
+                                <h2>
+                                    Acciones rápidas
+                                </h2>
+
+
+                                <div className="acciones-grid">
+
+
+                                    {/* REGISTRAR PAQUETE */}
+
+                                    <div className="accion-card">
+
+                                        <div className="accion-icono">
+                                            📦
+                                        </div>
+
+                                        <h3>
+                                            Registrar Paquete
+                                        </h3>
+
+                                        <p>
+                                            Crea un nuevo paquete
+                                            y realiza un envío.
+                                        </p>
+
+                                        <button
+                                            onClick={() => cambiarMenu("paquete")}
+                                        >
+                                            Comenzar →
+                                        </button>
+
+                                    </div>
+
+
+                                    {/* MIS ENVÍOS */}
+
+                                    <div className="accion-card">
+
+                                        <div className="accion-icono">
+                                            🚚
+                                        </div>
+
+                                        <h3>
+                                            Mis Envíos
+                                        </h3>
+
+                                        <p>
+                                            Consulta y administra
+                                            todos tus envíos.
+                                        </p>
+
+                                        <button
+                                            onClick={() => cambiarMenu("envios")}
+                                        >
+                                            Ver envíos →
+                                        </button>
+
+                                    </div>
+
+
+                                    {/* RASTREAR */}
+
+                                    <div className="accion-card">
+
+                                        <div className="accion-icono">
+                                            🔍
+                                        </div>
+
+                                        <h3>
+                                            Rastrear Envío
+                                        </h3>
+
+                                        <p>
+                                            Ingresa tu código de guía
+                                            y consulta el estado.
+                                        </p>
+
+                                        <button
+                                            onClick={() => cambiarMenu("rastreo")}
+                                        >
+                                            Rastrear →
+                                        </button>
+
+                                    </div>
+
+
+                                    {/* PERFIL */}
+
+                                    <div className="accion-card">
+
+                                        <div className="accion-icono">
+                                            👤
+                                        </div>
+
+                                        <h3>
+                                            Mi Perfil
+                                        </h3>
+
+                                        <p>
+                                            Consulta tus datos
+                                            personales.
+                                        </p>
+
+                                        <button
+                                            onClick={() => cambiarMenu("perfil")}
+                                        >
+                                            Ver perfil →
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+
+                            {/* ÚLTIMOS ENVÍOS */}
+
+                            <section className="ultimos-envios">
+
+                                <div className="envios-header">
+
+                                    <h2>
+                                        Últimos envíos
+                                    </h2>
+
+                                    <button
+                                        onClick={() => cambiarMenu("envios")}
+                                    >
+                                        Ver todos mis envíos →
+                                    </button>
+
+                                </div>
+
+
+                                <div className="tabla-envios">
+
+                                    {cargandoEnvios ? (
+
+                                        <p>
+                                            Cargando envíos...
+                                        </p>
+
+                                    ) : errorEnvios ? (
+
+                                        <p>
+                                            {errorEnvios}
+                                        </p>
+
+                                    ) : envios.length === 0 ? (
+
+                                        <p>
+                                            Aún no tienes envíos registrados.
+                                        </p>
+
+                                    ) : (
+
+                                        <table>
+
+                                            <thead>
+
+                                                <tr>
+
+                                                    <th>
+                                                        Código de guía
+                                                    </th>
+
+                                                    <th>
+                                                        Tipo de envío
+                                                    </th>
+
+                                                    <th>
+                                                        Cantidad
+                                                    </th>
+
+                                                    <th>
+                                                        Estado
+                                                    </th>
+
+                                                    <th>
+                                                        Paquetes
+                                                    </th>
+
+                                                </tr>
+
+                                            </thead>
+
+
+                                            <tbody>
+
+                                                {envios.slice(0, 4).map(
+                                                    (envio) => (
+
+                                                        <tr
+                                                            key={envio.id_pedido}
+                                                        >
+
+                                                            <td>
+                                                                {envio.codigo_rastreo}
+                                                            </td>
+
+                                                            <td>
+                                                                {envio.tipo_envio}
+                                                            </td>
+
+                                                            <td>
+                                                                {envio.cantidad}
+                                                            </td>
+
+                                                            <td>
+
+                                                                <span
+                                                                    className={`estado estado-${envio.estado
+                                                                        ?.toLowerCase()
+                                                                        .replaceAll(
+                                                                            " ",
+                                                                            "-"
+                                                                        )}`}
+                                                                >
+                                                                    {envio.estado}
+                                                                </span>
+
+                                                            </td>
+
+                                                            <td>
+                                                                {envio.paquetes_registrados}
+                                                            </td>
+
+                                                        </tr>
+
+                                                    )
+                                                )}
+
+                                            </tbody>
+
+                                        </table>
+
+                                    )}
+
+                                </div>
+
+                            </section>
+
+                        </>
+
+                    )}
+
+
+                    {/* ==================================================
+                        MI PERFIL
+                    ================================================== */}
+
+                    {menuActivo === "perfil" && (
+
+                        <section className="usuario-bienvenida">
+
+                            <div className="bienvenida-texto">
+
+                                <h1>
+                                    Mi Perfil
+                                </h1>
+
+                                {cargandoPerfil ? (
+
+                                    <p>
+                                        Cargando información...
+                                    </p>
+
+                                ) : errorPerfil ? (
+
+                                    <p>
+                                        {errorPerfil}
+                                    </p>
+
+                                ) : usuario ? (
+
+                                    <div className="perfil-datos">
+
+                                        <p>
+                                            <strong>
+                                                Nombre:
+                                            </strong>{" "}
+                                            {usuario.nombre}
+                                        </p>
+
+                                        <p>
+                                            <strong>
+                                                Correo:
+                                            </strong>{" "}
+                                            {usuario.correo}
+                                        </p>
+
+                                        <p>
+                                            <strong>
+                                                Teléfono:
+                                            </strong>{" "}
+                                            {usuario.telefono || "No registrado"}
+                                        </p>
+
+                                        <p>
+                                            <strong>
+                                                Tipo de documento:
+                                            </strong>{" "}
+                                            {usuario.tipo_documento}
+                                        </p>
+
+                                        <p>
+                                            <strong>
+                                                Número de documento:
+                                            </strong>{" "}
+                                            {usuario.num_documento}
+                                        </p>
+
+                                        <p>
+                                            <strong>
+                                                Dirección:
+                                            </strong>{" "}
+                                            {usuario.direccion || "No registrada"}
+                                        </p>
+
+                                    </div>
+
+                                ) : null}
+
                             </div>
 
-                        </div>
 
-                    </section>
+                            <div className="bienvenida-imagen">
 
-
-                    {/* ═══════════════════════════════
-                        RESUMEN DE ENVÍOS
-                    ═══════════════════════════════ */}
-
-                    <section className="resumen">
-
-                        <div className="seccion-titulo">
-
-                            <h2>
-                                Resumen de tus envíos
-                            </h2>
-
-                        </div>
-
-
-                        <div className="estadisticas-grid">
-
-
-                            <div className="estadistica-card">
-
-                                <div className="estadistica-icono">
-                                    📦
-                                </div>
-
-                                <div>
-                                    <strong>
-                                        {estadisticas.total}
-                                    </strong>
-
-                                    <span>
-                                        Total enviados
-                                    </span>
-                                </div>
-
-                            </div>
-
-
-                            <div className="estadistica-card">
-
-                                <div className="estadistica-icono">
-                                    🚚
-                                </div>
-
-                                <div>
-                                    <strong>
-                                        {estadisticas.camino}
-                                    </strong>
-
-                                    <span>
-                                        En camino
-                                    </span>
-                                </div>
-
-                            </div>
-
-
-                            <div className="estadistica-card">
-
-                                <div className="estadistica-icono">
-                                    ✓
-                                </div>
-
-                                <div>
-                                    <strong>
-                                        {estadisticas.entregados}
-                                    </strong>
-
-                                    <span>
-                                        Entregados
-                                    </span>
-                                </div>
-
-                            </div>
-
-
-                            <div className="estadistica-card">
-
-                                <div className="estadistica-icono">
-                                    ◷
-                                </div>
-
-                                <div>
-                                    <strong>
-                                        {estadisticas.pendientes}
-                                    </strong>
-
-                                    <span>
-                                        Pendientes
-                                    </span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    {/* ═══════════════════════════════
-                        ACCIONES RÁPIDAS
-                    ═══════════════════════════════ */}
-
-                    <section className="acciones">
-
-                        <h2>
-                            Acciones rápidas
-                        </h2>
-
-
-                        <div className="acciones-grid">
-
-
-                            <div className="accion-card">
-
-                                <div className="accion-icono">
-                                    📦
-                                </div>
-
-                                <h3>
-                                    Registrar Paquete
-                                </h3>
-
-                                <p>
-                                    Crea un nuevo paquete
-                                    y realiza un envío.
-                                </p>
-
-                                <button>
-                                    Comenzar →
-                                </button>
-
-                            </div>
-
-
-                            <div className="accion-card">
-
-                                <div className="accion-icono">
-                                    🚚
-                                </div>
-
-                                <h3>
-                                    Mis Envíos
-                                </h3>
-
-                                <p>
-                                    Consulta y administra
-                                    todos tus envíos.
-                                </p>
-
-                                <button>
-                                    Ver envíos →
-                                </button>
-
-                            </div>
-
-
-                            <div className="accion-card">
-
-                                <div className="accion-icono">
-                                    🔍
-                                </div>
-
-                                <h3>
-                                    Rastrear Envío
-                                </h3>
-
-                                <p>
-                                    Ingresa tu código de guía
-                                    y consulta el estado.
-                                </p>
-
-                                <button>
-                                    Rastrear →
-                                </button>
-
-                            </div>
-
-
-                            <div className="accion-card">
-
-                                <div className="accion-icono">
+                                <div className="paquete-imagen">
                                     👤
                                 </div>
 
-                                <h3>
-                                    Mi Perfil
-                                </h3>
+                            </div>
 
-                                <p>
-                                    Actualiza tus datos
-                                    y preferencias.
-                                </p>
+                        </section>
 
-                                <button>
-                                    Editar perfil →
+                    )}
+
+
+                    {/* ==================================================
+                        MIS ENVÍOS
+                    ================================================== */}
+
+                    {menuActivo === "envios" && (
+
+                        <section className="ultimos-envios">
+
+                            <div className="envios-header">
+
+                                <h2>
+                                    Mis Envíos
+                                </h2>
+
+                                <button onClick={cargarEnvios}>
+                                    🔄 Actualizar
                                 </button>
 
                             </div>
 
-                        </div>
 
-                    </section>
+                            {cargandoEnvios ? (
+
+                                <p>
+                                    Cargando tus envíos...
+                                </p>
+
+                            ) : errorEnvios ? (
+
+                                <p>
+                                    {errorEnvios}
+                                </p>
+
+                            ) : envios.length === 0 ? (
+
+                                <p>
+                                    Aún no tienes envíos registrados.
+                                </p>
+
+                            ) : (
+
+                                <div className="tabla-envios">
+
+                                    <table>
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>
+                                                    Código de guía
+                                                </th>
+
+                                                <th>
+                                                    Tipo de envío
+                                                </th>
+
+                                                <th>
+                                                    Cantidad
+                                                </th>
+
+                                                <th>
+                                                    Paquetes registrados
+                                                </th>
+
+                                                <th>
+                                                    Estado
+                                                </th>
+
+                                            </tr>
+
+                                        </thead>
 
 
-                    {/* ═══════════════════════════════
-                        ÚLTIMOS ENVÍOS
-                    ═══════════════════════════════ */}
+                                        <tbody>
 
-                    <section className="ultimos-envios">
+                                            {envios.map((envio) => (
 
-                        <div className="envios-header">
-
-                            <h2>
-                                Últimos envíos
-                            </h2>
-
-                            <button>
-                                Ver todos mis envíos →
-                            </button>
-
-                        </div>
-
-
-                        <div className="tabla-envios">
-
-                            <table>
-
-                                <thead>
-
-                                    <tr>
-                                        <th>Código de guía</th>
-                                        <th>Destino</th>
-                                        <th>Fecha de envío</th>
-                                        <th>Estado</th>
-                                        <th>Progreso</th>
-                                        <th>Acciones</th>
-                                    </tr>
-
-                                </thead>
-
-
-                                <tbody>
-
-                                    {envios.map((envio) => (
-
-                                        <tr key={envio.codigo}>
-
-                                            <td>
-                                                {envio.codigo}
-                                            </td>
-
-                                            <td>
-                                                {envio.destino}
-                                            </td>
-
-                                            <td>
-                                                {envio.fecha}
-                                            </td>
-
-                                            <td>
-
-                                                <span
-                                                    className={`estado estado-${envio.estado
-                                                        .toLowerCase()
-                                                        .replace(' ', '-')}`}
+                                                <tr
+                                                    key={envio.id_pedido}
                                                 >
-                                                    {envio.estado}
-                                                </span>
 
-                                            </td>
+                                                    <td>
+                                                        {envio.codigo_rastreo}
+                                                    </td>
 
-                                            <td>
+                                                    <td>
+                                                        {envio.tipo_envio}
+                                                    </td>
 
-                                                <div className="progreso">
+                                                    <td>
+                                                        {envio.cantidad}
+                                                    </td>
 
-                                                    <div className="barra">
+                                                    <td>
+                                                        {envio.paquetes_registrados}
+                                                    </td>
 
-                                                        <div
-                                                            className="barra-llenado"
-                                                            style={{
-                                                                width: `${envio.progreso}%`
-                                                            }}
-                                                        ></div>
+                                                    <td>
 
-                                                    </div>
+                                                        <span
+                                                            className={`estado estado-${envio.estado
+                                                                ?.toLowerCase()
+                                                                .replaceAll(
+                                                                    " ",
+                                                                    "-"
+                                                                )}`}
+                                                        >
+                                                            {envio.estado}
+                                                        </span>
 
-                                                    <span>
-                                                        {envio.progreso}%
-                                                    </span>
+                                                    </td>
 
-                                                </div>
+                                                </tr>
 
-                                            </td>
+                                            ))}
 
-                                            <td>
+                                        </tbody>
 
-                                                <button className="ver-envio">
-                                                    👁
-                                                </button>
+                                    </table>
 
-                                            </td>
+                                </div>
 
-                                        </tr>
+                            )}
 
-                                    ))}
+                        </section>
 
-                                </tbody>
+                    )}
 
-                            </table>
 
-                        </div>
+                    {/* ==================================================
+                        SECCIONES TODAVÍA NO CONECTADAS
+                    ================================================== */}
 
-                    </section>
+                    {menuActivo === "paquete" && (
+
+                        <section className="usuario-bienvenida">
+
+                            <div className="bienvenida-texto">
+
+                                <h1>
+                                    Registrar Paquete
+                                </h1>
+
+                                <p>
+                                    Desde aquí podrás registrar un nuevo
+                                    paquete y realizar tu envío.
+                                </p>
+
+                                <p>
+                                    Esta sección la conectaremos con
+                                    FastAPI en el siguiente paso.
+                                </p>
+
+                            </div>
+
+                            <div className="bienvenida-imagen">
+
+                                <div className="paquete-imagen">
+                                    📦
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    )}
+
+
+                    {menuActivo === "rastreo" && (
+
+                        <section className="usuario-bienvenida">
+
+                            <div className="bienvenida-texto">
+
+                                <h1>
+                                    Rastrear Envío
+                                </h1>
+
+                                <p>
+                                    Aquí podrás consultar el estado de
+                                    tu envío mediante el código de rastreo.
+                                </p>
+
+                                <p>
+                                    Esta sección la conectaremos con
+                                    FastAPI en el siguiente paso.
+                                </p>
+
+                            </div>
+
+                            <div className="bienvenida-imagen">
+
+                                <div className="paquete-imagen">
+                                    🔍
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    )}
+
+
+                    {menuActivo === "direcciones" && (
+
+                        <section className="usuario-bienvenida">
+
+                            <div className="bienvenida-texto">
+
+                                <h1>
+                                    Direcciones
+                                </h1>
+
+                                <p>
+                                    Aquí podrás administrar tus direcciones
+                                    de envío.
+                                </p>
+
+                                <p>
+                                    Esta sección la conectaremos con
+                                    FastAPI posteriormente.
+                                </p>
+
+                            </div>
+
+                            <div className="bienvenida-imagen">
+
+                                <div className="paquete-imagen">
+                                    📍
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    )}
+
+
+                    {menuActivo === "notificaciones" && (
+
+                        <section className="usuario-bienvenida">
+
+                            <div className="bienvenida-texto">
+
+                                <h1>
+                                    Notificaciones
+                                </h1>
+
+                                <p>
+                                    Aquí aparecerán las notificaciones
+                                    relacionadas con tus envíos.
+                                </p>
+
+                                <p>
+                                    Esta sección la conectaremos con
+                                    FastAPI posteriormente.
+                                </p>
+
+                            </div>
+
+                            <div className="bienvenida-imagen">
+
+                                <div className="paquete-imagen">
+                                    🔔
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    )}
 
                 </main>
 
