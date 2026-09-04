@@ -3,6 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import "./Usuarios.css";
 
+
+const extraerMensajeError = (error) => {
+    const detail = error.response?.data?.detail;
+
+    if (typeof detail === "string") return detail;
+
+    if (Array.isArray(detail)) {
+        return detail.map((d) => d.msg).join(", ");
+    }
+
+    return "Ocurrió un error inesperado.";
+};
+
 export default function Usuario() {
 
     // ============================================
@@ -27,6 +40,27 @@ export default function Usuario() {
     const [errorPerfil, setErrorPerfil] = useState("");
     const [errorEnvios, setErrorEnvios] = useState("");
 
+    // Registrar Paquete
+const [tiposEnvio, setTiposEnvio] = useState([]);
+const [cargandoTipos, setCargandoTipos] = useState(true);
+
+const [formPaquete, setFormPaquete] = useState({
+    id_tipenvio: "",
+    nombre_destinatario: "",
+    documento_destinatario: "",
+    peso: "",
+    alto: "",
+    largo: "",
+    ancho: "",
+    descripcion: "",
+    origen: "",
+    destino: ""
+});
+
+const [enviandoPaquete, setEnviandoPaquete] = useState(false);
+const [mensajePaquete, setMensajePaquete] = useState("");
+const [errorPaquete, setErrorPaquete] = useState("");
+
 
     // ============================================
     // CARGAR INFORMACIÓN AL ABRIR EL PANEL
@@ -35,6 +69,7 @@ export default function Usuario() {
     useEffect(() => {
         cargarPerfil();
         cargarEnvios();
+        cargarTiposEnvio(); 
     }, []);
 
 
@@ -68,10 +103,7 @@ export default function Usuario() {
 
             } else {
 
-                setErrorPerfil(
-                    error.response?.data?.detail ||
-                    "No se pudo cargar la información del perfil."
-                );
+                setErrorPerfil(extraerMensajeError(error));
             }
 
         } finally {
@@ -112,10 +144,7 @@ export default function Usuario() {
 
             } else {
 
-                setErrorEnvios(
-                    error.response?.data?.detail ||
-                    "No se pudieron cargar tus envíos."
-                );
+                setErrorEnvios(extraerMensajeError(error));
             }
 
         } finally {
@@ -124,6 +153,18 @@ export default function Usuario() {
 
         }
     };
+
+    const cargarTiposEnvio = async () => {
+    try {
+        setCargandoTipos(true);
+        const response = await api.get("/tipos-envio/");
+        setTiposEnvio(response.data);
+    } catch (error) {
+        console.error("Error al cargar tipos de envío:", error);
+    } finally {
+        setCargandoTipos(false);
+    }
+};
 
 
     // ============================================
@@ -164,6 +205,61 @@ export default function Usuario() {
 
         navigate("/");
     };
+
+    const handleChangePaquete = (e) => {
+    const { name, value } = e.target;
+    setFormPaquete((prev) => ({ ...prev, [name]: value }));
+};
+
+const enviarPaquete = async (e) => {
+    e.preventDefault();
+
+    setEnviandoPaquete(true);
+    setErrorPaquete("");
+    setMensajePaquete("");
+
+    try {
+        const response = await api.post("/envios/registrar-paquete", {
+            id_tipenvio: Number(formPaquete.id_tipenvio),
+            nombre_destinatario: formPaquete.nombre_destinatario,
+            documento_destinatario: formPaquete.documento_destinatario,
+            peso: Number(formPaquete.peso),
+            alto: Number(formPaquete.alto),
+            largo: Number(formPaquete.largo),
+            ancho: Number(formPaquete.ancho),
+            descripcion: formPaquete.descripcion || null,
+            origen: formPaquete.origen,
+            destino: formPaquete.destino
+        });
+
+        setMensajePaquete(
+            `¡Paquete registrado! Código de rastreo: ${response.data.codigo_rastreo}`
+        );
+
+        // Limpiar formulario
+        setFormPaquete({
+            id_tipenvio: "",
+            nombre_destinatario: "",
+            documento_destinatario: "",
+            peso: "",
+            alto: "",
+            largo: "",
+            ancho: "",
+            descripcion: "",
+            origen: "",
+            destino: ""
+        });
+
+        // Refrescar la lista de envíos
+        cargarEnvios();
+
+    } catch (error) {
+        console.error("Error al registrar paquete:", error);
+        setErrorPaquete(extraerMensajeError(error));
+    } finally {
+        setEnviandoPaquete(false);
+    }
+};
 
 
     // ============================================
@@ -215,13 +311,6 @@ export default function Usuario() {
                         Inicio
                     </Link>
 
-                    <Link to="/servicios">
-                        Servicios
-                    </Link>
-
-                    <Link to="/nosotros">
-                        Quiénes Somos
-                    </Link>
 
                     <Link to="/rastreo">
                         Rastrear Envío
@@ -380,408 +469,189 @@ export default function Usuario() {
                         PANEL PRINCIPAL
                     ================================================== */}
 
-                    {menuActivo === "panel" && (
-
-                        <>
-
-                            {/* BIENVENIDA */}
-
-                            <section className="usuario-bienvenida">
-
-                                <div className="bienvenida-texto">
-
-                                    <h1>
-                                        ¡Hola,{" "}
-                                        {usuario?.nombre?.split(" ")[0] || "usuario"}!
-                                    </h1>
-
-                                    <p>
-                                        Bienvenido al panel de usuario de ONUFAST,
-                                        tu aliado confiable en envíos
-                                    </p>
-
-                                    <p>
-                                        Desde aquí puedes gestionar tus envíos
-                                        de forma rápida y segura.
-                                    </p>
-
-                                </div>
-
-
-                                <div className="bienvenida-imagen">
-
-                                    <div className="paquete-imagen">
-                                        📦
-                                    </div>
-
-                                </div>
-
-                            </section>
-
-
-                            {/* RESUMEN DE ENVÍOS */}
-
-                            <section className="resumen">
-
-                                <div className="seccion-titulo">
-
-                                    <h2>
-                                        Resumen de tus envíos
-                                    </h2>
-
-                                </div>
-
-
-                                <div className="estadisticas-grid">
-
-
-                                    {/* TOTAL */}
-
-                                    <div className="estadistica-card">
-
-                                        <div className="estadistica-icono">
-                                            📦
-                                        </div>
-
-                                        <div>
-
-                                            <strong>
-                                                {estadisticas.total}
-                                            </strong>
-
-                                            <span>
-                                                Total enviados
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* EN CAMINO */}
-
-                                    <div className="estadistica-card">
-
-                                        <div className="estadistica-icono">
-                                            🚚
-                                        </div>
-
-                                        <div>
-
-                                            <strong>
-                                                {estadisticas.camino}
-                                            </strong>
-
-                                            <span>
-                                                En camino
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* ENTREGADOS */}
-
-                                    <div className="estadistica-card">
-
-                                        <div className="estadistica-icono">
-                                            ✓
-                                        </div>
-
-                                        <div>
-
-                                            <strong>
-                                                {estadisticas.entregados}
-                                            </strong>
-
-                                            <span>
-                                                Entregados
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* PENDIENTES */}
-
-                                    <div className="estadistica-card">
-
-                                        <div className="estadistica-icono">
-                                            ◷
-                                        </div>
-
-                                        <div>
-
-                                            <strong>
-                                                {estadisticas.pendientes}
-                                            </strong>
-
-                                            <span>
-                                                Pendientes
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </section>
-
-
-                            {/* ACCIONES RÁPIDAS */}
-
-                            <section className="acciones">
-
-                                <h2>
-                                    Acciones rápidas
-                                </h2>
-
-
-                                <div className="acciones-grid">
-
-
-                                    {/* REGISTRAR PAQUETE */}
-
-                                    <div className="accion-card">
-
-                                        <div className="accion-icono">
-                                            📦
-                                        </div>
-
-                                        <h3>
-                                            Registrar Paquete
-                                        </h3>
-
-                                        <p>
-                                            Crea un nuevo paquete
-                                            y realiza un envío.
-                                        </p>
-
-                                        <button
-                                            onClick={() => cambiarMenu("paquete")}
-                                        >
-                                            Comenzar →
-                                        </button>
-
-                                    </div>
-
-
-                                    {/* MIS ENVÍOS */}
-
-                                    <div className="accion-card">
-
-                                        <div className="accion-icono">
-                                            🚚
-                                        </div>
-
-                                        <h3>
-                                            Mis Envíos
-                                        </h3>
-
-                                        <p>
-                                            Consulta y administra
-                                            todos tus envíos.
-                                        </p>
-
-                                        <button
-                                            onClick={() => cambiarMenu("envios")}
-                                        >
-                                            Ver envíos →
-                                        </button>
-
-                                    </div>
-
-
-                                    {/* RASTREAR */}
-
-                                    <div className="accion-card">
-
-                                        <div className="accion-icono">
-                                            🔍
-                                        </div>
-
-                                        <h3>
-                                            Rastrear Envío
-                                        </h3>
-
-                                        <p>
-                                            Ingresa tu código de guía
-                                            y consulta el estado.
-                                        </p>
-
-                                        <button
-                                            onClick={() => cambiarMenu("rastreo")}
-                                        >
-                                            Rastrear →
-                                        </button>
-
-                                    </div>
-
-
-                                    {/* PERFIL */}
-
-                                    <div className="accion-card">
-
-                                        <div className="accion-icono">
-                                            👤
-                                        </div>
-
-                                        <h3>
-                                            Mi Perfil
-                                        </h3>
-
-                                        <p>
-                                            Consulta tus datos
-                                            personales.
-                                        </p>
-
-                                        <button
-                                            onClick={() => cambiarMenu("perfil")}
-                                        >
-                                            Ver perfil →
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            </section>
-
-
-                            {/* ÚLTIMOS ENVÍOS */}
-
-                            <section className="ultimos-envios">
-
-                                <div className="envios-header">
-
-                                    <h2>
-                                        Últimos envíos
-                                    </h2>
-
-                                    <button
-                                        onClick={() => cambiarMenu("envios")}
-                                    >
-                                        Ver todos mis envíos →
-                                    </button>
-
-                                </div>
-
-
-                                <div className="tabla-envios">
-
-                                    {cargandoEnvios ? (
-
-                                        <p>
-                                            Cargando envíos...
-                                        </p>
-
-                                    ) : errorEnvios ? (
-
-                                        <p>
-                                            {errorEnvios}
-                                        </p>
-
-                                    ) : envios.length === 0 ? (
-
-                                        <p>
-                                            Aún no tienes envíos registrados.
-                                        </p>
-
-                                    ) : (
-
-                                        <table>
-
-                                            <thead>
-
-                                                <tr>
-
-                                                    <th>
-                                                        Código de guía
-                                                    </th>
-
-                                                    <th>
-                                                        Tipo de envío
-                                                    </th>
-
-                                                    <th>
-                                                        Cantidad
-                                                    </th>
-
-                                                    <th>
-                                                        Estado
-                                                    </th>
-
-                                                    <th>
-                                                        Paquetes
-                                                    </th>
-
-                                                </tr>
-
-                                            </thead>
-
-
-                                            <tbody>
-
-                                                {envios.slice(0, 4).map(
-                                                    (envio) => (
-
-                                                        <tr
-                                                            key={envio.id_pedido}
-                                                        >
-
-                                                            <td>
-                                                                {envio.codigo_rastreo}
-                                                            </td>
-
-                                                            <td>
-                                                                {envio.tipo_envio}
-                                                            </td>
-
-                                                            <td>
-                                                                {envio.cantidad}
-                                                            </td>
-
-                                                            <td>
-
-                                                                <span
-                                                                    className={`estado estado-${envio.estado
-                                                                        ?.toLowerCase()
-                                                                        .replaceAll(
-                                                                            " ",
-                                                                            "-"
-                                                                        )}`}
-                                                                >
-                                                                    {envio.estado}
-                                                                </span>
-
-                                                            </td>
-
-                                                            <td>
-                                                                {envio.paquetes_registrados}
-                                                            </td>
-
-                                                        </tr>
-
-                                                    )
-                                                )}
-
-                                            </tbody>
-
-                                        </table>
-
-                                    )}
-
-                                </div>
-
-                            </section>
-
-                        </>
-
-                    )}
-
+                    {menuActivo === "paquete" && (
+
+    <section className="usuario-bienvenida">
+
+        <div className="bienvenida-texto" style={{ width: "100%" }}>
+
+            <h1>Registrar Paquete</h1>
+
+            <p>Completa los datos del destinatario y del paquete para generar tu envío.</p>
+
+            {mensajePaquete && (
+                <div style={{
+                    background: "#1e3a2f",
+                    color: "#4ade80",
+                    padding: "12px 16px",
+                    borderRadius: "8px",
+                    marginBottom: "15px"
+                }}>
+                    {mensajePaquete}
+                </div>
+            )}
+
+            {errorPaquete && (
+                <div style={{
+                    background: "#3a1e1e",
+                    color: "#f87171",
+                    padding: "12px 16px",
+                    borderRadius: "8px",
+                    marginBottom: "15px"
+                }}>
+                    {errorPaquete}
+                </div>
+            )}
+
+            <form onSubmit={enviarPaquete}>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+
+                    <div>
+                        <label>Tipo de envío</label><br />
+                        <select
+                            name="id_tipenvio"
+                            value={formPaquete.id_tipenvio}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        >
+                            <option value="">
+                                {cargandoTipos ? "Cargando..." : "Selecciona..."}
+                            </option>
+                            {tiposEnvio.map((tipo) => (
+                                <option key={tipo.id_tipenvio} value={tipo.id_tipenvio}>
+                                    {tipo.descripcion}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Nombre del destinatario</label><br />
+                        <input
+                            type="text"
+                            name="nombre_destinatario"
+                            value={formPaquete.nombre_destinatario}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Documento del destinatario</label><br />
+                        <input
+                            type="text"
+                            name="documento_destinatario"
+                            value={formPaquete.documento_destinatario}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Descripción del paquete</label><br />
+                        <input
+                            type="text"
+                            name="descripcion"
+                            value={formPaquete.descripcion}
+                            onChange={handleChangePaquete}
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Origen</label><br />
+                        <input
+                            type="text"
+                            name="origen"
+                            value={formPaquete.origen}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Destino</label><br />
+                        <input
+                            type="text"
+                            name="destino"
+                            value={formPaquete.destino}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Peso (kg)</label><br />
+                        <input
+                            type="number" step="0.01"
+                            name="peso"
+                            value={formPaquete.peso}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Alto (cm)</label><br />
+                        <input
+                            type="number" step="0.01"
+                            name="alto"
+                            value={formPaquete.alto}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Largo (cm)</label><br />
+                        <input
+                            type="number" step="0.01"
+                            name="largo"
+                            value={formPaquete.largo}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Ancho (cm)</label><br />
+                        <input
+                            type="number" step="0.01"
+                            name="ancho"
+                            value={formPaquete.ancho}
+                            onChange={handleChangePaquete}
+                            required
+                            style={{ width: "100%", padding: "10px" }}
+                        />
+                    </div>
+
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={enviandoPaquete}
+                    className="admin-btn"
+                    style={{ marginTop: "20px" }}
+                >
+                    {enviandoPaquete ? "Registrando..." : "Registrar Paquete"}
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+)}
 
                     {/* ==================================================
                         MI PERFIL

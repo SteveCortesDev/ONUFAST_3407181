@@ -203,3 +203,28 @@ class FacturaResponse(BaseModel):
     iva: float
     total_pago: float
     metodo_pago: str
+
+
+
+    # ─────────────────────────────────────────────
+#  REGISTRAR PAQUETE (Envío + Paquete juntos)
+# ─────────────────────────────────────────────
+
+class RegistrarPaqueteRequest(BaseModel):
+    id_tipenvio: int
+    nombre_destinatario: str = Field(..., max_length=100)
+    documento_destinatario: str = Field(..., max_length=50)
+    peso: float = Field(..., gt=0)
+    alto: float = Field(..., gt=0)
+    largo: float = Field(..., gt=0)
+    ancho: float = Field(..., gt=0)
+    descripcion: Optional[str] = Field(None, max_length=200)
+    origen: str = Field(..., max_length=100)
+    destino: str = Field(..., max_length=100)
+
+
+class RegistrarPaqueteResponse(BaseModel):
+    id_envio: int
+    id_paquete: int
+    codigo_rastreo: str
+    mensaje: str = "Paquete registrado exitosamente"
