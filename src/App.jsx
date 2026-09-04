@@ -53,6 +53,7 @@ function AppContent() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const esPanelUsuario = location.pathname === '/usuario';
     const estaLogueado = !!localStorage.getItem('token');
 
 
