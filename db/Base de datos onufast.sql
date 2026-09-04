@@ -84,7 +84,9 @@ CREATE TABLE rutas (
 
     codigo_ruta VARCHAR(50) UNIQUE,
 
-    tipo_vehiculo VARCHAR(30) NOT NULL
+   tipo_vehiculo VARCHAR(30) NOT NULL,
+
+	nombre_conductor varchar(50) NOT NULL
 );
 
 

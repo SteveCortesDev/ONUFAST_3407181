@@ -1,27 +1,50 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, paquetes, envios, rutas
-from sqlalchemy import text
+from routers import auth, usuarios, paquetes, envios, rutas, rol, usuario_roles, documento, tipo_envio, estado_envio, factura
 from core.database import engine
+from models.usuario import Usuario
 import webbrowser
 import threading
+
 
 app = FastAPI(
     title="ONUFAST API",
     description="""
 ## Sistema de Gestión de Paquetes y Rutas de Envío
-> ⚠️ Modo memoria — los datos se reinician al apagar el servidor.
 
 ### Flujo de uso:
 1. `POST /auth/registro` — Crear cuenta
-2. `POST /auth/login` — Iniciar sesión → copia el `access_token`
+2. `POST /auth/login` — Iniciar sesión
 3. `GET /envios/tipos` — Ver tipos de envío disponibles
-4. `POST /envios/pedido/iniciar` — Crear pedido (Express o Normal)
-5. `POST /paquetes/registrar/{id_pedido}` — Registrar datos del paquete
-6. `GET /envios/mis-pedidos` — Consultar mis pedidos y paquetes
+4. `POST /envios/pedido/iniciar` — Crear envío
+5. `POST /paquetes/registrar` — Registrar paquete
+6. `GET /paquetes/envio/{id_envio}` — Consultar paquetes de un envío
+7. `GET /envios/mis-pedidos` — Consultar envíos del usuario
     """,
     version="1.0.0",
 )
+
+
+# ─────────────────────────────────────────────
+# ROUTERS
+# ─────────────────────────────────────────────
+
+app.include_router(rol.router)
+
+app.include_router(auth.router)
+app.include_router(usuarios.router)
+app.include_router(paquetes.router)
+app.include_router(envios.router)
+app.include_router(rutas.router)
+app.include_router(usuario_roles.router)
+app.include_router(documento.router)
+app.include_router(tipo_envio.router)
+app.include_router(estado_envio.router)
+app.include_router(factura.router)
+
+# ─────────────────────────────────────────────
+# CORS
+# ─────────────────────────────────────────────
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,34 +53,49 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(paquetes.router)
-app.include_router(envios.router)
-app.include_router(rutas.router)
 
+# ─────────────────────────────────────────────
+# ROOT
+# ─────────────────────────────────────────────
 
 @app.get("/", tags=["Root"])
 def root():
     return {
         "sistema": "ONUFAST",
         "version": "1.0.0",
-        "modo":    "memoria (sin base de datos)",
-        "docs":    "/docs",
+        "modo": "PostgreSQL",
+        "docs": "/docs",
     }
 
 
-##prueba
+# ─────────────────────────────────────────────
+# PRUEBA DE BASE DE DATOS
+# ─────────────────────────────────────────────
+
 @app.get("/test-db", tags=["Root"])
 def test_db():
     try:
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
-        return {"conexion": "exitosa ✅"}
+
+        return {
+            "conexion": "exitosa ✅"
+        }
+
     except Exception as e:
-        return {"conexion": "fallida ❌", "error": str(e)}
+        return {
+            "conexion": "fallida ",
+            "error": str(e)
+        }
 
 
+# ─────────────────────────────────────────────
+# ABRIR SWAGGER AUTOMÁTICAMENTE
+# ─────────────────────────────────────────────
 
 @app.on_event("startup")
 def abrir_navegador():
-    threading.Timer(1.5, lambda: webbrowser.open("http://127.0.0.1:8000/docs")).start()
+    threading.Timer(
+        1.5,
+        lambda: webbrowser.open("http://127.0.0.1:8000/docs")
+    ).start()

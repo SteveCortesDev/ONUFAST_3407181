@@ -1,71 +1,150 @@
-import uuid
-from fastapi import APIRouter, HTTPException, status, Depends
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from core.database import get_db
+from models.paquete import Paquete
 from schemas.schemas import PaqueteRequest, PaqueteResponse
-from core.security import get_current_user, TokenData
-import store
-
-router = APIRouter(prefix="/paquetes", tags=["Paquetes"])
 
 
-def _cod_paquete() -> str:
-    return f"ONU-PKG-{uuid.uuid4().hex[:10].upper()}"
+router = APIRouter(
+    prefix="/paquetes",
+    tags=["Paquetes"]
+)
 
 
-# ─────────────────────────────────────────────────────────────
-#  POST /paquetes/registrar/{id_pedido}
-# ─────────────────────────────────────────────────────────────
+@router.get(
+    "/",
+    response_model=List[PaqueteResponse],
+    summary="Ver todos los paquetes"
+)
+def listar_paquetes(db: Session = Depends(get_db)):
+    return db.query(Paquete).all()
+
+
+@router.get(
+    "/{id_paquete}",
+    response_model=PaqueteResponse,
+    summary="Ver un paquete"
+)
+def obtener_paquete(
+    id_paquete: int,
+    db: Session = Depends(get_db)
+):
+    paquete = db.query(Paquete).filter(
+        Paquete.id_paquete == id_paquete
+    ).first()
+
+    if not paquete:
+        raise HTTPException(
+            status_code=404,
+            detail="Paquete no encontrado"
+        )
+
+    return paquete
+
+
+@router.get(
+    "/envio/{id_envio}",
+    response_model=List[PaqueteResponse],
+    summary="Ver paquetes de un envío"
+)
+def listar_paquetes_envio(
+    id_envio: int,
+    db: Session = Depends(get_db)
+):
+    paquetes = db.query(Paquete).filter(
+        Paquete.id_envio == id_envio
+    ).all()
+
+    return paquetes
+
+
 @router.post(
-    "/registrar/{id_pedido}",
+    "/",
     response_model=PaqueteResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Registrar datos del paquete en un pedido"
+    summary="Registrar un paquete"
 )
-def registrar_paquete(
-    id_pedido: int,
+def crear_paquete(
     payload: PaqueteRequest,
-    current_user: TokenData = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
-    pedido = store.pedidos.get(id_pedido)
-    if not pedido or pedido["id_cliente"] != current_user.id_usuario:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+    paquete = Paquete(
+        id_envio=payload.id_envio,
+        peso=payload.peso,
+        alto=payload.alto,
+        largo=payload.largo,
+        ancho=payload.ancho,
+        descripcion=payload.descripcion,
+        origen=payload.origen,
+        destino=payload.destino,
+        cod_rastreo=f"PKG-{payload.id_envio}-{payload.peso}"
+    )
 
-    pid = store.next_id("paquete")
-    paquete = {
-        "id_paquete":    pid,
-        "id_pedido":     id_pedido,
-        "cod_rastreo":   _cod_paquete(),
-        "tipo_producto": payload.tipo_producto,
-        "peso":          payload.peso,
-        "alto":          payload.alto,
-        "largo":         payload.largo,
-        "ancho":         payload.ancho,
-        "es_fragil":     payload.es_fragil,
-        "descripcion":   payload.descripcion,
-    }
-    store.paquetes[pid] = paquete
+    db.add(paquete)
+    db.commit()
+    db.refresh(paquete)
 
-    return PaqueteResponse(**paquete)
+    return paquete
 
 
-# ─────────────────────────────────────────────────────────────
-#  GET /paquetes/{id_pedido}
-# ─────────────────────────────────────────────────────────────
-@router.get(
-    "/{id_pedido}",
-    summary="Listar paquetes de un pedido"
+@router.put(
+    "/{id_paquete}",
+    response_model=PaqueteResponse,
+    summary="Actualizar un paquete"
 )
-def listar_paquetes(
-    id_pedido: int,
-    current_user: TokenData = Depends(get_current_user)
+def actualizar_paquete(
+    id_paquete: int,
+    payload: PaqueteRequest,
+    db: Session = Depends(get_db)
 ):
-    pedido = store.pedidos.get(id_pedido)
-    if not pedido or pedido["id_cliente"] != current_user.id_usuario:
-        raise HTTPException(status_code=404, detail="Pedido no encontrado")
+    paquete = db.query(Paquete).filter(
+        Paquete.id_paquete == id_paquete
+    ).first()
 
-    lista = [p for p in store.paquetes.values() if p["id_pedido"] == id_pedido]
+    if not paquete:
+        raise HTTPException(
+            status_code=404,
+            detail="Paquete no encontrado"
+        )
+
+    paquete.id_envio = payload.id_envio
+    paquete.peso = payload.peso
+    paquete.alto = payload.alto
+    paquete.largo = payload.largo
+    paquete.ancho = payload.ancho
+    paquete.descripcion = payload.descripcion
+    paquete.origen = payload.origen
+    paquete.destino = payload.destino
+
+    db.commit()
+    db.refresh(paquete)
+
+    return paquete
+
+
+@router.delete(
+    "/{id_paquete}",
+    summary="Eliminar un paquete"
+)
+def eliminar_paquete(
+    id_paquete: int,
+    db: Session = Depends(get_db)
+):
+    paquete = db.query(Paquete).filter(
+        Paquete.id_paquete == id_paquete
+    ).first()
+
+    if not paquete:
+        raise HTTPException(
+            status_code=404,
+            detail="Paquete no encontrado"
+        )
+
+    db.delete(paquete)
+    db.commit()
 
     return {
-        "id_pedido":       id_pedido,
-        "total_paquetes":  len(lista),
-        "paquetes":        lista,
+        "mensaje": "Paquete eliminado correctamente"
     }

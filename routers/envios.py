@@ -1,90 +1,160 @@
 import uuid
 from typing import List
-from fastapi import APIRouter, HTTPException, status, Depends
-from schemas.schemas import PedidoRequest, PedidoResponse, TipoEnvioResponse
-from core.security import get_current_user, TokenData
-import store
+from datetime import datetime
 
-router = APIRouter(prefix="/envios", tags=["Envíos y Pedidos"])
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
-
-def _cod_pedido() -> str:
-    return f"ONU-ORD-{uuid.uuid4().hex[:8].upper()}"
+from core.database import get_db
+from models.envio import Envio
+from schemas.schemas import EnvioRequest, EnvioResponse
 
 
-# ─────────────────────────────────────────────────────────────
-#  GET /envios/tipos
-# ─────────────────────────────────────────────────────────────
+router = APIRouter(
+    prefix="/envios",
+    tags=["Envíos"]
+)
+
+
+def generar_codigo_rastreo() -> str:
+    return f"ONU-{uuid.uuid4().hex[:10].upper()}"
+
+
+# ─────────────────────────────────────────────
+# GET /envios/
+# ─────────────────────────────────────────────
+
 @router.get(
-    "/tipos",
-    response_model=List[TipoEnvioResponse],
-    summary="Ver tipos de envío disponibles"
+    "/",
+    response_model=List[EnvioResponse],
+    summary="Ver todos los envíos"
 )
-def listar_tipos():
-    return list(store.tipos_envio.values())
+def listar_envios(db: Session = Depends(get_db)):
+    return db.query(Envio).all()
 
 
-# ─────────────────────────────────────────────────────────────
-#  POST /envios/pedido/iniciar
-# ─────────────────────────────────────────────────────────────
-@router.post(
-    "/pedido/iniciar",
-    response_model=PedidoResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Crear un nuevo pedido"
+# ─────────────────────────────────────────────
+# GET /envios/{id_envio}
+# ─────────────────────────────────────────────
+
+@router.get(
+    "/{id_envio}",
+    response_model=EnvioResponse,
+    summary="Ver un envío"
 )
-def iniciar_pedido(
-    payload: PedidoRequest,
-    current_user: TokenData = Depends(get_current_user)
+def obtener_envio(
+    id_envio: int,
+    db: Session = Depends(get_db)
 ):
-    tipo = store.tipos_envio.get(payload.id_tipenvio)
-    if not tipo:
-        raise HTTPException(status_code=404, detail="Tipo de envío no encontrado")
+    envio = db.query(Envio).filter(
+        Envio.id_envio == id_envio
+    ).first()
 
-    pid = store.next_id("pedido")
-    pedido = {
-        "id_pedido":      pid,
-        "id_cliente":     current_user.id_usuario,
-        "id_tipenvio":    payload.id_tipenvio,
-        "codigo_rastreo": _cod_pedido(),
-        "cantidad":       payload.cantidad,
-        "estado":         "PENDIENTE",
-    }
-    store.pedidos[pid] = pedido
+    if not envio:
+        raise HTTPException(
+            status_code=404,
+            detail="Envío no encontrado"
+        )
 
-    return PedidoResponse(
-        id_pedido=pid,
-        codigo_rastreo=pedido["codigo_rastreo"],
-        cantidad=pedido["cantidad"],
-        tipo_envio=tipo["descripcion"],
-        es_express=tipo["espress"],
-        estado="PENDIENTE",
+    return envio
+
+
+# ─────────────────────────────────────────────
+# POST /envios/
+# ─────────────────────────────────────────────
+
+@router.post(
+    "/",
+    response_model=EnvioResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Crear un envío"
+)
+def crear_envio(
+    payload: EnvioRequest,
+    db: Session = Depends(get_db)
+):
+    envio = Envio(
+        id_usuario=payload.id_usuario,
+        id_tipenvio=payload.id_tipenvio,
+        id_estadoenvio=payload.id_estadoenvio,
+        id_rutas=payload.id_rutas,
+        codigo_rastreo=generar_codigo_rastreo(),
+        fecha_creacion=datetime.now(),
+        nombre_destinatario=payload.nombre_destinatario,
+        documento_destinatario=payload.documento_destinatario,
+        estado_paquete=payload.estado_paquete
     )
 
+    db.add(envio)
+    db.commit()
+    db.refresh(envio)
 
-# ─────────────────────────────────────────────────────────────
-#  GET /envios/mis-pedidos
-# ─────────────────────────────────────────────────────────────
-@router.get(
-    "/mis-pedidos",
-    summary="Ver todos mis pedidos"
+    return envio
+
+
+# ─────────────────────────────────────────────
+# PUT /envios/{id_envio}
+# ─────────────────────────────────────────────
+
+@router.put(
+    "/{id_envio}",
+    response_model=EnvioResponse,
+    summary="Actualizar un envío"
 )
-def mis_pedidos(current_user: TokenData = Depends(get_current_user)):
-    lista = [p for p in store.pedidos.values() if p["id_cliente"] == current_user.id_usuario]
+def actualizar_envio(
+    id_envio: int,
+    payload: EnvioRequest,
+    db: Session = Depends(get_db)
+):
+    envio = db.query(Envio).filter(
+        Envio.id_envio == id_envio
+    ).first()
 
-    resultado = []
-    for p in lista:
-        tipo = store.tipos_envio.get(p["id_tipenvio"], {})
-        paquetes = [pk for pk in store.paquetes.values() if pk["id_pedido"] == p["id_pedido"]]
-        resultado.append({
-            **p,
-            "tipo_envio":      tipo.get("descripcion", ""),
-            "es_express":      tipo.get("espress", False),
-            "paquetes_registrados": len(paquetes),
-        })
+    if not envio:
+        raise HTTPException(
+            status_code=404,
+            detail="Envío no encontrado"
+        )
+
+    envio.id_usuario = payload.id_usuario
+    envio.id_tipenvio = payload.id_tipenvio
+    envio.id_estadoenvio = payload.id_estadoenvio
+    envio.id_rutas = payload.id_rutas
+    envio.nombre_destinatario = payload.nombre_destinatario
+    envio.documento_destinatario = payload.documento_destinatario
+    envio.estado_paquete = payload.estado_paquete
+
+    db.commit()
+    db.refresh(envio)
+
+    return envio
+
+
+# ─────────────────────────────────────────────
+# DELETE /envios/{id_envio}
+# ─────────────────────────────────────────────
+
+@router.delete(
+    "/{id_envio}",
+    summary="Eliminar un envío"
+)
+def eliminar_envio(
+    id_envio: int,
+    db: Session = Depends(get_db)
+):
+    envio = db.query(Envio).filter(
+        Envio.id_envio == id_envio
+    ).first()
+
+    if not envio:
+        raise HTTPException(
+            status_code=404,
+            detail="Envío no encontrado"
+        )
+
+    db.delete(envio)
+    db.commit()
 
     return {
-        "usuario":       current_user.nombre,
-        "total_pedidos": len(resultado),
-        "pedidos":       resultado,
+        "mensaje": "Envío eliminado correctamente"
     }
