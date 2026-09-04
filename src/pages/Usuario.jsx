@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import "./Usuarios.css";
+import Rastreo from "./Rastreo";
 
 
 const extraerMensajeError = (error) => {
@@ -303,25 +304,6 @@ const enviarPaquete = async (e) => {
                 </div>
 
 
-                {/* NAVEGACIÓN SUPERIOR */}
-
-                <nav className="usuario-nav">
-
-                    <Link to="/">
-                        Inicio
-                    </Link>
-
-
-                    <Link to="/rastreo">
-                        Rastrear Envío
-                    </Link>
-
-                    <Link to="/ubicacion">
-                        Ubícanos
-                    </Link>
-
-                </nav>
-
 
                 {/* PARTE DERECHA */}
 
@@ -400,10 +382,8 @@ const enviarPaquete = async (e) => {
 
 
                     <button
-                        className={`sidebar-item ${
-                            menuActivo === "rastreo" ? "activo" : ""
-                        }`}
-                        onClick={() => cambiarMenu("rastreo")}
+                        className="sidebar-item"
+                        onClick={() => navigate("/rastreo")}
                     >
                         <span>⌕</span>
                         Rastrear Envío
@@ -572,7 +552,7 @@ const enviarPaquete = async (e) => {
                     <div className="accion-icono">🔍</div>
                     <h3>Rastrear Envío</h3>
                     <p>Ingresa tu código de guía y consulta el estado.</p>
-                    <button onClick={() => cambiarMenu("rastreo")}>Rastrear →</button>
+                    <button onClick={() => navigate("/rastreo")}>Rastrear →</button>
                 </div>
 
                 <div className="accion-card">
@@ -1055,39 +1035,7 @@ const enviarPaquete = async (e) => {
                     
 
 
-                    {menuActivo === "rastreo" && (
-
-                        <section className="usuario-bienvenida">
-
-                            <div className="bienvenida-texto">
-
-                                <h1>
-                                    Rastrear Envío
-                                </h1>
-
-                                <p>
-                                    Aquí podrás consultar el estado de
-                                    tu envío mediante el código de rastreo.
-                                </p>
-
-                                <p>
-                                    Esta sección la conectaremos con
-                                    FastAPI en el siguiente paso.
-                                </p>
-
-                            </div>
-
-                            <div className="bienvenida-imagen">
-
-                                <div className="paquete-imagen">
-                                    🔍
-                                </div>
-
-                            </div>
-
-                        </section>
-
-                    )}
+                    {menuActivo === "rastreo" && <Rastreo />}
 
 
                     {menuActivo === "direcciones" && (
