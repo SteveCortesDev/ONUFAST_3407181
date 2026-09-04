@@ -53,7 +53,7 @@ function AppContent() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const esPanelUsuario = location.pathname === '/usuario';
+    const estaLogueado = !!localStorage.getItem('token');
 
 
     // ─────────────────────────────────────────
@@ -141,15 +141,10 @@ function AppContent() {
 
         <div className="logo-container">
 
-            <Link to="/" onClick={cerrarMenu}>
-
-                <img
-                    src="/logo_calidad_onufast.jpg"
-                    alt="Logo Onufast"
-                    className="logo-img"
-                />
-
-            </Link>
+            <Link to={estaLogueado ? "/usuario" : "/"} onClick={cerrarMenu}>
+                <img src="/logo_calidad_onufast.jpg" 
+                    alt="Logo Onufast" className="logo-img" />
+                </Link>
 
         </div>
 
@@ -187,7 +182,7 @@ function AppContent() {
                     className={`onufast-nav ${menuAbierto ? 'nav-abierto' : ''}`}
                 >
 
-                    <Link to="/" onClick={cerrarMenu}>
+                    <Link to={estaLogueado ? "/usuario" : "/"} onClick={cerrarMenu}>
                         Inicio
                     </Link>
 
