@@ -27,13 +27,16 @@ export default function Rastreo() {
     setResultado(null);
 
     try {
-      const response = await api.get(`/envios/rastreo/${codigo.trim()}`);
-      setResultado(response.data);
-    } catch (err) {
-      setError(extraerMensajeError(err));
-    } finally {
-      setCargando(false);
-    }
+  const response = await api.get(`/envios/rastreo/${codigo.trim()}`);
+
+  console.log("RESPUESTA DEL RASTREO:", response.data);
+
+  setResultado(response.data);
+} catch (err) {
+  setError(extraerMensajeError(err));
+} finally {
+  setCargando(false);
+}
   };
 
   // Determina qué pasos del timeline ya se completaron según el estado real

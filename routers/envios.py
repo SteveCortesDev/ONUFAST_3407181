@@ -60,6 +60,30 @@ def mis_pedidos(
 def generar_codigo_rastreo() -> str:
     return f"ONU-{uuid.uuid4().hex[:10].upper()}"
 
+# ─────────────────────────────────────────────
+# GET /envios/rastreo/{codigo_rastreo}
+# ─────────────────────────────────────────────
+
+@router.get(
+    "/rastreo/{codigo_rastreo}",
+    response_model=EnvioResponse,
+    summary="Rastrear un envío por código"
+)
+def rastrear_envio(
+    codigo_rastreo: str,
+    db: Session = Depends(get_db)
+):
+    envio = db.query(Envio).filter(
+        Envio.codigo_rastreo == codigo_rastreo
+    ).first()
+
+    if not envio:
+        raise HTTPException(
+            status_code=404,
+            detail="Envío no encontrado"
+        )
+
+    return envio
 
 # ─────────────────────────────────────────────
 # GET /envios/

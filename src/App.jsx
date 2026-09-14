@@ -13,7 +13,7 @@ import Rastreo from './pages/Rastreo';
 import Servicios from './pages/Servicios';
 import Ubicacion from './pages/Ubicacion';
 import Admin from './pages/Admin';
-import Usuario from './pages/Usuario';
+import Usuario from "./components/usuario/Usuario";
 
 import api from './api';
 
