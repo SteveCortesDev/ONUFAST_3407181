@@ -13,6 +13,41 @@ const extraerMensajeError = (error) => {
     return "Ocurrió un error inesperado.";
 };
 
+// ============================================
+// DEFINICIÓN DE LOS PASOS DEL ASISTENTE
+// ============================================
+
+const PASOS = [
+    {
+        numero: 1,
+        icono: "🚚",
+        titulo: "Tipo de envío",
+        campos: [
+            "id_tipenvio",
+            "nombre_destinatario",
+            "documento_destinatario"
+        ]
+    },
+    {
+        numero: 2,
+        icono: "📦",
+        titulo: "Información del paquete",
+        campos: ["descripcion", "peso", "alto", "largo", "ancho"]
+    },
+    {
+        numero: 3,
+        icono: "📍",
+        titulo: "Dónde es el envío",
+        campos: ["origen", "destino"]
+    },
+    {
+        numero: 4,
+        icono: "✅",
+        titulo: "Confirmación",
+        campos: []
+    }
+];
+
 export default function RegistrarPaquete({
     cargarEnvios
 }) {
@@ -23,6 +58,8 @@ export default function RegistrarPaquete({
 
     const [tiposEnvio, setTiposEnvio] = useState([]);
     const [cargandoTipos, setCargandoTipos] = useState(true);
+
+    const [paso, setPaso] = useState(1);
 
     const [formPaquete, setFormPaquete] = useState({
         id_tipenvio: "",
@@ -91,6 +128,72 @@ export default function RegistrarPaquete({
     };
 
     // ============================================
+    // NAVEGACIÓN ENTRE PASOS
+    // ============================================
+
+    const pasoActual = PASOS[paso - 1];
+
+    const pasoEsValido = () => {
+
+    return pasoActual.campos.every((campo) => {
+
+        const valor = formPaquete[campo];
+
+        // La descripción es opcional
+        if (campo === "descripcion") {
+            return true;
+        }
+
+        // Verificar que el campo tenga información
+        if (
+            valor === null ||
+            valor === undefined ||
+            String(valor).trim() === ""
+        ) {
+            return false;
+        }
+
+        return true;
+    });
+};
+
+    const irAlSiguientePaso = () => {
+
+        setErrorPaquete("");
+
+        if (!pasoEsValido()) {
+
+            setErrorPaquete(
+                "Por favor completa todos los campos antes de continuar."
+            );
+
+            return;
+        }
+
+        setPaso((actual) =>
+            Math.min(actual + 1, PASOS.length)
+        );
+    };
+
+    const irAlPasoAnterior = () => {
+
+        setErrorPaquete("");
+
+        setPaso((actual) => Math.max(actual - 1, 1));
+    };
+
+    const obtenerNombreTipoEnvio = () => {
+
+        const tipo = tiposEnvio.find(
+            (t) =>
+                String(t.id_tipenvio) ===
+                String(formPaquete.id_tipenvio)
+        );
+
+        return tipo ? tipo.descripcion : "—";
+    };
+
+    // ============================================
     // REGISTRAR PAQUETE
     // ============================================
 
@@ -153,6 +256,10 @@ export default function RegistrarPaquete({
                 destino: ""
             });
 
+            // Volver al primer paso del asistente
+
+            setPaso(1);
+
             // Actualizar lista de envíos
 
             if (cargarEnvios) {
@@ -182,118 +289,142 @@ export default function RegistrarPaquete({
 
     return (
 
-        <section className="usuario-bienvenida">
+        <section className="wizard-card">
 
-            <div
-                className="bienvenida-texto"
-                style={{ width: "100%" }}
+            {/* ==========================================
+                ENCABEZADO
+            ========================================== */}
+
+            <div className="wizard-top">
+
+                <div className="wizard-intro">
+
+                    <h1>Programa tu envío</h1>
+
+                    <p>
+                        Completa el formulario en 4 pasos
+                        para registrar tu pedido de forma
+                        rápida y segura.
+                    </p>
+
+                </div>
+
+                <div className="wizard-truck">
+                    🚚
+                </div>
+
+            </div>
+
+            {/* ==========================================
+                INDICADOR DE PASOS
+            ========================================== */}
+
+            <div className="wizard-steps">
+
+                {PASOS.map((p, index) => (
+
+                    <div
+                        key={p.numero}
+                        style={{
+                            display: "flex",
+                            alignItems: "center"
+                        }}
+                    >
+
+                        <div
+                            className={
+                                "wizard-step-circle" +
+                                (p.numero === paso
+                                    ? " activo"
+                                    : p.numero < paso
+                                    ? " completado"
+                                    : "")
+                            }
+                        >
+                            {p.numero < paso
+                                ? "✓"
+                                : p.numero}
+                        </div>
+
+                        {index < PASOS.length - 1 && (
+                            <div className="wizard-step-line" />
+                        )}
+
+                    </div>
+
+                ))}
+
+            </div>
+
+            {/* MENSAJE DE ÉXITO */}
+
+            {mensajePaquete && (
+
+                <div className="wizard-mensaje wizard-mensaje-exito">
+                    {mensajePaquete}
+                </div>
+
+            )}
+
+            {/* MENSAJE DE ERROR */}
+
+            {errorPaquete && (
+
+                <div className="wizard-mensaje wizard-mensaje-error">
+                    {errorPaquete}
+                </div>
+
+            )}
+
+            {/* ==========================================
+                TÍTULO DEL PASO ACTUAL
+            ========================================== */}
+
+            <div className="wizard-seccion-titulo">
+                <span>{pasoActual.icono}</span>
+                {pasoActual.titulo}
+            </div>
+
+            <form
+                className="wizard-form"
+                onSubmit={enviarPaquete}
             >
 
-                <h1>Registrar Paquete</h1>
+                {/* ======================================
+                    PASO 1 — TIPO DE ENVÍO
+                ====================================== */}
 
-                <p>
-                    Completa los datos del destinatario
-                    y del paquete para generar tu envío.
-                </p>
+                {paso === 1 && (
 
-                {/* MENSAJE DE ÉXITO */}
-
-                {mensajePaquete && (
-
-                    <div
-                        style={{
-                            background: "#1e3a2f",
-                            color: "#4ade80",
-                            padding: "12px 16px",
-                            borderRadius: "8px",
-                            marginBottom: "15px"
-                        }}
-                    >
-                        {mensajePaquete}
-                    </div>
-
-                )}
-
-                {/* MENSAJE DE ERROR */}
-
-                {errorPaquete && (
-
-                    <div
-                        style={{
-                            background: "#3a1e1e",
-                            color: "#f87171",
-                            padding: "12px 16px",
-                            borderRadius: "8px",
-                            marginBottom: "15px"
-                        }}
-                    >
-                        {errorPaquete}
-                    </div>
-
-                )}
-
-                <form onSubmit={enviarPaquete}>
-
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: "15px"
-                        }}
-                    >
-
-                        {/* TIPO DE ENVÍO */}
+                    <div className="wizard-grid">
 
                         <div>
 
-                            <label>
-                                Tipo de envío
-                            </label>
-
-                            <br />
+                            <label>Tipo de envío</label>
 
                             <select
-                                name="id_tipenvio"
-                                value={
-                                    formPaquete.id_tipenvio
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            >
+  name="id_tipenvio"
+  value={formPaquete.id_tipenvio || ""}
+  onChange={handleChangePaquete}
+  required
+>
+  <option value="" disabled>
+    {cargandoTipos ? "Cargando..." : "Selecciona..."}
+  </option>
 
-                                <option value="">
-                                    {cargandoTipos
-                                        ? "Cargando..."
-                                        : "Selecciona..."
-                                    }
-                                </option>
+  {!cargandoTipos &&
+    tiposEnvio.map((tipo) => (
+      <option
+        key={tipo.id_tipenvio}
+        value={tipo.id_tipenvio}
+      >
+        {tipo.descripcion}
+      </option>
+    ))}
+</select>
 
-                                {tiposEnvio.map((tipo) => (
-
-                                    <option
-                                        key={
-                                            tipo.id_tipenvio
-                                        }
-                                        value={
-                                            tipo.id_tipenvio
-                                        }
-                                    >
-                                        {tipo.descripcion}
-                                    </option>
-
-                                ))}
-
-                            </select>
 
                         </div>
-
-                        {/* DESTINATARIO */}
 
                         <div>
 
@@ -301,27 +432,17 @@ export default function RegistrarPaquete({
                                 Nombre del destinatario
                             </label>
 
-                            <br />
-
                             <input
                                 type="text"
                                 name="nombre_destinatario"
                                 value={
                                     formPaquete.nombre_destinatario
                                 }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
+                                onChange={handleChangePaquete}
+                                placeholder="Nombre completo"
                             />
 
                         </div>
-
-                        {/* DOCUMENTO */}
 
                         <div>
 
@@ -329,248 +450,260 @@ export default function RegistrarPaquete({
                                 Documento del destinatario
                             </label>
 
-                            <br />
-
                             <input
                                 type="text"
                                 name="documento_destinatario"
                                 value={
                                     formPaquete.documento_destinatario
                                 }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* DESCRIPCIÓN */}
-
-                        <div>
-
-                            <label>
-                                Descripción del paquete
-                            </label>
-
-                            <br />
-
-                            <input
-                                type="text"
-                                name="descripcion"
-                                value={
-                                    formPaquete.descripcion
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* ORIGEN */}
-
-                        <div>
-
-                            <label>
-                                Origen
-                            </label>
-
-                            <br />
-
-                            <input
-                                type="text"
-                                name="origen"
-                                value={
-                                    formPaquete.origen
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* DESTINO */}
-
-                        <div>
-
-                            <label>
-                                Destino
-                            </label>
-
-                            <br />
-
-                            <input
-                                type="text"
-                                name="destino"
-                                value={
-                                    formPaquete.destino
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* PESO */}
-
-                        <div>
-
-                            <label>
-                                Peso (kg)
-                            </label>
-
-                            <br />
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                name="peso"
-                                value={
-                                    formPaquete.peso
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* ALTO */}
-
-                        <div>
-
-                            <label>
-                                Alto (cm)
-                            </label>
-
-                            <br />
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                name="alto"
-                                value={
-                                    formPaquete.alto
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* LARGO */}
-
-                        <div>
-
-                            <label>
-                                Largo (cm)
-                            </label>
-
-                            <br />
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                name="largo"
-                                value={
-                                    formPaquete.largo
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
-                            />
-
-                        </div>
-
-                        {/* ANCHO */}
-
-                        <div>
-
-                            <label>
-                                Ancho (cm)
-                            </label>
-
-                            <br />
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                name="ancho"
-                                value={
-                                    formPaquete.ancho
-                                }
-                                onChange={
-                                    handleChangePaquete
-                                }
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px"
-                                }}
+                                onChange={handleChangePaquete}
+                                placeholder="Número de documento"
                             />
 
                         </div>
 
                     </div>
 
+                )}
+
+                {/* ======================================
+                    PASO 2 — INFORMACIÓN DEL PAQUETE
+                ====================================== */}
+
+                {paso === 2 && (
+
+                    <div className="wizard-grid">
+
+                        <div style={{ gridColumn: "1 / -1" }}>
+
+                            <label>
+                                Descripción del paquete
+                            </label>
+
+                            <input
+                                type="text"
+                                name="descripcion"
+                                value={formPaquete.descripcion}
+                                onChange={handleChangePaquete}
+                                placeholder="Ej: Ropa, computador, lavadora..."
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label>Peso (kg)</label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                name="peso"
+                                value={formPaquete.peso}
+                                onChange={handleChangePaquete}
+                                placeholder="0.0"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label>Alto (cm)</label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                name="alto"
+                                value={formPaquete.alto}
+                                onChange={handleChangePaquete}
+                                placeholder="0"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label>Largo (cm)</label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                name="largo"
+                                value={formPaquete.largo}
+                                onChange={handleChangePaquete}
+                                placeholder="0"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label>Ancho (cm)</label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                name="ancho"
+                                value={formPaquete.ancho}
+                                onChange={handleChangePaquete}
+                                placeholder="0"
+                            />
+
+                        </div>
+
+                    </div>
+
+                )}
+
+                {/* ======================================
+                    PASO 3 — DÓNDE ES EL ENVÍO
+                ====================================== */}
+
+                {paso === 3 && (
+
+                    <div className="wizard-grid">
+
+                        <div>
+
+                            <label>Origen</label>
+
+                            <input
+                                type="text"
+                                name="origen"
+                                value={formPaquete.origen}
+                                onChange={handleChangePaquete}
+                                placeholder="Ciudad o dirección de recogida"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label>Destino</label>
+
+                            <input
+                                type="text"
+                                name="destino"
+                                value={formPaquete.destino}
+                                onChange={handleChangePaquete}
+                                placeholder="Ciudad o dirección de entrega"
+                            />
+
+                        </div>
+
+                    </div>
+
+                )}
+
+                {/* ======================================
+                    PASO 4 — CONFIRMACIÓN
+                ====================================== */}
+
+                {paso === 4 && (
+
+                    <div className="wizard-resumen">
+
+                        <div className="wizard-resumen-fila">
+                            <span>Tipo de envío</span>
+                            <span>{obtenerNombreTipoEnvio()}</span>
+                        </div>
+
+                        <div className="wizard-resumen-fila">
+                            <span>Destinatario</span>
+                            <span>
+                                {formPaquete.nombre_destinatario}
+                            </span>
+                        </div>
+
+                        <div className="wizard-resumen-fila">
+                            <span>Documento</span>
+                            <span>
+                                {formPaquete.documento_destinatario}
+                            </span>
+                        </div>
+
+                        <div className="wizard-resumen-fila">
+                            <span>Descripción</span>
+                            <span>
+                                {formPaquete.descripcion || "—"}
+                            </span>
+                        </div>
+
+                        <div className="wizard-resumen-fila">
+                            <span>Peso / Dimensiones</span>
+                            <span>
+                                {formPaquete.peso} kg ·{" "}
+                                {formPaquete.alto}×
+                                {formPaquete.largo}×
+                                {formPaquete.ancho} cm
+                            </span>
+                        </div>
+
+                        <div className="wizard-resumen-fila">
+                            <span>Origen</span>
+                            <span>{formPaquete.origen}</span>
+                        </div>
+
+                        <div className="wizard-resumen-fila">
+                            <span>Destino</span>
+                            <span>{formPaquete.destino}</span>
+                        </div>
+
+                    </div>
+
+                )}
+
+                {/* ======================================
+                    BOTONES DE NAVEGACIÓN
+                ====================================== */}
+
+                <div className="wizard-botones">
+
                     <button
-                        type="submit"
-                        disabled={enviandoPaquete}
-                        className="admin-btn"
+                        type="button"
+                        className="wizard-btn-atras"
+                        onClick={irAlPasoAnterior}
+                        disabled={paso === 1}
                         style={{
-                            marginTop: "20px"
+                            visibility:
+                                paso === 1
+                                    ? "hidden"
+                                    : "visible"
                         }}
                     >
-                        {enviandoPaquete
-                            ? "Registrando..."
-                            : "Registrar Paquete"
-                        }
+                        ← Atrás
                     </button>
 
-                </form>
+                    {paso < PASOS.length ? (
 
-            </div>
+                        <button
+                            type="button"
+                            className="wizard-btn-continuar"
+                            onClick={irAlSiguientePaso}
+                        >
+                            Continuar →
+                        </button>
+
+                    ) : (
+
+                        <button
+                            type="submit"
+                            className="wizard-btn-continuar"
+                            disabled={enviandoPaquete}
+                        >
+                            {enviandoPaquete
+                                ? "Registrando..."
+                                : "Finalizar"}
+                        </button>
+
+                    )}
+
+                </div>
+
+            </form>
 
         </section>
     );

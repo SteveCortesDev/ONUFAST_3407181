@@ -248,6 +248,263 @@
 
 
 /* ═══════════════════════════════════════════════
+   ASISTENTE — PROGRAMA TU ENVÍO (WIZARD)
+═══════════════════════════════════════════════ */
+
+.wizard-card {
+    background: #ffffff;
+    color: #1a1a1a;
+    border-radius: 12px;
+    padding: 35px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+
+.wizard-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    gap: 20px;
+}
+
+.wizard-intro h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #111;
+}
+
+.wizard-intro p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0;
+}
+
+.wizard-truck {
+    font-size: 60px;
+    line-height: 1;
+}
+
+
+/* INDICADOR DE PASOS */
+
+.wizard-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.wizard-step-circle {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    border: 2px solid #d8d8d8;
+    color: #999;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.wizard-step-circle.activo {
+    background: #e5252a;
+    border-color: #e5252a;
+    color: #fff;
+}
+
+.wizard-step-circle.completado {
+    background: #fff;
+    border-color: #e5252a;
+    color: #e5252a;
+}
+
+.wizard-step-line {
+    width: 55px;
+    height: 0;
+    border-top: 2px dashed #d8d8d8;
+    margin: 0 6px;
+}
+
+
+/* MENSAJES */
+
+.wizard-mensaje {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.wizard-mensaje-exito {
+    background: #e6f7ec;
+    color: #1c7a3d;
+}
+
+.wizard-mensaje-error {
+    background: #fdeaea;
+    color: #c0272d;
+}
+
+
+/* TÍTULO DE SECCIÓN */
+
+.wizard-seccion-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+.wizard-seccion-titulo span {
+    font-size: 22px;
+}
+
+
+/* FORMULARIO */
+
+.wizard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+}
+
+.wizard-form label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+.wizard-form input,
+.wizard-form select {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    background: #fafafa;
+    color: #111;
+    font-size: 14px;
+    margin-bottom: 18px;
+    font-family: Arial, sans-serif;
+}
+
+.wizard-form input:focus,
+.wizard-form select:focus {
+    outline: none;
+    border-color: #e5252a;
+    background: #fff;
+}
+
+
+/* RESUMEN (PASO 4) */
+
+.wizard-resumen {
+    background: #f8f8f8;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 8px 18px;
+    margin-bottom: 20px;
+}
+
+.wizard-resumen-fila {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eaeaea;
+    font-size: 14px;
+}
+
+.wizard-resumen-fila:last-child {
+    border-bottom: none;
+}
+
+.wizard-resumen-fila span:first-child {
+    color: #888;
+}
+
+.wizard-resumen-fila span:last-child {
+    font-weight: 600;
+    color: #1a1a1a;
+    text-align: right;
+}
+
+
+/* BOTONES */
+
+.wizard-botones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.wizard-btn-atras {
+    background: #ebebeb;
+    color: #333;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.wizard-btn-atras:hover {
+    background: #dcdcdc;
+}
+
+.wizard-btn-continuar {
+    background: #e5252a;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.wizard-btn-continuar:hover {
+    background: #b11318;
+}
+
+.wizard-btn-continuar:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+
+@media (max-width: 700px) {
+
+    .wizard-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .wizard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wizard-step-line {
+        width: 25px;
+    }
+}
+
+
+/* ═══════════════════════════════════════════════
    RESUMEN
 ═══════════════════════════════════════════════ */
 
