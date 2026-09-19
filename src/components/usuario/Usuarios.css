@@ -191,7 +191,7 @@
     flex: 1;
     padding: 25px;
     overflow-x: hidden;
-    background-color: #595d63;
+    background-color: #7a7a7b;
 }
 
 
@@ -252,7 +252,7 @@
 ═══════════════════════════════════════════════ */
 
 .wizard-card {
-    background: #ffffff;
+    background: #e7dede;
     color: #1a1a1a;
     border-radius: 12px;
     padding: 35px;
@@ -495,12 +495,68 @@
     }
 
     .wizard-grid {
+        border: 1px solid #d5d5d5;
+        border-radius: 5px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
         grid-template-columns: 1fr;
     }
 
     .wizard-step-line {
         width: 25px;
     }
+}
+
+/* ============================================
+   CAMPOS DEL FORMULARIO
+   ============================================ */
+
+.wizard-form input,
+.wizard-form select,
+.wizard-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    border: 1px solid #d5d5d5;
+    border-radius: 5px;
+
+    background-color: #ffffff;
+    color: #222;
+
+    /* Sombra estilo Figma */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+
+    transition:
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* ============================================
+   CUANDO SE SELECCIONA UN CAMPO
+   ============================================ */
+
+.wizard-form input:focus,
+.wizard-form select:focus,
+.wizard-form textarea:focus {
+    outline: none;
+
+    border-color: #999999;
+
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
+}
+
+
+/* ============================================
+   PLACEHOLDER
+   ============================================ */
+
+.wizard-form input::placeholder,
+.wizard-form textarea::placeholder {
+    color: #888888;
 }
 
 

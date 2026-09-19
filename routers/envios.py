@@ -6,19 +6,43 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from core.database import get_db
+
 from models.envio import Envio
-from schemas.schemas import EnvioRequest, EnvioResponse
+from models.paquete import Paquete
+from models.tipo_envio import TipoEnvio
+from models.estado_envio import EstadoEnvio
+from models.rutas import Ruta
+
+from schemas.schemas import (
+    EnvioRequest,
+    EnvioResponse,
+    RastreoResponse,
+    RegistrarPaqueteRequest,
+    RegistrarPaqueteResponse,
+    TokenData
+)
+
+from core.security import get_current_user
 
 
 router = APIRouter(
     prefix="/envios",
     tags=["Envíos"]
 )
-from core.security import get_current_user
-from schemas.schemas import TokenData
-from models.paquete import Paquete
-from models.tipo_envio import TipoEnvio
 
+
+# ─────────────────────────────────────────────
+# GENERAR CÓDIGO DE RASTREO
+# ─────────────────────────────────────────────
+
+def generar_codigo_rastreo() -> str:
+    return f"ONU-{uuid.uuid4().hex[:10].upper()}"
+
+
+# ─────────────────────────────────────────────
+# GET /envios/mis-pedidos
+# Ver mis pedidos (usuario autenticado)
+# ─────────────────────────────────────────────
 
 @router.get(
     "/mis-pedidos",
@@ -37,6 +61,7 @@ def mis_pedidos(
     resultado = []
 
     for envio in envios:
+
         tipo = db.query(TipoEnvio).filter(
             TipoEnvio.id_tipenvio == envio.id_tipenvio
         ).first()
@@ -48,7 +73,10 @@ def mis_pedidos(
         resultado.append({
             "id_pedido": envio.id_envio,
             "codigo_rastreo": envio.codigo_rastreo,
-            "tipo_envio": tipo.descripcion if tipo else "Desconocido",
+            "tipo_envio": (
+                tipo.descripcion
+                if tipo else "Desconocido"
+            ),
             "cantidad": cantidad_paquetes,
             "paquetes_registrados": cantidad_paquetes,
             "estado": envio.estado_paquete,
@@ -57,22 +85,21 @@ def mis_pedidos(
     return {"pedidos": resultado}
 
 
-def generar_codigo_rastreo() -> str:
-    return f"ONU-{uuid.uuid4().hex[:10].upper()}"
-
 # ─────────────────────────────────────────────
 # GET /envios/rastreo/{codigo_rastreo}
+# Rastrear un envío por código
 # ─────────────────────────────────────────────
 
 @router.get(
     "/rastreo/{codigo_rastreo}",
-    response_model=EnvioResponse,
+    response_model=RastreoResponse,
     summary="Rastrear un envío por código"
 )
 def rastrear_envio(
     codigo_rastreo: str,
     db: Session = Depends(get_db)
 ):
+    # Buscar el envío
     envio = db.query(Envio).filter(
         Envio.codigo_rastreo == codigo_rastreo
     ).first()
@@ -83,10 +110,77 @@ def rastrear_envio(
             detail="Envío no encontrado"
         )
 
-    return envio
+    # ─────────────────────────────────────────
+    # Buscar el usuario que registró el envío
+    # ─────────────────────────────────────────
+
+    from models.usuario import Usuario
+
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == envio.id_usuario
+    ).first()
+
+    # ─────────────────────────────────────────
+    # Buscar el paquete asociado
+    # ─────────────────────────────────────────
+
+    paquete = db.query(Paquete).filter(
+        Paquete.id_envio == envio.id_envio
+    ).first()
+
+    # ─────────────────────────────────────────
+    # Buscar el tipo de envío
+    # ─────────────────────────────────────────
+
+    tipo = db.query(TipoEnvio).filter(
+        TipoEnvio.id_tipenvio == envio.id_tipenvio
+    ).first()
+
+    # ─────────────────────────────────────────
+    # Devolver información completa
+    # ─────────────────────────────────────────
+
+    return {
+        "id_envio": envio.id_envio,
+        "id_usuario": envio.id_usuario,
+        "codigo_rastreo": envio.codigo_rastreo,
+        "fecha_creacion": envio.fecha_creacion,
+
+        # Remitente
+        "remitente": (
+            f"{usuario.nombre} {usuario.apellido}"
+            if usuario else "No especificado"
+        ),
+
+        # Destinatario
+        "nombre_destinatario": envio.nombre_destinatario,
+        "documento_destinatario": envio.documento_destinatario,
+
+        # Ubicaciones
+        "origen": (
+            paquete.origen
+            if paquete else "No especificado"
+        ),
+
+        "destino": (
+            paquete.destino
+            if paquete else "No especificado"
+        ),
+
+        # Tipo de envío
+        "tipo_envio": (
+            tipo.descripcion
+            if tipo else "No especificado"
+        ),
+
+        # Estado
+        "estado_paquete": envio.estado_paquete
+    }
+
 
 # ─────────────────────────────────────────────
 # GET /envios/
+# Ver todos los envíos
 # ─────────────────────────────────────────────
 
 @router.get(
@@ -94,24 +188,29 @@ def rastrear_envio(
     response_model=List[EnvioResponse],
     summary="Ver todos los envíos"
 )
-def listar_envios(db: Session = Depends(get_db)):
+def listar_envios(
+    db: Session = Depends(get_db)
+):
     return db.query(Envio).all()
 
 
+# ─────────────────────────────────────────────
+# FUNCIONES AUXILIARES
+# ─────────────────────────────────────────────
 
-from models.estado_envio import EstadoEnvio
-from models.rutas import Ruta
-from models.paquete import Paquete
-from schemas.schemas import RegistrarPaqueteRequest, RegistrarPaqueteResponse
+def obtener_o_crear_estado_pendiente(
+    db: Session
+) -> int:
 
-
-def obtener_o_crear_estado_pendiente(db: Session) -> int:
     estado = db.query(EstadoEnvio).filter(
         EstadoEnvio.estado == "Pendiente"
     ).first()
 
     if not estado:
-        estado = EstadoEnvio(estado="Pendiente")
+        estado = EstadoEnvio(
+            estado="Pendiente"
+        )
+
         db.add(estado)
         db.commit()
         db.refresh(estado)
@@ -119,12 +218,16 @@ def obtener_o_crear_estado_pendiente(db: Session) -> int:
     return estado.id_estadoenvio
 
 
-def obtener_o_crear_ruta_sin_asignar(db: Session) -> int:
+def obtener_o_crear_ruta_sin_asignar(
+    db: Session
+) -> int:
+
     ruta = db.query(Ruta).filter(
         Ruta.codigo_ruta == "SIN-ASIGNAR"
     ).first()
 
     if not ruta:
+
         ruta = Ruta(
             fecha_creacion=datetime.now(),
             tiempo_estimado="Por definir",
@@ -136,12 +239,18 @@ def obtener_o_crear_ruta_sin_asignar(db: Session) -> int:
             tipo_vehiculo="Por definir",
             nombre_conductor="Por definir"
         )
+
         db.add(ruta)
         db.commit()
         db.refresh(ruta)
 
     return ruta.id_rutas
 
+
+# ─────────────────────────────────────────────
+# POST /envios/registrar-paquete
+# Registrar un nuevo paquete
+# ─────────────────────────────────────────────
 
 @router.post(
     "/registrar-paquete",
@@ -154,9 +263,19 @@ def registrar_paquete(
     current_user: TokenData = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+
+    # Generar código de rastreo
     codigo = generar_codigo_rastreo()
+
+    # Obtener estado pendiente
     id_estado = obtener_o_crear_estado_pendiente(db)
+
+    # Obtener ruta sin asignar
     id_ruta = obtener_o_crear_ruta_sin_asignar(db)
+
+    # ─────────────────────────────────────────
+    # Crear envío
+    # ─────────────────────────────────────────
 
     envio = Envio(
         id_usuario=current_user.id_usuario,
@@ -169,9 +288,14 @@ def registrar_paquete(
         documento_destinatario=payload.documento_destinatario,
         estado_paquete="Pendiente"
     )
+
     db.add(envio)
     db.commit()
     db.refresh(envio)
+
+    # ─────────────────────────────────────────
+    # Crear paquete
+    # ─────────────────────────────────────────
 
     paquete = Paquete(
         id_envio=envio.id_envio,
@@ -184,17 +308,25 @@ def registrar_paquete(
         origen=payload.origen,
         destino=payload.destino
     )
+
     db.add(paquete)
     db.commit()
     db.refresh(paquete)
+
+    # ─────────────────────────────────────────
+    # Respuesta
+    # ─────────────────────────────────────────
 
     return RegistrarPaqueteResponse(
         id_envio=envio.id_envio,
         id_paquete=paquete.id_paquete,
         codigo_rastreo=codigo
     )
+
+
 # ─────────────────────────────────────────────
 # GET /envios/{id_envio}
+# Ver un envío
 # ─────────────────────────────────────────────
 
 @router.get(
@@ -206,6 +338,7 @@ def obtener_envio(
     id_envio: int,
     db: Session = Depends(get_db)
 ):
+
     envio = db.query(Envio).filter(
         Envio.id_envio == id_envio
     ).first()
@@ -221,6 +354,7 @@ def obtener_envio(
 
 # ─────────────────────────────────────────────
 # POST /envios/
+# Crear un envío
 # ─────────────────────────────────────────────
 
 @router.post(
@@ -233,6 +367,7 @@ def crear_envio(
     payload: EnvioRequest,
     db: Session = Depends(get_db)
 ):
+
     envio = Envio(
         id_usuario=payload.id_usuario,
         id_tipenvio=payload.id_tipenvio,
@@ -254,6 +389,7 @@ def crear_envio(
 
 # ─────────────────────────────────────────────
 # PUT /envios/{id_envio}
+# Actualizar un envío
 # ─────────────────────────────────────────────
 
 @router.put(
@@ -266,6 +402,7 @@ def actualizar_envio(
     payload: EnvioRequest,
     db: Session = Depends(get_db)
 ):
+
     envio = db.query(Envio).filter(
         Envio.id_envio == id_envio
     ).first()
@@ -292,6 +429,7 @@ def actualizar_envio(
 
 # ─────────────────────────────────────────────
 # DELETE /envios/{id_envio}
+# Eliminar un envío
 # ─────────────────────────────────────────────
 
 @router.delete(
@@ -302,6 +440,7 @@ def eliminar_envio(
     id_envio: int,
     db: Session = Depends(get_db)
 ):
+
     envio = db.query(Envio).filter(
         Envio.id_envio == id_envio
     ).first()

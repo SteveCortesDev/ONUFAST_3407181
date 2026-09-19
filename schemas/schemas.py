@@ -137,6 +137,23 @@ class EnvioResponse(BaseModel):
     nombre_destinatario: str
     documento_destinatario: str
     estado_paquete: str
+    
+    
+class RastreoResponse(BaseModel):
+    id_envio: int
+    id_usuario: int
+    codigo_rastreo: str
+    fecha_creacion: datetime
+
+    remitente: str
+    nombre_destinatario: str
+    documento_destinatario: str
+
+    origen: Optional[str] = None
+    destino: Optional[str] = None
+
+    tipo_envio: str
+    estado_paquete: str
 
 # ─────────────────────────────────────────────
 #  TOKEN
