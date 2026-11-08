@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import api from '../api';
-import './Pages.css';
+import { useState } from "react";
+import api from "@/shared/api";
+import "@/styles/Pages.css";
 
 
 export default function Rastreo() {

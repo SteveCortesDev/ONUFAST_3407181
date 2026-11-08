@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../api";
+import api from "@/shared/api";
 
 const extraerMensajeError = (error) => {
     const detail = error.response?.data?.detail;

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text  # <-- ¡ESTA ES LA LÍNEA QUE FALTABA!
 from routers import auth, usuarios, paquetes, envios, rutas, rol, usuario_roles, documento, tipo_envio, estado_envio, factura
 from core.database import engine
 from models.usuario import Usuario
@@ -28,7 +29,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,7 +39,6 @@ app.add_middleware(
 # ─────────────────────────────────────────────
 
 app.include_router(rol.router)
-
 app.include_router(auth.router)
 app.include_router(usuarios.router)
 app.include_router(paquetes.router)
@@ -51,16 +51,15 @@ app.include_router(estado_envio.router)
 app.include_router(factura.router)
 
 # ─────────────────────────────────────────────
-# CORS
+# CORS (Solo uno, bien configurado)
 # ─────────────────────────────────────────────
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], # Permite tu frontend
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # ─────────────────────────────────────────────
 # ROOT

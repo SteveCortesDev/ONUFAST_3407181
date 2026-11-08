@@ -1,21 +1,21 @@
 import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import './App.css';
-import './responsive.css';
+import '@/styles/App.css';
+import '@/styles/responsive.css';
 
-import AuthModal from './components/AuthModal';
-import RastreoRapido from './components/RastreoRapido';
-import ComoFunciona from './components/ComoFunciona';
-import Footer from './components/Footer';
+import AuthModal from '@/features/auth/AuthModal';
+import RastreoRapido from '@/features/envios/RastreoRapido';
+import ComoFunciona from '@/features/landing/ComoFunciona';
+import Footer from '@/shared/components/Footer';
 
-import Nosotros from './pages/Nosotros';
-import Rastreo from './pages/Rastreo';
-import Servicios from './pages/Servicios';
-import Ubicacion from './pages/Ubicacion';
-import Admin from './pages/Admin';
-import Usuario from "./components/usuario/Usuario";
+import Nosotros from '@/features/landing/Nosotros';
+import Rastreo from '@/features/envios/Rastreo';
+import Servicios from '@/features/landing/Servicios';
+import Ubicacion from '@/features/landing/Ubicacion';
+import Admin from '@/features/admin/Admin';
+import Usuario from "@/features/usuario/Usuario";
 
-import api from './api';
+import api from '@/shared/api';
 
 
 // ─────────────────────────────────────────────

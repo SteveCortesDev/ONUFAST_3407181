@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminDashboard from '../admin/AdminDashboard';
-import AdminEnvios from '../admin/AdminEnvios';
-import AdminUsuarios from '../admin/AdminUsuarios';
-import AdminVehiculos from '../admin/AdminVehiculos';
-import AdminConductores from '../admin/AdminConductores';
-import '../Admin.css';
+import AdminDashboard from './AdminDashboard';
+import AdminEnvios from './AdminEnvios';
+import AdminUsuarios from './AdminUsuarios';
+import AdminVehiculos from './AdminVehiculos';
+import AdminConductores from './AdminConductores';
+import '@/styles/Admin.css';
 
 export default function Admin() {
     const [seccionActiva, setSeccionActiva] = useState('dashboard');

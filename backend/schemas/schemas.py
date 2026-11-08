@@ -24,9 +24,8 @@ class RegistroResponse(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    nombre: str = Field(..., description="Nombre completo (nombre + apellido)")
+    correo: EmailStr = Field(..., description="Correo del usuario")
     contrasena: str
-    direccion: str = Field(..., description="Dirección de entrega o residencia")
 
 class LoginResponse(BaseModel):
     access_token: str

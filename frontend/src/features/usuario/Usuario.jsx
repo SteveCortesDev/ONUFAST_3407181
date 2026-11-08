@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import api from "../../api";
-
-import "./Usuarios.css";
+import api from "@/shared/api";
+import "@/styles/Usuarios.css";
 
 import PanelUsuario from "./PanelUsuario";
 import MenuUsuario from "./MenuUsuario";

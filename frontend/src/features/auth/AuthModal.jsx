@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import api from '../api';
+import api from "@/shared/api"
 
 export default function AuthModal({ isOpen, onClose, onLogin }) {
 
     const [activeTab, setActiveTab] = useState('login');
 
-    // LOGIN
-    const [nombre, setNombre] = useState('');
+    // LOGIN (Cambiado a correo)
+    const [correo, setCorreo] = useState('');
     const [contrasena, setContrasena] = useState('');
-    const [direccion, setDireccion] = useState('');
 
     // REGISTRO
     const [regNombre, setRegNombre] = useState('');
@@ -51,9 +50,8 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
 
         try {
             const response = await api.post('/auth/login', {
-                nombre: nombre,
-                contrasena: contrasena,
-                direccion: direccion
+                correo: correo,
+                contrasena: contrasena
             });
 
             const data = response.data;
@@ -109,8 +107,8 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
             setRegContrasena('');
             setRegTelefono('');
 
-            // Pre-llenar el nombre completo en el tab de login
-            setNombre(`${response.data.nombre}`);
+            // Pre-llenar el correo en el tab de login
+            setCorreo(response.data.correo);
 
             // Cambiar a la pestaña de login después de 1.5s
             setTimeout(() => {
@@ -163,12 +161,12 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
                     <form className="modal-form" onSubmit={handleLogin}>
 
                         <div className="input-group">
-                            <label>Nombre completo</label>
+                            <label>Correo Electrónico</label>
                             <input
-                                type="text"
-                                placeholder="Ej: María López"
-                                value={nombre}
-                                onChange={(e) => setNombre(e.target.value)}
+                                type="email"
+                                placeholder="correo@ejemplo.com"
+                                value={correo}
+                                onChange={(e) => setCorreo(e.target.value)}
                                 required
                             />
                         </div>
@@ -180,17 +178,6 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
                                 placeholder="Contraseña"
                                 value={contrasena}
                                 onChange={(e) => setContrasena(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <div className="input-group">
-                            <label>Dirección</label>
-                            <input
-                                type="text"
-                                placeholder="Dirección de entrega"
-                                value={direccion}
-                                onChange={(e) => setDireccion(e.target.value)}
                                 required
                             />
                         </div>

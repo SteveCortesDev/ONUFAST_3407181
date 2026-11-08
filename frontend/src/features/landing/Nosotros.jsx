@@ -1,4 +1,4 @@
-import './Pages.css';
+import "@/styles/Pages.css"
 
 const stats = [
   { number: '+5K', label: 'Envíos mensuales' },

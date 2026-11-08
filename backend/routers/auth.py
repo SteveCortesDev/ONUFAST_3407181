@@ -89,13 +89,10 @@ def login(
     payload: LoginRequest,
     db: Session = Depends(get_db)
 ):
-    # Buscar usuario en PostgreSQL
+    # Buscar usuario en PostgreSQL por CORREO
     usuario = (
         db.query(Usuario)
-        .filter(
-            Usuario.nombre == payload.nombre.split(" ")[0],
-            Usuario.apellido == " ".join(payload.nombre.split(" ")[1:])
-        )
+        .filter(Usuario.correo == payload.correo)
         .first()
     )
 
@@ -106,7 +103,7 @@ def login(
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Nombre o contraseña incorrectos"
+            detail="Correo o contraseña incorrectos"
         )
 
     # Crear token

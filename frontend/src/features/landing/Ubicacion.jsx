@@ -1,4 +1,4 @@
-import './Pages.css';
+import "@/styles/Pages.css"
 
 export default function Ubicacion() {
   // Cambia esta dirección por la real de tus oficinas
