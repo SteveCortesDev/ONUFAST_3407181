@@ -297,6 +297,7 @@ def registrar_paquete(
     # Crear paquete
     # ─────────────────────────────────────────
 
+        # Crear paquete
     paquete = Paquete(
         id_envio=envio.id_envio,
         cod_rastreo=codigo,
@@ -306,7 +307,15 @@ def registrar_paquete(
         ancho=payload.ancho,
         descripcion=payload.descripcion,
         origen=payload.origen,
-        destino=payload.destino
+        destino=payload.destino,
+        
+        # 👇 NUEVOS DATOS 👇
+        direccion=payload.direccion,
+        barrio=payload.barrio,
+        telefono_destinatario=payload.telefono_destinatario,
+        referencias=payload.referencias,
+        precio_envio=payload.precio_envio,
+        metodo_pago=payload.metodo_pago
     )
 
     db.add(paquete)

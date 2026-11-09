@@ -239,6 +239,15 @@ class RegistrarPaqueteRequest(BaseModel):
     origen: str = Field(..., max_length=100)
     destino: str = Field(..., max_length=100)
 
+    direccion: str = Field(..., max_length=200)
+    barrio: str = Field(..., max_length=100)
+    telefono_destinatario: str = Field(..., max_length=20)
+    referencias: Optional[str] = Field(None, max_length=200)
+    
+    # El precio y el pago (el precio podría calcularse en el back, pero por ahora lo recibimos)
+    precio_envio: float = Field(..., ge=0)
+    metodo_pago: str = Field(..., max_length=50)
+
 
 class RegistrarPaqueteResponse(BaseModel):
     id_envio: int
