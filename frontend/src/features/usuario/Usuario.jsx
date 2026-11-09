@@ -84,52 +84,39 @@ export default function Usuario() {
     // GET /usuarios/perfil
     // ============================================
 
-    const cargarPerfil = async () => {
+        const cargarPerfil = async () => {
 
         try {
 
             setCargandoPerfil(true);
             setErrorPerfil("");
 
-            const response =
-                await api.get("/usuarios/perfil");
+            const response = await api.get("/usuarios/perfil");
+            
+            // 👇 NUEVA VALIDACIÓN DE SEGURIDAD 👇
+            if (response.data.id_rol === 1) {
+                // Si es admin, lo pateamos al panel de admin
+                navigate("/admin");
+                return; 
+            }
+            // 👆 FIN DE LA VALIDACIÓN 👆
 
             setUsuario(response.data);
 
         } catch (error) {
 
-            console.error(
-                "Error al cargar perfil:",
-                error
-            );
+            console.error("Error al cargar perfil:", error);
 
-            if (
-                error.response?.status === 401
-            ) {
-
-                localStorage.removeItem(
-                    "token"
-                );
-
-                localStorage.removeItem(
-                    "nombre_usuario"
-                );
-
-                localStorage.removeItem(
-                    "id_usuario"
-                );
-
+            if (error.response?.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("nombre_usuario");
+                localStorage.removeItem("id_usuario");
                 navigate("/");
-
             } else {
-
-                setErrorPerfil(
-                    extraerMensajeError(error)
-                );
+                setErrorPerfil(extraerMensajeError(error));
             }
 
         } finally {
-
             setCargandoPerfil(false);
         }
     };

@@ -55,6 +55,7 @@ function AppContent() {
 
     const esPanelUsuario = location.pathname === '/usuario';
     const estaLogueado = !!localStorage.getItem('token');
+    const esPanelAdmin = location.pathname === '/admin'; 
 
 
     // ─────────────────────────────────────────
@@ -80,12 +81,15 @@ function AppContent() {
     // LOGIN
     // ─────────────────────────────────────────
 
-    const handleLogin = (usuario) => {
-
+            const handleLogin = (usuario) => {
         console.log('Usuario autenticado:', usuario);
-
-        navigate('/usuario');
-
+        
+        // Si el correo es del admin, lo mandamos directo al panel de admin
+        if (usuario.correo === 'admin@onufast.com') {
+            navigate('/admin');
+        } else {
+            navigate('/usuario');
+        }
     };
 
 
@@ -136,7 +140,7 @@ function AppContent() {
             {/* ═══════════════════════════════════
                 HEADER / NAVBAR
             ═══════════════════════════════════ */}
-            {!esPanelUsuario && (
+            {!esPanelUsuario && !esPanelAdmin && (
 
     <header className="onufast-header">
 
@@ -578,14 +582,14 @@ function AppContent() {
 
             {/* FOOTER */}
 
-            {!esPanelUsuario && <Footer />}
+            {!esPanelUsuario && !esPanelAdmin && <Footer />}
 
 
             {/* ═══════════════════════════════════
                 MODAL DE AUTENTICACIÓN
             ═══════════════════════════════════ */}
 
-            {!esPanelUsuario && (
+            {!esPanelUsuario && !esPanelAdmin && (
                 <AuthModal
                     isOpen={mostrarModal}
                     onClose={() => setMostrarModal(false)}

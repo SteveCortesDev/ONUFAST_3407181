@@ -115,5 +115,6 @@ def login(
     return LoginResponse(
         access_token=token,
         id_usuario=usuario.id_usuario,
-        nombre=f"{usuario.nombre} {usuario.apellido}"
+        nombre=f"{usuario.nombre} {usuario.apellido}",
+        correo=usuario.correo # <-- ¡ESTA ES LA LÍNEA QUE FALTA!
     )

@@ -32,6 +32,7 @@ class LoginResponse(BaseModel):
     token_type: str = "bearer"
     id_usuario: int
     nombre: str
+    correo: str
     
 # ─────────────────────────────────────────────
 #  ROL
