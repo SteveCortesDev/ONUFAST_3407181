@@ -2,10 +2,10 @@
 
 > La plataforma digital que revoluciona la logística y gestión de mensajería en Colombia.
 
-![Python](https://shields.io)
-![FastAPI](https://shields.io)
-![React](https://shields.io)
-![PostgreSQL](https://shields.io)
+![ONUFAST](https://img.shields.io/badge/ONUFAST-Sistema_Logístico-cc0000?style=for-the-badge&logo=box&logoColor=white)
+![Status](https://img.shields.io/badge/Status-En_Desarrollo-orange?style=for-the-badge)
+![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react)
+
 
 ---
 
