@@ -36,11 +36,10 @@ export default function AdminUsuarios() {
         }
     };
 
-    // Filtramos por nombre, correo o documento
     const usuariosFiltrados = usuarios.filter(u => 
         u.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 
         u.correo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        u.num_documento.toLowerCase().includes(busqueda.toLowerCase())
+        (u.num_documento && u.num_documento.toLowerCase().includes(busqueda.toLowerCase()))
     );
 
     if (cargando) return <h2>Cargando usuarios...</h2>;
@@ -65,7 +64,7 @@ export default function AdminUsuarios() {
                     <tr style={{ borderBottom: '1px solid #444' }}>
                         <th style={{ padding: '10px' }}>ID</th>
                         <th style={{ padding: '10px' }}>Nombre</th>
-                        <th style={{ padding: '10px' }}>Documento</th> {/* Nueva Columna */}
+                        <th style={{ padding: '10px' }}>Documento</th>
                         <th style={{ padding: '10px' }}>Correo</th>
                         <th style={{ padding: '10px' }}>Rol Actual</th>
                         <th style={{ padding: '10px' }}>Acción</th>
@@ -73,36 +72,27 @@ export default function AdminUsuarios() {
                 </thead>
                 <tbody>
                     {usuariosFiltrados.map(user => {
-                        const esAdmin = user.id_rol === 1; // Validamos si es admin
-                        
+                        const esAdmin = user.id_rol === 1;
                         return (
                             <tr key={user.id_usuario} style={{ borderBottom: '1px solid #333' }}>
                                 <td style={{ padding: '10px' }}>{user.id_usuario}</td>
                                 <td style={{ padding: '10px' }}>{user.nombre}</td>
-                                <td style={{ padding: '10px' }}>{user.num_documento}</td> {/* Mostramos el documento */}
+                                <td style={{ padding: '10px' }}>{user.num_documento}</td>
                                 <td style={{ padding: '10px' }}>{user.correo}</td>
                                 <td style={{ padding: '10px' }}>
-                                    <span style={{ 
-                                        background: user.id_rol === 1 ? '#c9252c' : user.id_rol === 3 ? '#3b82f6' : user.id_rol === 5 ? '#eab308' : '#666',
-                                        padding: '4px 8px', borderRadius: '12px', fontSize: '12px'
-                                    }}>
+                                    <span style={{ background: user.id_rol === 1 ? '#c9252c' : user.id_rol === 3 ? '#3b82f6' : user.id_rol === 5 ? '#eab308' : '#666', padding: '4px 8px', borderRadius: '12px', fontSize: '12px' }}>
                                         {user.nombre_rol}
                                     </span>
                                 </td>
                                 <td style={{ padding: '10px' }}>
-                                    <select 
-                                        value={user.id_rol} 
-                                        onChange={(e) => cambiarRol(user.id_usuario, e.target.value)}
-                                        disabled={esAdmin} // Bloquea el selector si es admin
-                                        style={{ padding: '5px', borderRadius: '5px', background: esAdmin ? '#444' : '#222', color: esAdmin ? '#999' : 'white', border: '1px solid #555', cursor: esAdmin ? 'not-allowed' : 'pointer' }}
-                                    >
+                                    <select value={user.id_rol} onChange={(e) => cambiarRol(user.id_usuario, e.target.value)} disabled={esAdmin} style={{ padding: '5px', borderRadius: '5px', background: esAdmin ? '#444' : '#222', color: esAdmin ? '#999' : 'white', border: '1px solid #555', cursor: esAdmin ? 'not-allowed' : 'pointer' }}>
                                         <option value="2">Cliente</option>
                                         <option value="3">Conductor</option>
                                         <option value="5">Encargado de Bodega</option>
                                     </select>
                                 </td>
                             </tr>
-                        )
+                        );
                     })}
                 </tbody>
             </table>

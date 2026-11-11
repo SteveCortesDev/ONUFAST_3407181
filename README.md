@@ -1,161 +1,211 @@
 # 🚀 ONUFAST — Elevando el nivel de tus envíos
 
-<div align="center">
+> La plataforma digital que revoluciona la logística y gestión de mensajería en Colombia.
 
-![ONUFAST](https://img.shields.io/badge/ONUFAST-Sistema_Logístico-cc0000?style=for-the-badge&logo=box&logoColor=white)
-![Status](https://img.shields.io/badge/Status-En_Desarrollo-orange?style=for-the-badge)
-![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react)
-![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![Python](https://shields.io)
+![FastAPI](https://shields.io)
+![React](https://shields.io)
+![PostgreSQL](https://shields.io)
 
-**La plataforma digital que revoluciona la logística en Colombia**
+---
 
-[Documentación](#-instalación-y-ejecución) • [Características](#-características-principales) • [Roles](#-múltiples-roles-especializados)
-</div>
+## 📋 Tabla de Contenidos
+1. [¿Qué es ONUFAST?](#-qué-es-onufast)
+2. [Características Principales](#-características-principales)
+3. [Guía de Instalación y Ejecución (Windows)](#-guía-de-instalación-y-ejecución-windows)
+4. [Credenciales de Acceso](#-credenciales-de-acceso)
+5. [Estructura del Proyecto](#-estructura-del-proyecto)
 
 ---
 
 ## 📦 ¿Qué es ONUFAST?
 
-ONUFAST es una plataforma integral de gestión logística y envíos de paquetes diseñada para digitalizar completamente el proceso de mensajería, desde el registro del paquete hasta su entrega final. Nace con la misión de transformar la logística colombiana en una experiencia rápida, segura y totalmente transparente.
+**ONUFAST** es una plataforma integral de gestión logística y envíos de paquetes diseñada para digitalizar completamente el proceso operativo de mensajería: desde el registro inicial del paquete y cotización, hasta su despacho, rastreo y entrega final. 
 
-No es solo un sistema, es **la evolución de la logística moderna**.
+Nace con la misión de transformar la logística colombiana en una experiencia **rápida, segura, eficiente y totalmente transparente**.
 
 ---
 
 ## ✨ Características Principales
 
-### Múltiples Roles Especializados
-- **Cliente**: Registra, rastrea y gestiona sus envíos desde un portal intuitivo.
-- **Conductor**: Entrega paquetes, actualiza estados en tiempo real y reporta novedades.
-- **Encargado de Bodega**: Recibe, organiza y despacha paquetes con eficiencia.
-- **Administrador**: Control total del sistema, gestión de usuarios, rutas y asignación de roles.
+### 👥 Múltiples Roles Especializados
 
-### Rastreo en Tiempo Real
-Cada paquete tiene un código único de rastreo. El cliente ve exactamente dónde está en cada momento:
-- En bodega → En camino → Entregado.
-- Con cambios de estado registrados, fecha y quién realizó cada acción.
+| Rol | Responsabilidades Principales |
+| :--- | :--- |
+| **Cliente** | Registra, cotiza, rastrea y gestiona sus envíos personales desde un portal intuitivo. |
+| **Conductor** | Visualiza rutas asignadas, actualiza estados de entrega en tiempo real y reporta novedades. |
+| **Encargado de Bodega** | Recibe, organiza, valida paquetes y gestiona inventarios de salida. |
+| **Administrador** | Control total del sistema, gestión de usuarios, asignación dinámica de roles y supervisión global del tablero. |
 
-### Seguridad y Autenticación
-- Login protegido con encriptación de contraseñas (Bcrypt).
-- Tokens de seguridad (JWT) para mantener la sesión activa.
-- Rutas protegidas: un cliente no puede entrar al panel de administrador.
+### 📍 Rastreo en Tiempo Real
+* **Código único:** Cada paquete cuenta con un identificador exclusivo (ej. `ONU-2AA56A4628`).
+* **Ciclo de vida:** Seguimiento paso a paso del estado del envío:
+  ```text
+  En bodega ➔ En camino ➔ Entregado / Cancelado
+  ```
+* **Trazabilidad:** Historial completo de cambios de estado y auditoría de movimientos.
 
-### Creación de Envíos (Wizard)
-- Formulario intuitivo de 4 pasos.
-- Cálculo automático de precio base + recargo por peso.
-- Pasarela de pago simulada (Efectivo, Transferencia, Tarjeta).
-- Generación de código de rastreo único (Ej: `ONU-2AA56A4628`).
+### 🔒 Seguridad y Autenticación
+* Autenticación robusta basada en tokens **JWT (JSON Web Tokens)**.
+* Encriptación de contraseñas mediante **Bcrypt**.
+* Rutas protegidas tanto en el *backend* como en el *frontend* según el rol del usuario autenticado.
+
+### 📦 Creación de Envíos (Wizard)
+* Formulario interactivo guiado de múltiples pasos.
+* Cálculo automático de tarifas según tipo de envío y características del paquete.
+* Generación automática de códigos de rastreo y soporte completo de gestión documental.
 
 ---
 
-## 💻 Instalación y Ejecución (Windows)
+## 💻 Guía de Instalación y Ejecución (Windows)
 
-Sigue estos pasos **al pie de la letra** para levantar el proyecto en tu computadora.
+Sigue estos pasos detallados para clonar, configurar y poner en marcha el proyecto en un entorno local.
 
 ### 1. Requisitos Previos
-Asegúrate de tener instalado:
-- [Python 3.10+](https://www.python.org/downloads/) *(Importante: Marcar "Add Python to PATH")*
-- [Node.js LTS](https://nodejs.org/)
-- [PostgreSQL](https://www.postgresql.org/download/windows/) *(Configurar el usuario `postgres` con la contraseña `Sena1234`)*
-- [Git](https://git-scm.com/)
+Asegúrate de tener instalado en tu sistema:
+* **Python 3.10+** *(Importante: Marcar la opción `"Add Python to PATH"` durante la instalación)*.
+* **Node.js (LTS)** y **npm**.
+* **PostgreSQL** *(Configurado con el superusuario predeterminado `postgres` y contraseña `Sena1234`)*.
+* **Git**.
+
+---
 
 ### 2. Clonar el Repositorio
-Abre una terminal (PowerShell o CMD) y ejecuta:
+Abre una terminal (**PowerShell** o **CMD**) y ejecuta:
+
 ```bash
 git clone https://github.com/SteveCortesDev/ONUFAST_3407181.git
 cd ONUFAST_3407181
 git checkout reestructuracion
-3. Configurar la Base de Datos
-Abre una terminal y conéctate a PostgreSQL (te pedirá la contraseña Sena1234):
+```
 
-bash
-psql -U postgres
-Dentro de la consola de Postgres, crea la base de datos:
+---
 
-sql
-CREATE DATABASE onufast_db;
-\q
-Carga todas las tablas y datos de prueba ejecutando este comando (desde la raíz del proyecto):
+### 3. Configurar la Base de Datos en PostgreSQL
+1. Conéctate a la consola de PostgreSQL desde tu terminal *(ingresa `Sena1234` cuando te solicite la contraseña)*:
+   ```bash
+   psql -U postgres
+   ```
+2. Crea la base de datos del proyecto y sal de la consola:
+   ```sql
+   CREATE DATABASE onufast_db;
+   \q
+   ```
 
-bash
-psql -U postgres -d onufast_db -f "backend/db/Base de datos onufast.sql"
-4. Configurar el Backend (Python/FastAPI)
-Entra a la carpeta del backend:
+---
 
-bash
-cd backend
-Crea y activa un entorno virtual:
+### 4. Configurar y Levantar el Backend (Python / FastAPI)
 
-bash
-python -m venv venv
-.\venv\Scripts\activate
-Instala las dependencias:
+1. **Accede a la carpeta del backend:**
+   ```bash
+   cd backend
+   ```
 
-bash
-pip install -r requirements.txt
-Crear el archivo .env: Crea un archivo llamado .env dentro de la carpeta backend y pega esta línea:
+2. **Crea y activa el entorno virtual:**
+   ```bash
+   python -m venv venv
+   .\venv\Scripts\activate
+   ```
+   > *Nota: Si PowerShell bloquea la ejecución de scripts, utiliza:* `cmd /c venv\Scripts\activate.bat`
 
-env
-DATABASE_URL=postgresql://postgres:Sena1234@localhost:5432/onufast_db
-Levanta el servidor:
+3. **Instala las dependencias:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-bash
-uvicorn main:app --reload
-El backend estará en http://127.0.0.1:8000. Documentación en http://127.0.0.1:8000/docs.
+4. **Configura las variables de entorno:**
+   Crea un archivo llamado `.env` dentro de la carpeta `backend/` y agrega la siguiente línea:
+   ```env
+   DATABASE_URL=postgresql://postgres:Sena1234@localhost:5432/onufast_db
+   ```
 
-5. Configurar el Frontend (React/Vite)
-Abre otra terminal y ejecuta:
+5. **Sincroniza modelos y puebla los catálogos base:**
+   Con el entorno virtual activo, ejecuta los siguientes comandos en orden:
 
-Entra a la carpeta del frontend (desde la raíz del proyecto):
+   * **Crear tablas automáticas:**
+     ```bash
+     python -c "from core.database import engine, Base; import models; Base.metadata.drop_all(bind=engine); Base.metadata.create_all(bind=engine); print('¡Tablas creadas con éxito!')"
+     ```
 
-bash
-cd frontend
-Instala los módulos de Node:
+   * **Poblar roles del sistema:**
+     ```bash
+     python -c "from core.database import SessionLocal; from models.rol import Rol; db = SessionLocal(); [db.add(Rol(id_rol=rid, nombre_rol=rnombre)) for rid, rnombre in [(1, 'Administrador'), (2, 'Cliente'), (3, 'Conductor'), (4, 'Operador'), (5, 'Encargado de Bodega')] if not db.query(Rol).filter_by(id_rol=rid).first()]; db.commit(); print('¡Roles iniciales creados!')"
+     ```
 
-bash
-npm install
-Levanta el servidor de desarrollo:
+   * **Poblar tipos de envío:**
+     ```bash
+     python -c "from core.database import SessionLocal; from models.tipo_envio import TipoEnvio; db = SessionLocal(); db.add_all([TipoEnvio(id_tipenvio=1, descripcion='Envío Estándar'), TipoEnvio(id_tipenvio=2, descripcion='Envío Express'), TipoEnvio(id_tipenvio=3, descripcion='Carga Pesada')]) if not db.query(TipoEnvio).first() else None; db.commit(); print('¡Tipos de envío creados!')"
+     ```
 
-bash
-npm run dev
-El frontend estará en http://localhost:5173.
+   * **Crear el Administrador Principal:**
+     ```bash
+     python -c "from core.security import hash_password; from core.database import SessionLocal; from models.usuario import Usuario; from models.usuario_roles import UsuarioRol; db = SessionLocal(); u = Usuario(nombre='Admin', apellido='Principal', clave=hash_password('admin123'), correo='admin@onufast.com', telefono='0000000000', jornada='Completa'); db.add(u); db.commit(); db.refresh(u); db.add(UsuarioRol(id_usuario=u.id_usuario, id_rol=1)); db.commit(); print('¡Administrador creado con éxito!')"
+     ```
 
-🔑 Credenciales de Prueba
-👑 Administrador (Creado manualmente)
-Para crear el Super Administrador (necesario para ver el panel de Admin), con el entorno virtual de Python activado, ejecuta este comando:
+6. **Inicia el servidor Backend:**
+   ```bash
+   uvicorn main:app --reload
+   ```
+   * **API activa en:** `http://127.0.0.1:8000`
+   * **Documentación Swagger UI:** `http://127.0.0.1:8000/docs`
 
-bash
-python -c "from core.security import hash_password; from core.database import SessionLocal; from models.usuario import Usuario; from models.usuario_roles import UsuarioRol; db = SessionLocal(); u = Usuario(nombre='Admin', apellido='Principal', clave=hash_password('admin123'), correo='admin@onufast.com', telefono='0000000000', jornada='Completa'); db.add(u); db.commit(); db.refresh(u); r = UsuarioRol(id_usuario=u.id_usuario, id_rol=1); db.add(r); db.commit(); print('Administrador creado')"
-Correo: admin@onufast.com
+---
 
-Contraseña: admin123
+### 5. Configurar y Levantar el Frontend (React / Vite)
 
-🧑‍💼 Clientes (Creados por el script SQL)
-Correo: daniel@gmail.com | Contraseña: 123456
+1. Abre una **nueva ventana de terminal** y navega a la carpeta `frontend`:
+   ```bash
+   cd C:\Ruta\Al\Proyecto\ONUFAST_3407181\frontend
+   ```
 
-Correo: laura@gmail.com | Contraseña: 123456
+2. **Instala las dependencias de Node:**
+   ```bash
+   npm install
+   ```
 
-📂 Estructura del Proyecto
-text
+3. **Inicia el entorno de desarrollo:**
+   ```bash
+   npm run dev
+   ```
+   * **Interfaz web disponible en:** `http://localhost:5173`
+
+---
+
+## 🔑 Credenciales de Acceso
+
+### 👑 Administrador del Sistema
+* **Correo:** `admin@onufast.com`
+* **Contraseña:** `admin123`
+* **Acceso:** Total al panel de administración en `http://localhost:5173/admin`.
+
+### 🧑‍💼 Clientes de Prueba
+Puedes registrar nuevos clientes directamente desde la interfaz web de registro en:
+* `http://localhost:5173/registro`
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
 ONUFAST_3407181/
-├── backend/            # Código fuente de Python/FastAPI
-│   ├── core/           # Configuración de BD y Seguridad
-│   ├── db/             # Script SQL
-│   ├── models/         # Tablas de SQLAlchemy
-│   ├── routers/        # Endpoints de la API
-│   ├── schemas/        # Validaciones de Pydantic
-│   ├── main.py         # Punto de entrada del Backend
-│   └── requirements.txt
+├── backend/                  # Código fuente de Python / FastAPI
+│   ├── core/                 # Configuración de base de datos y seguridad JWT
+│   ├── db/                   # Scripts SQL y respaldos
+│   ├── models/               # Modelos y entidades ORM (SQLAlchemy)
+│   ├── routers/              # Endpoints y controladores de la API
+│   ├── schemas/              # Esquemas de validación de datos (Pydantic)
+│   ├── main.py               # Punto de entrada principal de FastAPI
+│   └── requirements.txt      # Dependencias de Python
 │
-├── frontend/           # Código fuente de React/Vite
-│   ├── public/         # Imágenes estáticas
-│   ├── src/            # Código fuente
-│   │   ├── app/        # App.jsx y main.jsx
-│   │   ├── features/   # Módulos (admin, auth, envios, usuario)
-│   │   ├── shared/     # API y componentes reutilizables
-│   │   └── styles/     # Archivos CSS
-│   ├── package.json
-│   └── vite.config.js
+├── frontend/                 # Aplicación web en React / Vite
+│   ├── public/               # Recursos e imágenes estáticas
+│   ├── src/                  # Código fuente de la interfaz
+│   │   ├── app/              # Configuración raíz (App.jsx, main.jsx)
+│   │   ├── features/         # Módulos funcionales (admin, auth, envios, usuario)
+│   │   ├── shared/           # Cliente Axios, rutas protegidas y componentes reutilizables
+│   │   └── styles/           # Hojas de estilo CSS globales y modulares
+│   ├── package.json          # Dependencias de Node.js
+│   └── vite.config.js        # Configuración de Vite y alias de rutas (@/)
 │
-└── README.md           # Este archivo
+└── README.md                 # Documentación general del proyecto
+```
