@@ -3,6 +3,7 @@ import { useState } from "react";
 import "./Conductor.css";
 
 import DashboardConductor from "./DashboardConductor";
+import MisRutas from "./MisRutas";
 
 
 export default function Conductor() {
@@ -95,7 +96,7 @@ export default function Conductor() {
           )}
 
           {seccionActiva === "rutas" && (
-            <h2>Mis rutas</h2>
+            <MisRutas />
           )}
 
           {seccionActiva === "entregas" && (

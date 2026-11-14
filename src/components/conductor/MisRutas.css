@@ -1,0 +1,316 @@
+
+.mis-rutas {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.mis-rutas-titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.rutas-etiqueta {
+  color: #c9252c;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+}
+
+.mis-rutas-titulo h1 {
+  color: #1a191f;
+  font-size: 27px;
+  margin: 8px 0;
+}
+
+.mis-rutas-titulo p {
+  color: #888;
+  font-size: 13px;
+  margin: 0;
+}
+
+.rutas-total {
+  background: white;
+  padding: 15px 22px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rutas-total span {
+  color: #888;
+  font-size: 12px;
+}
+
+.rutas-total strong {
+  font-size: 25px;
+  color: #c9252c;
+}
+
+/* RESUMEN */
+
+.rutas-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.ruta-resumen-card {
+  background: white;
+  padding: 20px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+}
+
+.ruta-resumen-icono {
+  font-size: 27px;
+}
+
+.ruta-resumen-card p {
+  color: #888;
+  font-size: 12px;
+  margin: 0 0 6px;
+}
+
+.ruta-resumen-card strong {
+  color: #1a191f;
+  font-size: 23px;
+}
+
+/* LISTADO */
+
+.rutas-listado {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+}
+
+.rutas-listado-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.rutas-listado-header h2 {
+  color: #1a191f;
+  font-size: 19px;
+  margin: 0 0 6px;
+}
+
+.rutas-listado-header p {
+  color: #888;
+  font-size: 12px;
+  margin: 0;
+}
+
+.rutas-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rutas-filtros button {
+  background: #f3f3f3;
+  border: none;
+  border-radius: 7px;
+  padding: 9px 13px;
+  color: #666;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.rutas-filtros button:hover,
+.rutas-filtros button.filtro-activo {
+  background: #c9252c;
+  color: white;
+}
+
+/* TARJETAS */
+
+.rutas-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.ruta-card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 20px;
+  transition: 0.2s;
+}
+
+.ruta-card:hover {
+  border-color: #c9252c;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+.ruta-card-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 23px;
+}
+
+.ruta-card-superior > strong {
+  color: #1a191f;
+  font-size: 14px;
+}
+
+.ruta-estado {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.ruta-estado.pendiente {
+  background: #fff1d9;
+  color: #b77b13;
+}
+
+.ruta-estado.proceso {
+  background: #e4efff;
+  color: #3269b3;
+}
+
+.ruta-estado.finalizada {
+  background: #e4f5e9;
+  color: #268343;
+}
+
+/* RECORRIDO */
+
+.ruta-recorrido {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 23px;
+}
+
+.ruta-punto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.punto-origen,
+.punto-destino {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.punto-origen {
+  background: #c9252c;
+}
+
+.punto-destino {
+  background: #29985b;
+}
+
+.ruta-punto div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ruta-punto small {
+  color: #999;
+  font-size: 11px;
+}
+
+.ruta-punto strong {
+  color: #333;
+  font-size: 14px;
+}
+
+.ruta-linea {
+  height: 20px;
+  border-left: 2px dashed #ddd;
+  margin: 3px 0 3px 5px;
+}
+
+/* DETALLES */
+
+.ruta-detalles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding-top: 17px;
+  border-top: 1px solid #eee;
+}
+
+.ruta-detalles div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ruta-detalles small {
+  color: #999;
+  font-size: 11px;
+}
+
+.ruta-detalles strong {
+  color: #444;
+  font-size: 12px;
+}
+
+/* ESTADO VACÍO */
+
+.rutas-vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 15px;
+}
+
+.rutas-vacio span {
+  font-size: 35px;
+}
+
+.rutas-vacio h3 {
+  color: #333;
+}
+
+.rutas-vacio p {
+  color: #888;
+  font-size: 13px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+  .rutas-resumen {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rutas-tarjetas {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 550px) {
+  .mis-rutas-titulo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .rutas-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .rutas-listado {
+    padding: 16px;
+  }
+}
