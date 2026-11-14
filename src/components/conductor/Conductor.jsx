@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import "./Conductor.css";
+import "./CSS/Conductor.css";
 
 import DashboardConductor from "./DashboardConductor";
 import MisRutas from "./MisRutas";

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import "./MisEntregas.css";
+import "./CSS/MisEntregas.css";
 
 export default function MisEntregas() {
   const [busqueda, setBusqueda] = useState("");

@@ -1,5 +1,5 @@
 
-import "./DashboardConductor.css";
+import "./CSS/DashboardConductor.css";
 
 export default function DashboardConductor() {
 

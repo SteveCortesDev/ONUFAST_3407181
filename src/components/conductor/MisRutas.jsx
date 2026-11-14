@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import "./MisRutas.css";
+import "./CSS/MisRutas.css";
 
 export default function MisRutas() {
   const [filtro, setFiltro] = useState("Todas");

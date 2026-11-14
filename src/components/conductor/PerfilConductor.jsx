@@ -1,5 +1,5 @@
 
-import "./PerfilConductor.css";
+import "./CSS/PerfilConductor.css";
 
 export default function PerfilConductor() {
   const nombre =
