@@ -21,14 +21,19 @@ export default function PerfilConductor() {
       <div className="perfil-card">
 
         <div className="perfil-portada">
+
           <div className="perfil-avatar">
-            {nombre.charAt(0).toUpperCase()}
+            <img
+              src="/public/foto-perfil.avif"
+              alt="Foto de perfil del conductor"
+            />
           </div>
 
           <div className="perfil-nombre">
             <h2>{nombre}</h2>
             <span>Conductor ONUFAST</span>
           </div>
+
         </div>
 
         <div className="perfil-informacion">

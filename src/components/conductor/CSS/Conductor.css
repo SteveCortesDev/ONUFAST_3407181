@@ -53,6 +53,23 @@
   margin: 0 auto 12px;
 }
 
+.foto-perfil {
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 15px auto;
+  background-color: #f1f1f1;
+  border: 2px solid white;
+}
+
+.foto-perfil img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .conductor-info h3 {
   margin: 5px 0;
   font-size: 17px;

@@ -33,7 +33,13 @@ export default function Conductor() {
         </div>
 
         <div className="conductor-info">
-          <div className="conductor-avatar">C</div>
+          <div className="foto-perfil">
+            <img
+                src="/public/foto-perfil.avif"
+                alt="Foto de perfil del conductor"
+                
+            />
+          </div>
           <h3>Conductor</h3>
           <span>Panel de trabajo</span>
         </div>
