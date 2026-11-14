@@ -14,6 +14,7 @@ import Servicios from './pages/Servicios';
 import Ubicacion from './pages/Ubicacion';
 import Admin from './pages/Admin';
 import Usuario from "./components/usuario/Usuario";
+import Conductor from "./components/conductor/Conductor";
 
 import api from './api';
 
@@ -266,11 +267,20 @@ function AppContent() {
             ═══════════════════════════════════ */}
 
             <Routes>
+                {/* ═══════════════════════════════════
+                    RUTAS INTERFAZ CONDUCTOR
+                ═══════════════════════════════════ */}
+
+
+                <Route path="/conductor" element={<Conductor />} />
 
 
                 {/* ═══════════════════════════════
                     PÁGINA PRINCIPAL
                 ═══════════════════════════════ */}
+
+
+                
 
                 <Route
                     path="/"
