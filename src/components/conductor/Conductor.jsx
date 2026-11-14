@@ -5,6 +5,7 @@ import "./Conductor.css";
 import DashboardConductor from "./DashboardConductor";
 import MisRutas from "./MisRutas";
 import MisEntregas from "./MisEntregas";
+import PerfilConductor from "./PerfilConductor";
 
 
 export default function Conductor() {
@@ -105,7 +106,7 @@ export default function Conductor() {
           )}
 
           {seccionActiva === "perfil" && (
-            <h2>Mi perfil</h2>
+            <PerfilConductor/>
           )}
 
         </section>
