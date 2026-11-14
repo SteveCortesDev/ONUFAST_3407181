@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import './responsive.css';
 
+
 import AuthModal from './components/AuthModal';
 import RastreoRapido from './components/RastreoRapido';
 import ComoFunciona from './components/ComoFunciona';
@@ -38,6 +39,8 @@ const imagenesCarrusel = [
 // ─────────────────────────────────────────────
 
 function AppContent() {
+    
+    
 
     // Estados del carrusel
     const [indiceActivo, setIndiceActivo] = useState(0);
@@ -51,11 +54,15 @@ function AppContent() {
     // Estado de conexión con la base de datos
     const [dbStatus, setDbStatus] = useState(null);
 
-    const navigate = useNavigate();
     const location = useLocation();
+    const esPanelConductor = location.pathname === "/conductor";
+    const esPanelUsuario = location.pathname === "/usuario";
 
-    const esPanelUsuario = location.pathname === '/usuario';
     const estaLogueado = !!localStorage.getItem('token');
+
+    const navigate = useNavigate();
+
+    
 
 
     // ─────────────────────────────────────────
@@ -137,7 +144,7 @@ function AppContent() {
             {/* ═══════════════════════════════════
                 HEADER / NAVBAR
             ═══════════════════════════════════ */}
-            {!esPanelUsuario && (
+            {!esPanelUsuario && !esPanelConductor && (
 
     <header className="onufast-header">
 
@@ -588,20 +595,20 @@ function AppContent() {
 
             {/* FOOTER */}
 
-            {!esPanelUsuario && <Footer />}
+            {!esPanelUsuario && !esPanelConductor && <Footer />}
 
 
             {/* ═══════════════════════════════════
                 MODAL DE AUTENTICACIÓN
             ═══════════════════════════════════ */}
 
-            {!esPanelUsuario && (
+            {!esPanelUsuario && !esPanelConductor && (
                 <AuthModal
                     isOpen={mostrarModal}
                     onClose={() => setMostrarModal(false)}
                     onLogin={handleLogin}
                 />
-)}
+            )}
 
         </div>
 
