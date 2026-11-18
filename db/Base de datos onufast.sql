@@ -249,7 +249,8 @@ INSERT INTO rutas
     ciudad_destino,
     cantidad_paquetes,
     codigo_ruta,
-    tipo_vehiculo
+    tipo_vehiculo,
+	nombre_conductor
 )
 VALUES
 (
@@ -260,7 +261,8 @@ VALUES
     'Tunja',
     2,
     'RUTA-001',
-    'Camion'
+    'Camion',
+	'Camilo'
 ),
 (
     '2026-08-31 09:00:00',
@@ -270,7 +272,8 @@ VALUES
     'Ibague',
     3,
     'RUTA-002',
-    'Camion'
+    'Camion',
+	'Nicolas'
 ),
 (
     '2026-08-31 10:00:00',
@@ -280,7 +283,8 @@ VALUES
     'Chia',
     1,
     'RUTA-003',
-    'Moto'
+    'Moto',
+	'Santiago'
 ),
 (
     '2026-08-31 11:00:00',
@@ -290,8 +294,10 @@ VALUES
     'Manizales',
     2,
     'RUTA-004',
-    'Camion'
+    'Camion',
+	'Andres'
 );
+
 
 
 INSERT INTO envio
@@ -509,9 +515,6 @@ VALUES
     35700.00,
     'Transferencia'
 );
-
-
-
 
 
 
