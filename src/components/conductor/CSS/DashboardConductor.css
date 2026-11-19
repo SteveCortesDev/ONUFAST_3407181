@@ -1,116 +1,332 @@
 
+/* ==============================
+   DASHBOARD CONDUCTOR
+================================= */
+
 .dashboard-conductor {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 26px;
+  width: 100%;
+  color: #292830;
 }
 
-/* BIENVENIDA */
+/* ==============================
+   BIENVENIDA
+================================= */
 
 .dashboard-bienvenida {
-  background: linear-gradient(120deg, #1a191f, #34313b);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 220px;
+  padding: 35px 40px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, #1a191f, #302c37);
   color: white;
-  padding: 30px;
-  border-radius: 14px;
+}
+
+.dashboard-bienvenida-texto {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+}
+
+.dashboard-etiqueta {
+  display: inline-block;
+  color: #ff8589;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.dashboard-bienvenida h1 {
+  font-size: 30px;
+  margin: 15px 0 10px;
+  font-weight: 700;
+}
+
+.dashboard-bienvenida-texto > p {
+  max-width: 460px;
+  color: #d1ced5;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.dashboard-fecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 9px 13px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  color: #e6e3e9;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+/* Ilustración */
+
+.bienvenida-ilustracion {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+}
+
+.bienvenida-circulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 145px;
+  height: 145px;
+  border-radius: 50%;
+  background: rgba(201, 37, 44, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 75px;
+}
+
+.bienvenida-decoracion {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  font-size: 20px;
+}
+
+.decoracion-1 {
+  top: 12px;
+  right: 5px;
+}
+
+.decoracion-2 {
+  bottom: 5px;
+  left: 3px;
+}
+
+/* ==============================
+   SECCIONES
+================================= */
+
+.dashboard-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.dashboard-titulo-seccion {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.dashboard-etiqueta {
-  color: #ff7777;
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: 2px;
+.dashboard-titulo-seccion h2 {
+  margin: 0 0 6px;
+  color: #292830;
+  font-size: 19px;
 }
 
-.dashboard-bienvenida h1 {
-  font-size: 27px;
-  margin: 12px 0;
+.dashboard-titulo-seccion p {
+  margin: 0;
+  color: #8b8992;
+  font-size: 13px;
 }
 
-.dashboard-bienvenida p {
-  color: #d0cdd3;
-  font-size: 14px;
-}
-
-.bienvenida-icono {
-  font-size: 65px;
-}
-
-/* ESTADÍSTICAS */
+/* ==============================
+   ESTADÍSTICAS
+================================= */
 
 .estadisticas-conductor {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
 }
 
 .estadistica-card {
-  background: white;
-  padding: 22px;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #f0eef1;
+  border-radius: 15px;
+  padding: 21px;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.estadistica-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.07);
 }
 
 .estadistica-superior {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 10px;
 }
 
-.estadistica-superior span {
-  color: #666;
+.estadistica-titulo {
+  color: #77747e;
   font-size: 12px;
+  line-height: 1.5;
 }
 
 .estadistica-icono {
-  font-size: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  font-size: 19px;
 }
 
-.estadistica-card h2 {
-  color: #1a191f;
-  font-size: 30px;
-  margin: 18px 0 5px;
+.estadistica-icono.rojo {
+  background: #fff0f0;
+  color: #c9252c;
+}
+
+.estadistica-icono.amarillo {
+  background: #fff6e4;
+}
+
+.estadistica-icono.verde {
+  background: #eaf8ef;
+  color: #27864b;
+}
+
+.estadistica-icono.azul {
+  background: #eaf2ff;
+}
+
+.estadistica-card h3 {
+  margin: 17px 0 6px;
+  color: #25232b;
+  font-size: 29px;
+  font-weight: 750;
 }
 
 .estadistica-card p {
-  color: #999;
+  margin: 0;
+  color: #a09da5;
   font-size: 12px;
+}
+
+/* ==============================
+   JORNADA
+================================= */
+
+.jornada-conductor {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 23px;
+  background: #ffffff;
+  border: 1px solid #f0eef1;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
+}
+
+.jornada-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: #fff0f0;
+  font-size: 23px;
+}
+
+.jornada-info {
+  flex: 1;
+}
+
+.jornada-info h3 {
+  color: #302e36;
+  font-size: 14px;
+  margin: 0 0 5px;
+}
+
+.jornada-info p {
+  color: #898690;
+  font-size: 12px;
+  line-height: 1.6;
   margin: 0;
 }
 
-/* TABLA DE RUTAS */
+.jornada-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border-radius: 30px;
+  background: #f2f3f4;
+  color: #6d6b73;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.jornada-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #398b57;
+}
+
+/* ==============================
+   TABLA DE RUTAS
+================================= */
 
 .rutas-conductor-card {
-  background: white;
-  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #f0eef1;
+  border-radius: 15px;
   padding: 25px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
 }
 
 .rutas-card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  justify-content: space-between;
+  margin-bottom: 23px;
 }
 
 .rutas-card-header h2 {
-  color: #1a191f;
-  font-size: 19px;
+  color: #292830;
+  font-size: 18px;
   margin: 0 0 7px;
 }
 
 .rutas-card-header p {
-  color: #888;
-  font-size: 13px;
+  color: #8b8992;
+  font-size: 12px;
   margin: 0;
 }
 
-.rutas-icono {
-  font-size: 25px;
+.rutas-icono-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: #fff0f0;
+  font-size: 22px;
 }
 
 .tabla-rutas {
@@ -121,102 +337,388 @@
 .tabla-rutas-encabezado,
 .tabla-rutas-fila {
   display: grid;
-  grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr;
-  min-width: 570px;
+  grid-template-columns: 1.1fr 1fr 1fr 1.15fr 1fr;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  min-width: 610px;
 }
 
 .tabla-rutas-encabezado {
-  background: #f5f5f5;
-  padding: 15px;
-  color: #777;
-  font-size: 12px;
-  font-weight: bold;
+  padding: 14px 16px;
+  background: #f8f7f9;
+  border-radius: 9px;
+  color: #88858f;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .tabla-rutas-fila {
-  padding: 17px 15px;
-  border-bottom: 1px solid #eee;
-  color: #555;
-  font-size: 13px;
+  padding: 17px 16px;
+  border-bottom: 1px solid #f1eff2;
+  color: #77747e;
+  font-size: 12px;
+}
+
+.tabla-rutas-fila:last-child {
+  border-bottom: none;
 }
 
 .tabla-rutas-fila strong {
-  color: #1a191f;
+  color: #302e36;
+  font-size: 12px;
 }
+
+.tabla-rutas-fila > span {
+  min-width: 0;
+}
+
+/* Estados */
 
 .estado-proceso,
 .estado-pendiente {
-  padding: 6px 9px;
-  border-radius: 20px;
-  font-size: 11px;
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 30px;
+  font-size: 10px;
+  font-weight: 650;
   white-space: nowrap;
 }
 
 .estado-proceso {
-  background: #e4f5e9;
-  color: #268343;
+  background: #e9f7ee;
+  color: #34824d;
 }
 
 .estado-pendiente {
-  background: #fff1d9;
-  color: #b77b13;
+  background: #fff4df;
+  color: #b27a21;
 }
 
-/* AVISO */
+/* ==============================
+   AVISO
+================================= */
 
 .conductor-aviso {
-  background: #fff;
-  border-left: 4px solid #c9252c;
-  border-radius: 8px;
-  padding: 18px;
   display: flex;
   align-items: flex-start;
-  gap: 13px;
+  gap: 14px;
+  padding: 19px 21px;
+  border: 1px solid #f1e4e4;
+  border-left: 4px solid #c9252c;
+  border-radius: 11px;
+  background: #ffffff;
 }
 
-.conductor-aviso > span {
-  font-size: 22px;
+.aviso-icono {
+  font-size: 21px;
 }
 
 .conductor-aviso strong {
-  color: #333;
-  font-size: 13px;
+  color: #343139;
+  font-size: 12px;
 }
 
 .conductor-aviso p {
-  color: #888;
+  color: #898690;
   font-size: 12px;
-  margin-bottom: 0;
+  line-height: 1.6;
+  margin: 6px 0 0;
 }
 
-/* RESPONSIVE */
+/* ==============================
+   RESPONSIVE
+================================= */
 
-@media (max-width: 1100px) {
+@media (max-width: 1150px) {
   .estadisticas-conductor {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 750px) {
+  .dashboard-bienvenida {
+    padding: 27px;
+  }
+
+  .bienvenida-ilustracion {
+    width: 130px;
+    height: 130px;
+    margin-right: 0;
+  }
+
+  .bienvenida-circulo {
+    width: 110px;
+    height: 110px;
+    font-size: 57px;
+  }
+
+  .bienvenida-decoracion {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .dashboard-bienvenida h1 {
+    font-size: 24px;
+  }
+
+  .jornada-conductor {
+    flex-wrap: wrap;
+  }
+
+  .jornada-estado {
+    margin-left: 64px;
+  }
+}
+
+@media (max-width: 550px) {
   .estadisticas-conductor {
     grid-template-columns: 1fr;
   }
 
   .dashboard-bienvenida {
-    padding: 22px;
+    min-height: auto;
+    padding: 24px 20px;
+  }
+
+  .bienvenida-ilustracion {
+    display: none;
   }
 
   .dashboard-bienvenida h1 {
-    font-size: 21px;
+    font-size: 23px;
   }
 
-  .bienvenida-icono {
-    font-size: 40px;
+  .dashboard-bienvenida-texto > p {
+    font-size: 13px;
+  }
+
+  .dashboard-titulo-seccion h2 {
+    font-size: 17px;
   }
 
   .rutas-conductor-card {
+    padding: 17px;
+  }
+
+  .jornada-conductor {
+    padding: 17px;
+  }
+
+  .jornada-estado {
+    margin-left: 0;
+  }
+
+  .conductor-aviso {
     padding: 16px;
+  }
+}
+
+
+
+/* ==================================
+   MEJORAS VISUALES - DASHBOARD
+   ================================== */
+
+/* BANNER DE BIENVENIDA */
+.dashboard-bienvenida {
+  min-height: 245px;
+  padding: 38px 45px;
+}
+
+.dashboard-bienvenida h1 {
+  font-size: 34px;
+  margin: 16px 0 12px;
+}
+
+.dashboard-bienvenida-texto > p {
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 520px;
+}
+
+.dashboard-etiqueta {
+  font-size: 12px;
+}
+
+.dashboard-fecha {
+  padding: 11px 15px;
+  font-size: 13px;
+  margin-top: 22px;
+}
+
+.bienvenida-ilustracion {
+  width: 210px;
+  height: 210px;
+}
+
+.bienvenida-circulo {
+  width: 165px;
+  height: 165px;
+  font-size: 85px;
+}
+
+/* TITULOS DE SECCION */
+.dashboard-titulo-seccion h2 {
+  font-size: 21px;
+}
+
+.dashboard-titulo-seccion p {
+  font-size: 14px;
+}
+
+/* TARJETAS DE ESTADISTICAS */
+.estadisticas-conductor {
+  gap: 20px;
+}
+
+.estadistica-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 155px;
+  padding: 23px;
+}
+
+.estadistica-superior {
+  width: 100%;
+}
+
+.estadistica-titulo {
+  font-size: 13px;
+  font-weight: 600;
+  color: #686570;
+}
+
+.estadistica-icono {
+  width: 46px;
+  height: 46px;
+  font-size: 21px;
+  border-radius: 13px;
+}
+
+.estadistica-card h3 {
+  font-size: 34px;
+  margin: 15px 0 5px;
+}
+
+.estadistica-card p {
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+/* JORNADA */
+.jornada-conductor {
+  padding: 23px 26px;
+  gap: 18px;
+}
+
+.jornada-icono {
+  width: 52px;
+  height: 52px;
+  font-size: 24px;
+}
+
+.jornada-info h3 {
+  font-size: 15px;
+}
+
+.jornada-info p {
+  font-size: 13px;
+}
+
+.jornada-estado {
+  padding: 11px 15px;
+  font-size: 12px;
+}
+
+/* TABLA DE RUTAS */
+.rutas-conductor-card {
+  padding: 28px;
+}
+
+.rutas-card-header {
+  margin-bottom: 26px;
+}
+
+.rutas-card-header h2 {
+  font-size: 20px;
+}
+
+.rutas-card-header p {
+  font-size: 13px;
+}
+
+.tabla-rutas-encabezado,
+.tabla-rutas-fila {
+  gap: 15px;
+  min-width: 650px;
+}
+
+.tabla-rutas-encabezado {
+  padding: 17px;
+  font-size: 12px;
+}
+
+.tabla-rutas-fila {
+  padding: 20px 17px;
+  font-size: 13px;
+}
+
+.tabla-rutas-fila strong {
+  font-size: 13px;
+}
+
+.estado-proceso,
+.estado-pendiente {
+  padding: 7px 11px;
+  font-size: 11px;
+}
+
+/* AVISO */
+.conductor-aviso {
+  padding: 22px 24px;
+}
+
+.conductor-aviso strong {
+  font-size: 14px;
+}
+
+.conductor-aviso p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ADAPTACION PARA TABLET */
+@media (max-width: 1100px) {
+  .estadistica-card {
+    min-height: 145px;
+  }
+
+  .dashboard-bienvenida {
+    padding: 30px;
+  }
+}
+
+/* ADAPTACION PARA CELULAR */
+@media (max-width: 550px) {
+  .dashboard-bienvenida {
+    padding: 24px;
+  }
+
+  .dashboard-bienvenida h1 {
+    font-size: 25px;
+  }
+
+  .estadistica-card {
+    min-height: 135px;
+  }
+
+  .estadistica-card h3 {
+    font-size: 30px;
+  }
+
+  .rutas-conductor-card {
+    padding: 18px;
   }
 }
