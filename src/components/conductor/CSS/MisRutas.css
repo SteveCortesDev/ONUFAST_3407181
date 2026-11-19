@@ -612,3 +612,353 @@
     gap: 16px 10px;
   }
 }
+
+
+/* ==========================================
+   MEJORAS VISUALES - MIS ENTREGAS ONUFAST
+========================================== */
+
+/* CONTENEDOR GENERAL */
+.mis-entregas {
+  gap: 28px;
+}
+
+/* ENCABEZADO */
+.entregas-titulo {
+  gap: 25px;
+}
+
+.entregas-etiqueta {
+  font-size: 12px;
+  letter-spacing: 1.8px;
+}
+
+.entregas-titulo h1 {
+  font-size: 32px;
+  margin: 12px 0;
+}
+
+.entregas-titulo p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* TOTAL DE PAQUETES */
+.entregas-total {
+  min-width: 140px;
+  padding: 20px 24px;
+  border: 1px solid #f0eef1;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
+}
+
+.entregas-total span {
+  font-size: 13px;
+}
+
+.entregas-total strong {
+  font-size: 30px;
+}
+
+/* RESUMEN DE ESTADOS */
+.entregas-resumen {
+  gap: 20px;
+}
+
+.entrega-resumen-card {
+  min-height: 115px;
+  padding: 23px;
+  border: 1px solid #f0eef1;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.entrega-resumen-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.07);
+}
+
+.entrega-resumen-card > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: #fff0f0;
+  font-size: 23px;
+}
+
+.entrega-resumen-card p {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.entrega-resumen-card strong {
+  font-size: 28px;
+}
+
+/* CONTENEDOR DEL LISTADO */
+.entregas-listado {
+  padding: 28px;
+  border: 1px solid #f0eef1;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
+}
+
+.entregas-listado-header {
+  margin-bottom: 5px;
+}
+
+.entregas-listado-header h2 {
+  font-size: 21px;
+  margin-bottom: 8px;
+}
+
+.entregas-listado-header p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* BUSCADOR Y FILTRO */
+.entregas-controles {
+  gap: 16px;
+  margin: 25px 0;
+}
+
+.entregas-buscador {
+  max-width: 600px;
+  padding: 0 16px;
+  border-radius: 10px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.entregas-buscador:focus-within {
+  border-color: #c9252c;
+  box-shadow: 0 0 0 3px rgba(201, 37, 44, 0.08);
+}
+
+.entregas-buscador span {
+  font-size: 25px;
+}
+
+.entregas-buscador input {
+  padding: 15px 0;
+  font-size: 13px;
+}
+
+.entregas-buscador input::placeholder {
+  color: #aaa;
+}
+
+.entregas-controles select {
+  min-width: 175px;
+  padding: 13px 15px;
+  font-size: 13px;
+  border-radius: 9px;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.entregas-controles select:focus {
+  border-color: #c9252c;
+  box-shadow: 0 0 0 3px rgba(201, 37, 44, 0.08);
+}
+
+/* TARJETAS DE PAQUETES */
+.entregas-tarjetas {
+  gap: 20px;
+}
+
+.entrega-card {
+  padding: 24px;
+  border: 1px solid #eee9ed;
+  border-radius: 14px;
+  background: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+}
+
+.entrega-card:hover {
+  transform: translateY(-2px);
+  border-color: #e7c5c7;
+  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.055);
+}
+
+/* ENCABEZADO DE CADA PAQUETE */
+.entrega-card-header {
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+.entrega-codigo {
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+.entrega-card-header h3 {
+  font-size: 17px;
+  margin-top: 9px;
+}
+
+.entrega-estado {
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+/* INFORMACIÓN DEL DESTINATARIO */
+.entrega-informacion {
+  gap: 20px;
+  padding: 22px 0;
+}
+
+.entrega-informacion div {
+  gap: 7px;
+}
+
+.entrega-informacion span {
+  font-size: 12px;
+}
+
+.entrega-informacion strong {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* DIRECCIÓN */
+.entrega-direccion {
+  padding: 14px;
+  background: #faf9fb;
+  border-radius: 9px;
+}
+
+/* BOTONES DE ACCIÓN */
+.entrega-acciones {
+  padding-top: 18px;
+}
+
+.entrega-acciones button {
+  padding: 13px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.entrega-acciones button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(28, 24, 35, 0.12);
+}
+
+.btn-iniciar-entrega {
+  background: #1a191f;
+}
+
+.btn-finalizar-entrega {
+  background: #c9252c;
+}
+
+.entrega-completada {
+  padding: 13px;
+  font-size: 13px;
+  border-radius: 9px;
+}
+
+/* SIN RESULTADOS */
+.entregas-vacio {
+  padding: 55px 20px;
+  border: 1px dashed #e7e3e8;
+  border-radius: 12px;
+  background: #faf9fb;
+}
+
+.entregas-vacio span {
+  font-size: 42px;
+}
+
+.entregas-vacio h3 {
+  font-size: 17px;
+  margin: 15px 0 8px;
+}
+
+.entregas-vacio p {
+  font-size: 13px;
+}
+
+/* TABLET */
+@media (max-width: 1000px) {
+  .entregas-tarjetas {
+    grid-template-columns: 1fr;
+  }
+
+  .entrega-card {
+    padding: 23px;
+  }
+}
+
+/* CELULAR */
+@media (max-width: 650px) {
+  .mis-entregas {
+    gap: 21px;
+  }
+
+  .entregas-titulo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .entregas-titulo h1 {
+    font-size: 27px;
+  }
+
+  .entregas-total {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .entregas-resumen {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .entrega-resumen-card {
+    min-height: 90px;
+  }
+
+  .entregas-listado {
+    padding: 18px;
+  }
+
+  .entregas-controles {
+    flex-direction: column;
+  }
+
+  .entregas-buscador {
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .entregas-controles select {
+    width: 100%;
+    min-width: 0;
+    padding: 13px;
+  }
+
+  .entrega-card {
+    padding: 19px;
+  }
+
+  .entrega-card-header h3 {
+    font-size: 15px;
+  }
+
+  .entrega-informacion {
+    gap: 16px 12px;
+  }
+
+  .entrega-informacion strong {
+    font-size: 12px;
+  }
+}
+
