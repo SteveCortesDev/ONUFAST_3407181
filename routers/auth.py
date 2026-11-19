@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from sqlalchemy import func
 from sqlalchemy.orm import Session
+from models.usuario_roles import UsuarioRol
 
 from schemas.schemas import (
     RegistroRequest,
@@ -24,7 +26,7 @@ router = APIRouter(prefix="/auth", tags=["Autenticación"])
 # POST /auth/registro
 # ─────────────────────────────────────────────────────────────
 @router.post(
-    "/registro",
+    '/registro',
     response_model=RegistroResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Crear cuenta de usuario"
@@ -46,36 +48,52 @@ def registro(
             detail="El correo ya está registrado"
         )
 
-    # Crear usuario
-    usuario = Usuario(
-        nombre=payload.nombre,
-        apellido=payload.apellido,
-        clave=hash_password(payload.contrasena),
-        correo=payload.correo,
-        telefono=payload.telefono or "",
-        jornada="No definida"
-    )
+    try:
+        # Crear usuario
+        usuario = Usuario(
+            nombre=payload.nombre,
+            apellido=payload.apellido,
+            clave=hash_password(payload.contrasena),
+            correo=payload.correo,
+            telefono=payload.telefono or "",
+            jornada="No definida"
+        )
 
-    db.add(usuario)
-    db.commit()
-    db.refresh(usuario)
+        db.add(usuario)
+        db.flush()  # Obtiene el ID sin confirmar todavía la transacción
 
-    # Crear documento relacionado con el usuario
-    documento = Documento(
-        tipo_documento=payload.tipo_documento,
-        num_documento=payload.num_documento,
-        id_usuario=usuario.id_usuario
-    )
+        # Crear documento
+        documento = Documento(
+            tipo_documento=payload.tipo_documento,
+            num_documento=payload.num_documento,
+            id_usuario=usuario.id_usuario
+        )
 
-    db.add(documento)
-    db.commit()
+        # Asignar rol Cliente (ID 2)
+        usuario_rol = UsuarioRol(
+            id_usuario=usuario.id_usuario,
+            id_rol=2
+        )
 
-    return RegistroResponse(
-        id_usuario=usuario.id_usuario,
-        nombre=f"{usuario.nombre} {usuario.apellido}",
-        correo=usuario.correo
-    )
+        db.add(documento)
+        db.add(usuario_rol)
 
+        # Guardar todo
+        db.commit()
+        db.refresh(usuario)
+
+        return RegistroResponse(
+            id_usuario=usuario.id_usuario,
+            nombre=f"{usuario.nombre} {usuario.apellido}",
+            correo=usuario.correo
+        )
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="No fue posible completar el registro"
+        )
 
 # ─────────────────────────────────────────────────────────────
 # POST /auth/login
@@ -89,15 +107,18 @@ def login(
     payload: LoginRequest,
     db: Session = Depends(get_db)
 ):
-    # Buscar usuario en PostgreSQL
+    # Buscar usuario por nombre completo
+    nombre_completo = " ".join(payload.nombre.split())
+
     usuario = (
-        db.query(Usuario)
-        .filter(
-            Usuario.nombre == payload.nombre.split(" ")[0],
-            Usuario.apellido == " ".join(payload.nombre.split(" ")[1:])
-        )
-        .first()
+    db.query(Usuario)
+    .filter(
+        func.lower(
+            func.concat(Usuario.nombre, " ", Usuario.apellido)
+        ) == nombre_completo.lower()
     )
+    .first()
+)
 
     # Verificar usuario y contraseña
     if not usuario or not verify_password(

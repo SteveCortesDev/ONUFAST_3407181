@@ -88,13 +88,38 @@ function AppContent() {
     // LOGIN
     // ─────────────────────────────────────────
 
-    const handleLogin = (usuario) => {
+    const handleLogin = async (usuario) => {
 
-        console.log('Usuario autenticado:', usuario);
+    console.log('Usuario autenticado:', usuario);
 
+    try {
+        // Consultar el perfil del usuario autenticado
+        const respuesta = await api.get('/usuarios/perfil');
+
+        // Obtener los roles del usuario
+        const roles = respuesta.data.roles || [];
+
+        console.log('Roles del usuario:', roles);
+
+        // Redirigir según el rol
+        if (roles.includes('Administrador')) {
+            navigate('/admin');
+        } 
+        else if (roles.includes('Conductor') || roles.includes('Conductor Auxiliar')) {
+            navigate('/conductor');
+        } 
+        else {
+            navigate('/usuario');
+        }
+
+    } catch (error) {
+        console.error('Error al consultar los roles:', error);
+
+        // Si falla la consulta, enviar al panel de usuario
         navigate('/usuario');
+    }
 
-    };
+};
 
 
     // ─────────────────────────────────────────

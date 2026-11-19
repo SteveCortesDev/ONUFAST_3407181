@@ -1,48 +1,56 @@
 
+import { useEffect, useState } from "react";
+import api from "../../api";
 import "./CSS/PerfilConductor.css";
 
 export default function PerfilConductor() {
-  const obtenerDato = (...claves) => {
-    for (const clave of claves) {
-      const valor = localStorage.getItem(clave);
-      if (valor) return valor;
-    }
-    return "No disponible";
-  };
+  const [perfil, setPerfil] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
 
-  const nombre =
-    obtenerDato("nombre_usuario", "nombre") !== "No disponible"
-      ? obtenerDato("nombre_usuario", "nombre")
-      : "Conductor";
+  useEffect(() => {
+    const cargarPerfil = async () => {
+      try {
+        const respuesta = await api.get("/usuarios/perfil");
+        setPerfil(respuesta.data);
+      } catch (error) {
+        console.error("Error al cargar el perfil:", error);
+        setError("No fue posible cargar tu información.");
+      } finally {
+        setCargando(false);
+      }
+    };
 
-  const idUsuario = obtenerDato("id_usuario");
-  const correo = obtenerDato("correo_usuario", "correo", "email");
-  const telefono = obtenerDato("telefono_usuario", "telefono");
-  const jornada = obtenerDato("jornada_usuario", "jornada");
+    cargarPerfil();
+  }, []);
 
-  const datos = [
-    { icono: "🪪", titulo: "Identificación", valor: idUsuario },
-    { icono: "✉️", titulo: "Correo electrónico", valor: correo },
-    { icono: "📱", titulo: "Teléfono", valor: telefono },
-    { icono: "🕒", titulo: "Jornada de trabajo", valor: jornada },
-    { icono: "🚚", titulo: "Rol asignado", valor: "Conductor" },
-    { icono: "🏢", titulo: "Empresa", valor: "ONUFAST" },
-  ];
+  if (cargando) {
+    return (
+      <div className="perfil-conductor">
+        <p className="perfil-mensaje">Cargando información del perfil...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="perfil-conductor">
+        <p className="perfil-error">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="perfil-conductor">
 
       <div className="perfil-titulo">
-        <span className="perfil-etiqueta">CUENTA Y DATOS PERSONALES</span>
         <h2>Mi perfil</h2>
         <p>Consulta tu información personal y datos de usuario.</p>
       </div>
 
       <div className="perfil-card">
 
-        {/* ENCABEZADO DEL PERFIL */}
         <div className="perfil-portada">
-
           <div className="perfil-avatar">
             <img
               src="/foto-perfil.avif"
@@ -51,64 +59,70 @@ export default function PerfilConductor() {
           </div>
 
           <div className="perfil-nombre">
-            <span className="perfil-rol">PERFIL DE CONDUCTOR</span>
-            <h2>{nombre}</h2>
-            <p>Conductor ONUFAST</p>
-
-            <span className="perfil-estado">
-              <span className="perfil-punto-activo"></span>
-              Cuenta activa
-            </span>
+            <h2>{perfil.nombre}</h2>
+            <span>Conductor ONUFAST</span>
           </div>
-
-          <div className="perfil-portada-icono">
-            🚚
-          </div>
-
         </div>
 
-        {/* INFORMACIÓN */}
         <div className="perfil-informacion">
-
-          <div className="perfil-informacion-header">
-            <div>
-              <h3>Información personal</h3>
-              <p>Datos asociados a tu cuenta de conductor.</p>
-            </div>
-            <span className="perfil-icono-info">👤</span>
-          </div>
+          <h3>Información personal</h3>
 
           <div className="perfil-grid">
 
-            {datos.map((dato, index) => (
-              <div className="perfil-dato" key={index}>
+            <div className="perfil-dato">
+              <span>Nombre completo</span>
+              <strong>{perfil.nombre || "No disponible"}</strong>
+            </div>
 
-                <div className="perfil-dato-icono">
-                  {dato.icono}
-                </div>
+            <div className="perfil-dato">
+              <span>Identificación de usuario</span>
+              <strong>{perfil.id_usuario ?? "No disponible"}</strong>
+            </div>
 
-                <div className="perfil-dato-texto">
-                  <span>{dato.titulo}</span>
-                  <strong>{dato.valor}</strong>
-                </div>
+            <div className="perfil-dato">
+              <span>Correo electrónico</span>
+              <strong>{perfil.correo || "No disponible"}</strong>
+            </div>
 
-              </div>
-            ))}
+            <div className="perfil-dato">
+              <span>Teléfono</span>
+              <strong>{perfil.telefono || "No disponible"}</strong>
+            </div>
+
+            <div className="perfil-dato">
+              <span>Tipo de documento</span>
+              <strong>{perfil.tipo_documento || "No disponible"}</strong>
+            </div>
+
+            <div className="perfil-dato">
+              <span>Número de documento</span>
+              <strong>{perfil.num_documento || "No disponible"}</strong>
+            </div>
+
+            <div className="perfil-dato">
+  <span>Jornada</span>
+  <strong>{perfil.jornada || "No definida"}</strong>
+</div>
+
+<div className="perfil-dato">
+  <span>Rol</span>
+  <strong>
+    {perfil.roles?.length > 0
+      ? perfil.roles.join(", ")
+      : "Sin rol asignado"}
+  </strong>
+</div>
 
           </div>
         </div>
 
-        {/* NOTA */}
         <div className="perfil-nota">
-          <span className="perfil-nota-icono">ℹ️</span>
-          <div>
-            <strong>Información de tu cuenta</strong>
-            <p>
-              Estos datos corresponden a tu perfil dentro de ONUFAST.
-              Si necesitas actualizar tu información, comunícate con el
-              administrador del sistema.
-            </p>
-          </div>
+          <span>ℹ</span>
+          <p>
+            Esta información corresponde a los datos registrados
+            en ONUFAST. Si encuentras algún dato incorrecto,
+            comunícalo al administrador.
+          </p>
         </div>
 
       </div>
