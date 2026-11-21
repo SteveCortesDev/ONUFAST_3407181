@@ -9,6 +9,14 @@ from models.rutas import Ruta
 from schemas.schemas import RutaRequest, RutaResponse
 
 
+from sqlalchemy import func
+
+from core.security import get_current_user
+from models.usuario import Usuario
+from models.rol import Rol
+from models.usuario_roles import UsuarioRol
+
+
 router = APIRouter(prefix="/rutas", tags=["Rutas"])
 
 
@@ -27,6 +35,57 @@ def listar_rutas(db: Session = Depends(get_db)):
     rutas = db.query(Ruta).all()
 
     return rutas
+
+
+# ─────────────────────────────────────────────
+# GET /rutas/mis-rutas
+#
+# ─────────────────────────────────────────────
+
+@router.get("/mis-rutas", response_model=List[RutaResponse])
+def obtener_mis_rutas(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Verificar que el usuario exista
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == current_user.id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    # Consultar los roles del usuario
+    roles = (
+        db.query(Rol.nombre_rol)
+        .join(UsuarioRol, UsuarioRol.id_rol == Rol.id_rol)
+        .filter(UsuarioRol.id_usuario == current_user.id_usuario)
+        .all()
+    )
+
+    nombres_roles = [rol[0] for rol in roles]
+
+    # Verificar que sea conductor
+    if not any(
+        rol in nombres_roles
+        for rol in ["Conductor", "Conductor Auxiliar"]
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para consultar estas rutas"
+        )
+
+    # Buscar las rutas asociadas al primer nombre
+    rutas = db.query(Ruta).filter(
+        func.lower(Ruta.nombre_conductor) == func.lower(usuario.nombre)
+    ).all()
+
+    return rutas
+
+
 
 
 # ─────────────────────────────────────────────
@@ -163,3 +222,7 @@ def eliminar_ruta(
     return {
         "mensaje": "Ruta eliminada correctamente"
     }
+
+
+
+
