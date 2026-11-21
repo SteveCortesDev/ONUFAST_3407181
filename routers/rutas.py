@@ -1,7 +1,7 @@
 from typing import List
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -225,4 +225,60 @@ def eliminar_ruta(
 
 
 
+# ─────────────────────────────────────────────
+# PATCH /rutas/{id_rutas}/estado
+# Actualizar el estado de una ruta
+# ─────────────────────────────────────────────
 
+@router.patch("/{id_rutas}/estado", response_model=RutaResponse)
+def actualizar_estado_ruta(
+    id_rutas: int,
+    estado: str = Body(..., embed=True),
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Estados permitidos
+    estados_permitidos = ["Pendiente", "En proceso", "Finalizada"]
+
+    if estado not in estados_permitidos:
+        raise HTTPException(
+            status_code=400,
+            detail="Estado de ruta no válido"
+        )
+
+    # Buscar al conductor
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == current_user.id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    # Buscar la ruta
+    ruta = db.query(Ruta).filter(
+        Ruta.id_rutas == id_rutas
+    ).first()
+
+    if not ruta:
+        raise HTTPException(
+            status_code=404,
+            detail="Ruta no encontrada"
+        )
+
+    # Comprobar que la ruta pertenezca al conductor
+    if ruta.nombre_conductor.lower() != usuario.nombre.lower():
+        raise HTTPException(
+            status_code=403,
+            detail="Esta ruta no está asignada a tu usuario"
+        )
+
+    # Actualizar estado
+    ruta.estado = estado
+
+    db.commit()
+    db.refresh(ruta)
+
+    return ruta
