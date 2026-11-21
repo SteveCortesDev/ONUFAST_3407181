@@ -176,6 +176,7 @@ class RutaRequest(BaseModel):
     nombre_conductor: str = Field(..., max_length=50)
     cantidad_paquetes: int = Field(..., ge=0)
     codigo_ruta: str = Field(..., max_length=100)
+    estado: str = Field(default="Pendiente", max_length=30)
 
 
 class RutaResponse(BaseModel):
@@ -189,6 +190,7 @@ class RutaResponse(BaseModel):
     codigo_ruta: str
     tipo_vehiculo: str
     nombre_conductor: str
+    estado: str 
 
 # ESTADO_ENVIO
 

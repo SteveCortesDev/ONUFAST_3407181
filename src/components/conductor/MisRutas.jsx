@@ -1,53 +1,56 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../../api";
 import "./CSS/MisRutas.css";
 
 export default function MisRutas() {
   const [filtro, setFiltro] = useState("Todas");
+  const [rutas, setRutas] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
 
-  // Datos temporales para visualizar las rutas
-  const rutas = [
-    {
-      codigo: "RUT-001",
-      origen: "Bogotá",
-      destino: "Soacha",
-      hora: "08:00 AM",
-      fecha: "14 Nov 2026",
-      vehiculo: "Motocicleta",
-      paquetes: 5,
-      estado: "En proceso"
-    },
-    {
-      codigo: "RUT-002",
-      origen: "Bogotá",
-      destino: "Chía",
-      hora: "10:30 AM",
-      fecha: "14 Nov 2026",
-      vehiculo: "Camioneta",
-      paquetes: 8,
-      estado: "Pendiente"
-    },
-    {
-      codigo: "RUT-003",
-      origen: "Bogotá",
-      destino: "Mosquera",
-      hora: "02:00 PM",
-      fecha: "14 Nov 2026",
-      vehiculo: "Motocicleta",
-      paquetes: 4,
-      estado: "Finalizada"
-    },
-    {
-      codigo: "RUT-004",
-      origen: "Bogotá",
-      destino: "Funza",
-      hora: "03:30 PM",
-      fecha: "14 Nov 2026",
-      vehiculo: "Camioneta",
-      paquetes: 6,
-      estado: "Pendiente"
-    }
-  ];
+  useEffect(() => {
+    const cargarRutas = async () => {
+      try {
+        setCargando(true);
+        setError("");
+
+        const respuesta = await api.get("/rutas/mis-rutas");
+
+        const rutasAdaptadas = respuesta.data.map((ruta) => ({
+          codigo: ruta.codigo_ruta,
+          origen: ruta.ciudad_origen,
+          destino: ruta.ciudad_destino,
+          hora: ruta.fecha_creacion
+            ? new Date(ruta.fecha_creacion).toLocaleTimeString("es-CO", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })
+            : "No disponible",
+          fecha: ruta.fecha_creacion
+            ? new Date(ruta.fecha_creacion).toLocaleDateString("es-CO")
+            : "No disponible",
+          vehiculo: ruta.tipo_vehiculo,
+          paquetes: ruta.cantidad_paquetes,
+          estado: ruta.estado,
+        }));
+
+        setRutas(rutasAdaptadas);
+      } catch (error) {
+        console.error("Error al cargar las rutas:", error);
+
+        setError(
+          error.response?.data?.detail ||
+          "No fue posible cargar tus rutas."
+        );
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarRutas();
+  }, []);
 
   const rutasFiltradas =
     filtro === "Todas"
@@ -140,7 +143,17 @@ export default function MisRutas() {
         {/* TARJETAS DE RUTAS */}
         <div className="rutas-tarjetas">
 
-          {rutasFiltradas.length > 0 ? (
+          {cargando ? (
+            <div className="rutas-vacio">
+              <p>Cargando tus rutas...</p>
+            </div>
+          ) : error ? (
+            <div className="rutas-vacio">
+              <span>⚠️</span>
+              <h3>No se pudieron cargar las rutas</h3>
+              <p>{error}</p>
+            </div>
+          ) : rutasFiltradas.length > 0 ? (
             rutasFiltradas.map((ruta) => (
               <article className="ruta-card" key={ruta.codigo}>
 
@@ -209,7 +222,11 @@ export default function MisRutas() {
           ) : (
             <div className="rutas-vacio">
               <span>📭</span>
-              <h3>No hay rutas en este estado</h3>
+              <h3>
+                {rutas.length === 0
+                  ? "Aún no tienes rutas asignadas"
+                  : "No hay rutas en este estado"}
+              </h3>
               <p>Prueba seleccionando otro filtro.</p>
             </div>
           )}

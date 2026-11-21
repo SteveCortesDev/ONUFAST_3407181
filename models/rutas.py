@@ -1,6 +1,6 @@
+
 from sqlalchemy import Column, Integer, String, Numeric, DateTime
 from core.database import Base
-
 
 class Ruta(Base):
     __tablename__ = "rutas"
@@ -15,3 +15,5 @@ class Ruta(Base):
     codigo_ruta = Column(String(100), unique=True, nullable=False)
     tipo_vehiculo = Column(String(30), nullable=False)
     nombre_conductor = Column(String(50), nullable=False)
+    #Agregar nuevo campo para el estado de la ruta
+    estado = Column(String(30), nullable=False, default="Pendiente")
