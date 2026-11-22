@@ -17,6 +17,7 @@ import Admin from './pages/Admin';
 import Usuario from "./components/usuario/Usuario";
 import Conductor from "./components/conductor/Conductor";
 
+
 import api from './api';
 
 
@@ -31,6 +32,112 @@ const imagenesCarrusel = [
     "/carrusel_img4.jpg",
     "/carrusel_img5.jpg"
 ];
+
+
+
+/* ==========================================
+   PROTECCIÓN DEL PANEL DEL CONDUCTOR
+========================================== */
+
+function RutaConductorProtegida() {
+  const [estado, setEstado] = useState("comprobando");
+  const [intento, setIntento] = useState(0);
+  const [rutaDestino, setRutaDestino] = useState("/");
+
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    let activo = true;
+
+    const verificarAcceso = async () => {
+      if (!token) {
+        setEstado("sin-sesion");
+        return;
+      }
+
+      try {
+        const respuesta = await api.get("/usuarios/perfil");
+        const roles = respuesta.data.roles || [];
+
+        if (!activo) return;
+
+        if (
+          roles.includes("Conductor") ||
+          roles.includes("Conductor Auxiliar")
+        ) {
+          setEstado("permitido");
+        } else {
+          setRutaDestino(
+            roles.includes("Administrador") ? "/admin" : "/usuario"
+          );
+
+          setEstado("redireccionar");
+        }
+
+      } catch (error) {
+        console.error("Error verificando acceso:", error);
+
+        if (!activo) return;
+
+        const codigo = error.response?.status;
+
+        if (codigo === 401 || codigo === 403) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("nombre_usuario");
+          localStorage.removeItem("id_usuario");
+
+          setEstado("sin-sesion");
+        } else {
+          setEstado("error");
+        }
+      }
+    };
+
+    verificarAcceso();
+
+    return () => {
+      activo = false;
+    };
+  }, [token, intento]);
+
+  // Redirecciones
+  useEffect(() => {
+    if (estado === "sin-sesion") {
+      navigate("/", { replace: true });
+    }
+
+    if (estado === "redireccionar") {
+      navigate(rutaDestino, { replace: true });
+    }
+  }, [estado, rutaDestino, navigate]);
+
+  if (estado === "comprobando") {
+    return <p>Verificando acceso al panel del conductor...</p>;
+  }
+
+  if (estado === "sin-sesion" || estado === "redireccionar") {
+    return null;
+  }
+
+  if (estado === "error") {
+    return (
+      <div style={{ padding: "30px", textAlign: "center" }}>
+        <h3>No fue posible verificar tu sesión</h3>
+        <p>Comprueba que el servidor esté funcionando e inténtalo nuevamente.</p>
+
+        <button
+          type="button"
+          onClick={() => setIntento((anterior) => anterior + 1)}
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+
+  return <Conductor />;
+}
 
 
 // ─────────────────────────────────────────────
@@ -304,7 +411,7 @@ function AppContent() {
                 ═══════════════════════════════════ */}
 
 
-                <Route path="/conductor" element={<Conductor />} />
+                <Route path="/conductor" element={<RutaConductorProtegida />}/>
 
 
                 {/* ═══════════════════════════════

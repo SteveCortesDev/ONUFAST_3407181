@@ -1,7 +1,101 @@
-
 import { useState, useEffect } from "react";
 import api from "../../api"; // Ajusta esta ruta si tu archivo está en otra carpeta
 import "./CSS/MisEntregas.css";
+
+/* ==========================================
+   ICONOS SVG (mismo estilo que el resto del panel)
+========================================== */
+
+function Icono({ size = 20, children }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+const IconPaquete = (p) => (
+  <Icono {...p}>
+    <path d="M21 8 12 3 3 8v8l9 5 9-5V8z" />
+    <path d="M3 8l9 5 9-5" />
+    <path d="M12 13v8" />
+  </Icono>
+);
+
+const IconCamion = (p) => (
+  <Icono {...p}>
+    <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+    <path d="M15 18H9" />
+    <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+    <circle cx="17" cy="18" r="2" />
+    <circle cx="7" cy="18" r="2" />
+  </Icono>
+);
+
+const IconCheck = (p) => (
+  <Icono {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m8 12 3 3 5-6" />
+  </Icono>
+);
+
+const IconPin = (p) => (
+  <Icono {...p}>
+    <path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" />
+    <circle cx="12" cy="9.5" r="2.5" />
+  </Icono>
+);
+
+const IconBuscar = (p) => (
+  <Icono {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5" />
+  </Icono>
+);
+
+const IconActualizar = (p) => (
+  <Icono {...p}>
+    <path d="M21 12a9 9 0 0 1-15.5 6.2L3 16" />
+    <path d="M3 12A9 9 0 0 1 18.5 5.8L21 8" />
+    <path d="M21 3v5h-5M3 21v-5h5" />
+  </Icono>
+);
+
+const IconBandeja = (p) => (
+  <Icono {...p}>
+    <path d="M22 12h-6l-2 3h-4l-2-3H2" />
+    <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+  </Icono>
+);
+
+/* ==========================================
+   CONSTANTES
+========================================== */
+
+// Clase CSS según el estado que llega del servidor
+const CLASE_ESTADO = {
+  Pendiente: "pendiente",
+  "En camino": "en-camino",
+  Entregado: "entregado",
+};
+
+// Opciones del filtro (el "valor" es el mismo que usaba el select)
+const FILTROS = [
+  { valor: "Todas", texto: "Todas" },
+  { valor: "Pendiente", texto: "Pendientes" },
+  { valor: "En camino", texto: "En camino" },
+  { valor: "Entregado", texto: "Entregadas" },
+];
 
 export default function MisEntregas() {
   const [busqueda, setBusqueda] = useState("");
@@ -13,10 +107,12 @@ export default function MisEntregas() {
 
   // ==========================================
   // CONSULTAR ENTREGAS DEL CONDUCTOR
+  // silencioso = true: refresca los datos sin tapar
+  // la lista con el estado de "cargando"
   // ==========================================
-  const cargarEntregas = async () => {
+  const cargarEntregas = async (silencioso = false) => {
     try {
-      setCargando(true);
+      if (!silencioso) setCargando(true);
       setError("");
 
       const respuesta = await api.get("/envios/mis-entregas");
@@ -51,18 +147,17 @@ export default function MisEntregas() {
       setError("");
 
       await api.patch(`/envios/${id}/estado`, {
-        estado: nuevoEstado
+        estado: nuevoEstado,
       });
 
-      // Actualizar la lista con los datos del servidor
-      await cargarEntregas();
-
+      // Actualizar la lista con los datos del servidor (sin parpadeo)
+      await cargarEntregas(true);
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
 
       setError(
         error.response?.data?.detail ||
-        "No fue posible actualizar el estado de la entrega."
+          "No fue posible actualizar el estado de la entrega."
       );
     } finally {
       setActualizando(null);
@@ -80,8 +175,7 @@ export default function MisEntregas() {
       (entrega.destinatario || "").toLowerCase().includes(texto) ||
       (entrega.ciudad || "").toLowerCase().includes(texto);
 
-    const coincideEstado =
-      filtro === "Todas" || entrega.estado === filtro;
+    const coincideEstado = filtro === "Todas" || entrega.estado === filtro;
 
     return coincideBusqueda && coincideEstado;
   });
@@ -89,242 +183,227 @@ export default function MisEntregas() {
   // ==========================================
   // ESTADÍSTICAS
   // ==========================================
-  const pendientes = entregas.filter(
-    (e) => e.estado === "Pendiente"
-  ).length;
+  const contar = (estado) => entregas.filter((e) => e.estado === estado).length;
 
-  const enCamino = entregas.filter(
-    (e) => e.estado === "En camino"
-  ).length;
+  const pendientes = contar("Pendiente");
+  const enCamino = contar("En camino");
+  const completadas = contar("Entregado");
 
-  const completadas = entregas.filter(
-    (e) => e.estado === "Entregado"
-  ).length;
+  // Cantidad que se muestra junto a cada opción del filtro
+  const cantidadPorFiltro = {
+    Todas: entregas.length,
+    Pendiente: pendientes,
+    "En camino": enCamino,
+    Entregado: completadas,
+  };
 
   // ==========================================
   // INTERFAZ
   // ==========================================
   return (
     <div className="mis-entregas">
-
       {/* ENCABEZADO */}
-      <div className="entregas-titulo">
+      <header className="entregas-titulo">
         <div>
-          <span className="entregas-etiqueta">
-            GESTIÓN DE PAQUETES
-          </span>
-
           <h1>Mis entregas</h1>
-
-          <p>
-            Consulta los paquetes asignados y actualiza su estado.
-          </p>
+          <p>Consulta los paquetes asignados y actualiza su estado.</p>
         </div>
 
         <div className="entregas-total">
           <span>Total de paquetes</span>
           <strong>{entregas.length}</strong>
         </div>
-      </div>
+      </header>
 
       {/* ESTADÍSTICAS */}
-      <div className="entregas-resumen">
-
+      <section className="entregas-resumen" aria-label="Resumen de entregas">
         <div className="entrega-resumen-card">
-          <span>📦</span>
+          <span className="resumen-icono amarillo">
+            <IconPaquete />
+          </span>
           <div>
-            <p>Pendientes</p>
             <strong>{pendientes}</strong>
+            <p>Pendientes</p>
           </div>
         </div>
 
         <div className="entrega-resumen-card">
-          <span>🚚</span>
+          <span className="resumen-icono azul">
+            <IconCamion />
+          </span>
           <div>
-            <p>En camino</p>
             <strong>{enCamino}</strong>
+            <p>En camino</p>
           </div>
         </div>
 
         <div className="entrega-resumen-card">
-          <span>✅</span>
+          <span className="resumen-icono verde">
+            <IconCheck />
+          </span>
           <div>
-            <p>Entregadas</p>
             <strong>{completadas}</strong>
+            <p>Entregadas</p>
           </div>
         </div>
+      </section>
 
-      </div>
-
-      {/* LISTADO */}
-      <div className="entregas-listado">
-
-        <div className="entregas-listado-header">
-          <div>
-            <h2>Paquetes asignados</h2>
-            <p>Consulta la información de cada entrega.</p>
-          </div>
-
-          <button
-            type="button"
-            onClick={cargarEntregas}
-            disabled={cargando}
-          >
-            {cargando ? "Cargando..." : "Actualizar"}
-          </button>
+      {/* BARRA DE HERRAMIENTAS: buscar, filtrar y actualizar */}
+      <section className="entregas-barra">
+        <div className="entregas-buscador">
+          <IconBuscar size={18} />
+          <input
+            type="text"
+            placeholder="Buscar por código, destinatario o ciudad"
+            aria-label="Buscar entregas"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
         </div>
 
-        {/* MENSAJE DE ERROR */}
-        {error && (
-          <div className="entregas-error">
-            {error}
+        <button
+          type="button"
+          className="entregas-actualizar"
+          onClick={() => cargarEntregas()}
+          disabled={cargando}
+        >
+          <span className={cargando ? "girando" : ""}>
+            <IconActualizar size={16} />
+          </span>
+          {cargando ? "Cargando" : "Actualizar"}
+        </button>
+
+        <div className="entregas-filtros" role="group" aria-label="Filtrar por estado">
+          {FILTROS.map(({ valor, texto }) => (
+            <button
+              key={valor}
+              type="button"
+              className={filtro === valor ? "activo" : ""}
+              aria-pressed={filtro === valor}
+              onClick={() => setFiltro(valor)}
+            >
+              {texto}
+              <small>{cantidadPorFiltro[valor]}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* MENSAJE DE ERROR */}
+      {error && (
+        <div className="entregas-error" role="alert">
+          {error}
+        </div>
+      )}
+
+      {/* TARJETAS */}
+      <section className="entregas-tarjetas" aria-live="polite">
+        {cargando ? (
+          // Esqueletos: muestran la forma de las tarjetas mientras llegan los datos
+          [1, 2, 3, 4].map((n) => (
+            <div className="entrega-card entrega-esqueleto" key={n} aria-hidden="true">
+              <span className="esq esq-linea corta" />
+              <span className="esq esq-linea" />
+              <span className="esq esq-bloque" />
+              <span className="esq esq-boton" />
+            </div>
+          ))
+        ) : entregasFiltradas.length > 0 ? (
+          entregasFiltradas.map((entrega) => {
+            const id = entrega.id_envio ?? entrega.id;
+            const claseEstado = CLASE_ESTADO[entrega.estado] || "otro";
+
+            return (
+              <article className={`entrega-card ${claseEstado}`} key={id}>
+                <div className="entrega-card-header">
+                  <div>
+                    <span className="entrega-codigo">{entrega.codigo}</span>
+                    <h3>{entrega.destinatario}</h3>
+                  </div>
+
+                  <span className={`entrega-estado ${claseEstado}`}>
+                    {entrega.estado}
+                  </span>
+                </div>
+
+                <div className="entrega-informacion">
+                  <div className="entrega-direccion">
+                    <span>Dirección de entrega</span>
+                    <strong>
+                      <IconPin size={16} />
+                      {entrega.direccion || "Sin dirección"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Ciudad</span>
+                    <strong>{entrega.ciudad || "—"}</strong>
+                  </div>
+
+                  <div>
+                    <span>Documento</span>
+                    <strong>{entrega.documento || "—"}</strong>
+                  </div>
+
+                  <div className="entrega-descripcion">
+                    <span>Descripción</span>
+                    <strong>{entrega.descripcion || "Sin descripción"}</strong>
+                  </div>
+                </div>
+
+                <div className="entrega-acciones">
+                  {entrega.estado === "Pendiente" && (
+                    <button
+                      type="button"
+                      className="btn-iniciar-entrega"
+                      disabled={actualizando === id}
+                      onClick={() => actualizarEstado(id, "En camino")}
+                    >
+                      {actualizando === id ? "Actualizando..." : "Iniciar entrega"}
+                    </button>
+                  )}
+
+                  {entrega.estado === "En camino" && (
+                    <button
+                      type="button"
+                      className="btn-finalizar-entrega"
+                      disabled={actualizando === id}
+                      onClick={() => actualizarEstado(id, "Entregado")}
+                    >
+                      {actualizando === id
+                        ? "Actualizando..."
+                        : "Marcar como entregado"}
+                    </button>
+                  )}
+
+                  {entrega.estado === "Entregado" && (
+                    <span className="entrega-completada">
+                      <IconCheck size={16} />
+                      Entrega completada
+                    </span>
+                  )}
+                </div>
+              </article>
+            );
+          })
+        ) : (
+          <div className="entregas-vacio">
+            <span className="vacio-icono">
+              <IconBandeja size={28} />
+            </span>
+            <h3>
+              {entregas.length === 0
+                ? "No tienes entregas asignadas"
+                : "No se encontraron entregas"}
+            </h3>
+            <p>
+              {entregas.length === 0
+                ? "Cuando te asignen paquetes, aparecerán aquí."
+                : "Prueba con otra búsqueda o cambia el filtro de estado."}
+            </p>
           </div>
         )}
-
-        {/* BUSCADOR Y FILTROS */}
-        <div className="entregas-controles">
-
-          <div className="entregas-buscador">
-            <span>⌕</span>
-            <input
-              type="text"
-              placeholder="Buscar por código, destinatario o ciudad..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </div>
-
-          <select
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-          >
-            <option value="Todas">Todos los estados</option>
-            <option value="Pendiente">Pendientes</option>
-            <option value="En camino">En camino</option>
-            <option value="Entregado">Entregados</option>
-          </select>
-
-        </div>
-
-        {/* TARJETAS */}
-        <div className="entregas-tarjetas">
-
-          {cargando ? (
-            <div className="entregas-vacio">
-              <p>Cargando tus entregas...</p>
-            </div>
-          ) : entregasFiltradas.length > 0 ? (
-
-            entregasFiltradas.map((entrega) => {
-              const id = entrega.id_envio ?? entrega.id;
-
-              return (
-                <article className="entrega-card" key={id}>
-
-                  <div className="entrega-card-header">
-                    <div>
-                      <span className="entrega-codigo">
-                        {entrega.codigo}
-                      </span>
-
-                      <h3>{entrega.destinatario}</h3>
-                    </div>
-
-                    <span
-                      className={`entrega-estado ${
-                        entrega.estado === "Pendiente"
-                          ? "pendiente"
-                          : entrega.estado === "En camino"
-                          ? "en-camino"
-                          : "entregado"
-                      }`}
-                    >
-                      {entrega.estado}
-                    </span>
-                  </div>
-
-                  <div className="entrega-informacion">
-
-                    <div>
-                      <span>Documento</span>
-                      <strong>{entrega.documento}</strong>
-                    </div>
-
-                    <div>
-                      <span>Ciudad</span>
-                      <strong>{entrega.ciudad}</strong>
-                    </div>
-
-                    <div className="entrega-direccion">
-                      <span>Dirección de entrega</span>
-                      <strong>📍 {entrega.direccion}</strong>
-                    </div>
-
-                    <div>
-                      <span>Descripción</span>
-                      <strong>{entrega.descripcion}</strong>
-                    </div>
-
-                  </div>
-
-                  <div className="entrega-acciones">
-
-                    {entrega.estado === "Pendiente" && (
-                      <button
-                        className="btn-iniciar-entrega"
-                        disabled={actualizando === id}
-                        onClick={() =>
-                          actualizarEstado(id, "En camino")
-                        }
-                      >
-                        {actualizando === id
-                          ? "Actualizando..."
-                          : "Iniciar entrega"}
-                      </button>
-                    )}
-
-                    {entrega.estado === "En camino" && (
-                      <button
-                        className="btn-finalizar-entrega"
-                        disabled={actualizando === id}
-                        onClick={() =>
-                          actualizarEstado(id, "Entregado")
-                        }
-                      >
-                        {actualizando === id
-                          ? "Actualizando..."
-                          : "Marcar como entregado"}
-                      </button>
-                    )}
-
-                    {entrega.estado === "Entregado" && (
-                      <span className="entrega-completada">
-                        ✓ Entrega completada
-                      </span>
-                    )}
-
-                  </div>
-
-                </article>
-              );
-            })
-
-          ) : (
-            <div className="entregas-vacio">
-              <span>📭</span>
-              <h3>
-                {entregas.length === 0
-                  ? "No tienes entregas asignadas"
-                  : "No se encontraron entregas"}
-              </h3>
-              <p>
-                Intenta cambiar la búsqueda o el filtro.
-              </p>
-            </div>
-          )}
-
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
