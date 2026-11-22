@@ -75,9 +75,7 @@ export default function DashboardConductor() {
       {/* ENCABEZADO DE BIENVENIDA */}
       <section className="dashboard-bienvenida">
         <div className="dashboard-bienvenida-texto">
-          <span className="dashboard-etiqueta">
-            PANEL DE CONTROL · CONDUCTOR
-          </span>
+          
 
           <h1>¡Hola, {nombre}! 👋</h1>
 
@@ -199,19 +197,7 @@ export default function DashboardConductor() {
         </div>
       </section>
 
-      {/* AVISO */}
-      <section className="conductor-aviso">
-        <div className="aviso-icono">ℹ️</div>
-
-        <div>
-          <strong>Mantén tus entregas actualizadas</strong>
-          <p>
-            Recuerda registrar los cambios de estado de cada paquete
-            para que el equipo de ONUFAST pueda realizar seguimiento
-            a los envíos.
-          </p>
-        </div>
-      </section>
+    
 
     </div>
   );

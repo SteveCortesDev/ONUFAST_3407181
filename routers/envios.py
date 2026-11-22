@@ -2,7 +2,7 @@ import uuid
 from typing import List
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -12,6 +12,11 @@ from models.paquete import Paquete
 from models.tipo_envio import TipoEnvio
 from models.estado_envio import EstadoEnvio
 from models.rutas import Ruta
+
+from models.usuario import Usuario
+from models.rol import Rol
+from models.usuario_roles import UsuarioRol
+from sqlalchemy import func
 
 from schemas.schemas import (
     EnvioRequest,
@@ -325,11 +330,202 @@ def registrar_paquete(
 
 
 # ─────────────────────────────────────────────
+# GET /envios/mis-entregas
+# Entregas asignadas al conductor autenticado
+# ─────────────────────────────────────────────
+
+
+@router.get("/mis-entregas")
+def obtener_mis_entregas(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    from models.usuario import Usuario
+    from models.rol import Rol
+    from models.usuario_roles import UsuarioRol
+    from sqlalchemy import func
+
+    # 1. Buscar el usuario autenticado
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == current_user.id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    # 2. Consultar los roles del usuario
+    roles = (
+        db.query(Rol.nombre_rol)
+        .join(UsuarioRol, UsuarioRol.id_rol == Rol.id_rol)
+        .filter(UsuarioRol.id_usuario == current_user.id_usuario)
+        .all()
+    )
+
+    nombres_roles = [rol[0] for rol in roles]
+
+    # 3. Verificar que sea conductor
+    if not any(
+        rol in nombres_roles
+        for rol in ["Conductor", "Conductor Auxiliar"]
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para consultar estas entregas"
+        )
+
+    # 4. Buscar las rutas asignadas al conductor
+    rutas = db.query(Ruta).filter(
+        func.lower(Ruta.nombre_conductor) == func.lower(usuario.nombre)
+    ).all()
+
+    ids_rutas = [ruta.id_rutas for ruta in rutas]
+
+    # 5. Buscar los envíos que pertenecen a esas rutas
+    envios = db.query(Envio).filter(
+        Envio.id_rutas.in_(ids_rutas)
+    ).all() if ids_rutas else []
+
+    # 6. Construir la respuesta con la información de cada entrega
+    resultado = []
+
+    for envio in envios:
+        paquete = db.query(Paquete).filter(
+            Paquete.id_envio == envio.id_envio
+        ).first()
+
+        estado = db.query(EstadoEnvio).filter(
+            EstadoEnvio.id_estadoenvio == envio.id_estadoenvio
+        ).first()
+
+        resultado.append({
+            "id": envio.id_envio,
+            "id_envio": envio.id_envio,
+            "codigo": envio.codigo_rastreo,
+            "destinatario": envio.nombre_destinatario,
+            "documento": envio.documento_destinatario,
+            "direccion": paquete.destino if paquete else "No disponible",
+            "ciudad": paquete.destino if paquete else "No disponible",
+            "descripcion": paquete.descripcion if paquete else "Sin descripción",
+            "origen": paquete.origen if paquete else "No disponible",
+            "destino": paquete.destino if paquete else "No disponible",
+            "estado": estado.estado if estado else "Pendiente",
+            "id_estadoenvio": envio.id_estadoenvio,
+            "id_rutas": envio.id_rutas
+        })
+
+    return resultado
+
+
+
+# ─────────────────────────────────────────────
+# PATCH /envios/{id_envio}/estado
+# Actualizar el estado de una entrega
+# ─────────────────────────────────────────────
+
+@router.patch("/{id_envio}/estado")
+def actualizar_estado_entrega(
+    id_envio: int,
+    estado: str = Body(..., embed=True),
+    current_user: TokenData = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    
+
+    # Verificar usuario
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == current_user.id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    # Verificar rol
+    roles = (
+        db.query(Rol.nombre_rol)
+        .join(UsuarioRol, UsuarioRol.id_rol == Rol.id_rol)
+        .filter(
+            UsuarioRol.id_usuario == current_user.id_usuario
+        )
+        .all()
+    )
+
+    nombres_roles = [rol[0] for rol in roles]
+
+    if not any(
+        rol in nombres_roles
+        for rol in ["Conductor", "Conductor Auxiliar"]
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para actualizar entregas"
+        )
+
+    # Buscar las rutas del conductor
+    rutas = db.query(Ruta).filter(
+        func.lower(Ruta.nombre_conductor) ==
+        func.lower(usuario.nombre)
+    ).all()
+
+    ids_rutas = [ruta.id_rutas for ruta in rutas]
+
+    # Buscar el envío y comprobar que pertenece al conductor
+    envio = db.query(Envio).filter(
+        Envio.id_envio == id_envio,
+        Envio.id_rutas.in_(ids_rutas)
+    ).first()
+
+    if not envio:
+        raise HTTPException(
+            status_code=404,
+            detail="Entrega no encontrada o no asignada a este conductor"
+        )
+
+    # Validar estados permitidos
+    estados_permitidos = ["Pendiente", "En camino", "Entregado"]
+
+    if estado not in estados_permitidos:
+        raise HTTPException(
+            status_code=400,
+            detail="Estado no válido"
+        )
+
+    # Buscar el estado en la tabla estado_envio
+    estado_db = db.query(EstadoEnvio).filter(
+        func.lower(EstadoEnvio.estado) == func.lower(estado)
+    ).first()
+
+    # Crear el estado si todavía no existe
+    if not estado_db:
+        estado_db = EstadoEnvio(estado=estado)
+        db.add(estado_db)
+        db.flush()
+
+    # Actualizar únicamente el estado del envío
+    envio.id_estadoenvio = estado_db.id_estadoenvio
+
+    db.commit()
+    db.refresh(envio)
+
+    return {
+        "mensaje": "Estado de entrega actualizado correctamente",
+        "id_envio": envio.id_envio,
+        "estado": estado_db.estado
+    }
+
+
+# ─────────────────────────────────────────────
 # GET /envios/{id_envio}
 # Ver un envío
 # ─────────────────────────────────────────────
 
 @router.get(
+        
     "/{id_envio}",
     response_model=EnvioResponse,
     summary="Ver un envío"
@@ -457,3 +653,7 @@ def eliminar_envio(
     return {
         "mensaje": "Envío eliminado correctamente"
     }
+
+
+
+

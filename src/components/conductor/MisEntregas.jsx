@@ -1,69 +1,84 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../../api"; // Ajusta esta ruta si tu archivo está en otra carpeta
 import "./CSS/MisEntregas.css";
 
 export default function MisEntregas() {
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState("Todas");
+  const [entregas, setEntregas] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [actualizando, setActualizando] = useState(null);
+  const [error, setError] = useState("");
 
-  const [entregas, setEntregas] = useState([
-    {
-      id: 1,
-      codigo: "ONU-2026-001",
-      destinatario: "Carlos Rodríguez",
-      documento: "1023456789",
-      direccion: "Calle 15 # 20-30, Soacha",
-      ciudad: "Soacha",
-      descripcion: "Caja de documentos",
-      estado: "Pendiente"
-    },
-    {
-      id: 2,
-      codigo: "ONU-2026-002",
-      destinatario: "Laura Martínez",
-      documento: "1034567890",
-      direccion: "Carrera 8 # 12-45, Chía",
-      ciudad: "Chía",
-      descripcion: "Paquete pequeño",
-      estado: "En camino"
-    },
-    {
-      id: 3,
-      codigo: "ONU-2026-003",
-      destinatario: "Andrés Gómez",
-      documento: "1012345678",
-      direccion: "Calle 10 # 5-20, Mosquera",
-      ciudad: "Mosquera",
-      descripcion: "Caja mediana",
-      estado: "Entregado"
-    },
-    {
-      id: 4,
-      codigo: "ONU-2026-004",
-      destinatario: "Sofía Ramírez",
-      documento: "1009876543",
-      direccion: "Carrera 12 # 8-15, Funza",
-      ciudad: "Funza",
-      descripcion: "Sobre",
-      estado: "Pendiente"
+  // ==========================================
+  // CONSULTAR ENTREGAS DEL CONDUCTOR
+  // ==========================================
+  const cargarEntregas = async () => {
+    try {
+      setCargando(true);
+      setError("");
+
+      const respuesta = await api.get("/envios/mis-entregas");
+
+      setEntregas(respuesta.data);
+    } catch (error) {
+      console.error("Error al cargar las entregas:", error);
+
+      if (error.response?.status === 401) {
+        setError("Tu sesión ha expirado. Inicia sesión nuevamente.");
+      } else if (error.response?.status === 403) {
+        setError("No tienes permisos para consultar estas entregas.");
+      } else {
+        setError("No fue posible cargar las entregas. Intenta nuevamente.");
+      }
+    } finally {
+      setCargando(false);
     }
-  ]);
-
-  const actualizarEstado = (id, nuevoEstado) => {
-    setEntregas((anteriores) =>
-      anteriores.map((entrega) =>
-        entrega.id === id
-          ? { ...entrega, estado: nuevoEstado }
-          : entrega
-      )
-    );
   };
 
+  // Cargar los datos cuando se abre la pantalla
+  useEffect(() => {
+    cargarEntregas();
+  }, []);
+
+  // ==========================================
+  // ACTUALIZAR ESTADO DE LA ENTREGA
+  // ==========================================
+  const actualizarEstado = async (id, nuevoEstado) => {
+    try {
+      setActualizando(id);
+      setError("");
+
+      await api.patch(`/envios/${id}/estado`, {
+        estado: nuevoEstado
+      });
+
+      // Actualizar la lista con los datos del servidor
+      await cargarEntregas();
+
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+
+      setError(
+        error.response?.data?.detail ||
+        "No fue posible actualizar el estado de la entrega."
+      );
+    } finally {
+      setActualizando(null);
+    }
+  };
+
+  // ==========================================
+  // BUSCADOR Y FILTROS
+  // ==========================================
   const entregasFiltradas = entregas.filter((entrega) => {
+    const texto = busqueda.toLowerCase();
+
     const coincideBusqueda =
-      entrega.codigo.toLowerCase().includes(busqueda.toLowerCase()) ||
-      entrega.destinatario.toLowerCase().includes(busqueda.toLowerCase()) ||
-      entrega.ciudad.toLowerCase().includes(busqueda.toLowerCase());
+      (entrega.codigo || "").toLowerCase().includes(texto) ||
+      (entrega.destinatario || "").toLowerCase().includes(texto) ||
+      (entrega.ciudad || "").toLowerCase().includes(texto);
 
     const coincideEstado =
       filtro === "Todas" || entrega.estado === filtro;
@@ -71,6 +86,9 @@ export default function MisEntregas() {
     return coincideBusqueda && coincideEstado;
   });
 
+  // ==========================================
+  // ESTADÍSTICAS
+  // ==========================================
   const pendientes = entregas.filter(
     (e) => e.estado === "Pendiente"
   ).length;
@@ -83,6 +101,9 @@ export default function MisEntregas() {
     (e) => e.estado === "Entregado"
   ).length;
 
+  // ==========================================
+  // INTERFAZ
+  // ==========================================
   return (
     <div className="mis-entregas">
 
@@ -143,7 +164,22 @@ export default function MisEntregas() {
             <h2>Paquetes asignados</h2>
             <p>Consulta la información de cada entrega.</p>
           </div>
+
+          <button
+            type="button"
+            onClick={cargarEntregas}
+            disabled={cargando}
+          >
+            {cargando ? "Cargando..." : "Actualizar"}
+          </button>
         </div>
+
+        {/* MENSAJE DE ERROR */}
+        {error && (
+          <div className="entregas-error">
+            {error}
+          </div>
+        )}
 
         {/* BUSCADOR Y FILTROS */}
         <div className="entregas-controles">
@@ -173,101 +209,122 @@ export default function MisEntregas() {
         {/* TARJETAS */}
         <div className="entregas-tarjetas">
 
-          {entregasFiltradas.length > 0 ? (
-            entregasFiltradas.map((entrega) => (
+          {cargando ? (
+            <div className="entregas-vacio">
+              <p>Cargando tus entregas...</p>
+            </div>
+          ) : entregasFiltradas.length > 0 ? (
 
-              <article className="entrega-card" key={entrega.id}>
+            entregasFiltradas.map((entrega) => {
+              const id = entrega.id_envio ?? entrega.id;
 
-                <div className="entrega-card-header">
-                  <div>
-                    <span className="entrega-codigo">
-                      {entrega.codigo}
-                    </span>
-                    <h3>{entrega.destinatario}</h3>
-                  </div>
+              return (
+                <article className="entrega-card" key={id}>
 
-                  <span className={`entrega-estado ${
-                    entrega.estado === "Pendiente"
-                      ? "pendiente"
-                      : entrega.estado === "En camino"
-                      ? "en-camino"
-                      : "entregado"
-                  }`}>
-                    {entrega.estado}
-                  </span>
-                </div>
+                  <div className="entrega-card-header">
+                    <div>
+                      <span className="entrega-codigo">
+                        {entrega.codigo}
+                      </span>
 
-                <div className="entrega-informacion">
+                      <h3>{entrega.destinatario}</h3>
+                    </div>
 
-                  <div>
-                    <span>Documento</span>
-                    <strong>{entrega.documento}</strong>
-                  </div>
-
-                  <div>
-                    <span>Ciudad</span>
-                    <strong>{entrega.ciudad}</strong>
-                  </div>
-
-                  <div className="entrega-direccion">
-                    <span>Dirección de entrega</span>
-                    <strong>📍 {entrega.direccion}</strong>
-                  </div>
-
-                  <div>
-                    <span>Descripción</span>
-                    <strong>{entrega.descripcion}</strong>
-                  </div>
-
-                </div>
-
-                <div className="entrega-acciones">
-
-                  {entrega.estado === "Pendiente" && (
-                    <button
-                      className="btn-iniciar-entrega"
-                      onClick={() =>
-                        actualizarEstado(entrega.id, "En camino")
-                      }
+                    <span
+                      className={`entrega-estado ${
+                        entrega.estado === "Pendiente"
+                          ? "pendiente"
+                          : entrega.estado === "En camino"
+                          ? "en-camino"
+                          : "entregado"
+                      }`}
                     >
-                      Iniciar entrega
-                    </button>
-                  )}
-
-                  {entrega.estado === "En camino" && (
-                    <button
-                      className="btn-finalizar-entrega"
-                      onClick={() =>
-                        actualizarEstado(entrega.id, "Entregado")
-                      }
-                    >
-                      Marcar como entregado
-                    </button>
-                  )}
-
-                  {entrega.estado === "Entregado" && (
-                    <span className="entrega-completada">
-                      ✓ Entrega completada
+                      {entrega.estado}
                     </span>
-                  )}
+                  </div>
 
-                </div>
+                  <div className="entrega-informacion">
 
-              </article>
+                    <div>
+                      <span>Documento</span>
+                      <strong>{entrega.documento}</strong>
+                    </div>
 
-            ))
+                    <div>
+                      <span>Ciudad</span>
+                      <strong>{entrega.ciudad}</strong>
+                    </div>
+
+                    <div className="entrega-direccion">
+                      <span>Dirección de entrega</span>
+                      <strong>📍 {entrega.direccion}</strong>
+                    </div>
+
+                    <div>
+                      <span>Descripción</span>
+                      <strong>{entrega.descripcion}</strong>
+                    </div>
+
+                  </div>
+
+                  <div className="entrega-acciones">
+
+                    {entrega.estado === "Pendiente" && (
+                      <button
+                        className="btn-iniciar-entrega"
+                        disabled={actualizando === id}
+                        onClick={() =>
+                          actualizarEstado(id, "En camino")
+                        }
+                      >
+                        {actualizando === id
+                          ? "Actualizando..."
+                          : "Iniciar entrega"}
+                      </button>
+                    )}
+
+                    {entrega.estado === "En camino" && (
+                      <button
+                        className="btn-finalizar-entrega"
+                        disabled={actualizando === id}
+                        onClick={() =>
+                          actualizarEstado(id, "Entregado")
+                        }
+                      >
+                        {actualizando === id
+                          ? "Actualizando..."
+                          : "Marcar como entregado"}
+                      </button>
+                    )}
+
+                    {entrega.estado === "Entregado" && (
+                      <span className="entrega-completada">
+                        ✓ Entrega completada
+                      </span>
+                    )}
+
+                  </div>
+
+                </article>
+              );
+            })
+
           ) : (
             <div className="entregas-vacio">
               <span>📭</span>
-              <h3>No se encontraron entregas</h3>
-              <p>Intenta cambiar la búsqueda o el filtro.</p>
+              <h3>
+                {entregas.length === 0
+                  ? "No tienes entregas asignadas"
+                  : "No se encontraron entregas"}
+              </h3>
+              <p>
+                Intenta cambiar la búsqueda o el filtro.
+              </p>
             </div>
           )}
 
         </div>
-
       </div>
-
     </div>
   );
 }

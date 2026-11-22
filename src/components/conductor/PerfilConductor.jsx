@@ -43,10 +43,7 @@ export default function PerfilConductor() {
   return (
     <div className="perfil-conductor">
 
-      <div className="perfil-titulo">
-        <h2>Mi perfil</h2>
-        <p>Consulta tu información personal y datos de usuario.</p>
-      </div>
+      
 
       <div className="perfil-card">
 
@@ -116,14 +113,7 @@ export default function PerfilConductor() {
           </div>
         </div>
 
-        <div className="perfil-nota">
-          <span>ℹ</span>
-          <p>
-            Esta información corresponde a los datos registrados
-            en ONUFAST. Si encuentras algún dato incorrecto,
-            comunícalo al administrador.
-          </p>
-        </div>
+        
 
       </div>
     </div>

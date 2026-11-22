@@ -1,7 +1,7 @@
 
-/* ==============================
-   DASHBOARD CONDUCTOR
-================================= */
+/* =========================================
+   DASHBOARD CONDUCTOR - ONUFAST
+========================================= */
 
 .dashboard-conductor {
   display: flex;
@@ -9,11 +9,12 @@
   gap: 26px;
   width: 100%;
   color: #292830;
+  font-family: Arial, sans-serif;
 }
 
-/* ==============================
+/* =========================================
    BIENVENIDA
-================================= */
+========================================= */
 
 .dashboard-bienvenida {
   position: relative;
@@ -21,11 +22,26 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 220px;
-  padding: 35px 40px;
-  border-radius: 18px;
+  min-height: 235px;
+  padding: 38px 45px;
+  border-radius: 16px;
   background: linear-gradient(120deg, #1a191f, #302c37);
-  color: white;
+  color: #ffffff;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.10);
+}
+
+.dashboard-bienvenida::after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: 100px;
+  top: -170px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 35px rgba(255, 255, 255, 0.025),
+    0 0 0 70px rgba(255, 255, 255, 0.02);
 }
 
 .dashboard-bienvenida-texto {
@@ -37,35 +53,37 @@
 .dashboard-etiqueta {
   display: inline-block;
   color: #ff8589;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 2px;
 }
 
 .dashboard-bienvenida h1 {
-  font-size: 30px;
-  margin: 15px 0 10px;
+  margin: 16px 0 12px;
+  color: #ffffff;
+  font-size: 34px;
   font-weight: 700;
 }
 
 .dashboard-bienvenida-texto > p {
-  max-width: 460px;
-  color: #d1ced5;
-  font-size: 14px;
-  line-height: 1.7;
+  max-width: 520px;
   margin: 0;
+  color: #d1ced5;
+  font-size: 15px;
+  line-height: 1.8;
 }
 
 .dashboard-fecha {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-  padding: 9px 13px;
+  gap: 9px;
+  margin-top: 22px;
+  padding: 11px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.09);
   color: #e6e3e9;
-  font-size: 12px;
+  font-size: 13px;
   text-transform: capitalize;
 }
 
@@ -73,24 +91,26 @@
 
 .bienvenida-ilustracion {
   position: relative;
-  width: 180px;
-  height: 180px;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 210px;
+  height: 210px;
   margin-right: 20px;
+  flex-shrink: 0;
 }
 
 .bienvenida-circulo {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 145px;
-  height: 145px;
+  width: 165px;
+  height: 165px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 50%;
-  background: rgba(201, 37, 44, 0.17);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 75px;
+  background: rgba(201, 37, 44, 0.18);
+  font-size: 85px;
 }
 
 .bienvenida-decoracion {
@@ -116,9 +136,9 @@
   left: 3px;
 }
 
-/* ==============================
-   SECCIONES
-================================= */
+/* =========================================
+   SECCIONES Y TÍTULOS
+========================================= */
 
 .dashboard-seccion {
   display: flex;
@@ -135,50 +155,57 @@
 .dashboard-titulo-seccion h2 {
   margin: 0 0 6px;
   color: #292830;
-  font-size: 19px;
+  font-size: 21px;
+  font-weight: 700;
 }
 
 .dashboard-titulo-seccion p {
   margin: 0;
   color: #8b8992;
-  font-size: 13px;
+  font-size: 14px;
 }
 
-/* ==============================
+/* =========================================
    ESTADÍSTICAS
-================================= */
+========================================= */
 
 .estadisticas-conductor {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
 .estadistica-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   min-width: 0;
+  min-height: 155px;
+  padding: 23px;
+  border: 1px solid #eeeef0;
+  border-radius: 14px;
   background: #ffffff;
-  border: 1px solid #f0eef1;
-  border-radius: 15px;
-  padding: 21px;
   box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .estadistica-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.07);
+  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.08);
 }
 
 .estadistica-superior {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 10px;
+  width: 100%;
 }
 
 .estadistica-titulo {
-  color: #77747e;
-  font-size: 12px;
+  color: #686570;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.5;
 }
 
@@ -186,11 +213,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 43px;
-  height: 43px;
-  border-radius: 12px;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
-  font-size: 19px;
+  border-radius: 13px;
+  font-size: 21px;
 }
 
 .estadistica-icono.rojo {
@@ -200,6 +227,7 @@
 
 .estadistica-icono.amarillo {
   background: #fff6e4;
+  color: #b27a21;
 }
 
 .estadistica-icono.verde {
@@ -209,33 +237,34 @@
 
 .estadistica-icono.azul {
   background: #eaf2ff;
+  color: #3474bd;
 }
 
 .estadistica-card h3 {
-  margin: 17px 0 6px;
+  margin: 15px 0 5px;
   color: #25232b;
-  font-size: 29px;
+  font-size: 34px;
   font-weight: 750;
 }
 
 .estadistica-card p {
-  margin: 0;
+  margin: 3px 0 0;
   color: #a09da5;
-  font-size: 12px;
+  font-size: 13px;
 }
 
-/* ==============================
+/* =========================================
    JORNADA
-================================= */
+========================================= */
 
 .jornada-conductor {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px 23px;
-  background: #ffffff;
-  border: 1px solid #f0eef1;
+  gap: 18px;
+  padding: 23px 26px;
+  border: 1px solid #eeeef0;
   border-radius: 14px;
+  background: #ffffff;
   box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
 }
 
@@ -243,40 +272,42 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
   border-radius: 13px;
   background: #fff0f0;
-  font-size: 23px;
+  font-size: 24px;
 }
 
 .jornada-info {
   flex: 1;
+  min-width: 0;
 }
 
 .jornada-info h3 {
-  color: #302e36;
-  font-size: 14px;
   margin: 0 0 5px;
+  color: #302e36;
+  font-size: 15px;
 }
 
 .jornada-info p {
-  color: #898690;
-  font-size: 12px;
-  line-height: 1.6;
   margin: 0;
+  color: #898690;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .jornada-estado {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 13px;
+  padding: 11px 15px;
   border-radius: 30px;
-  background: #f2f3f4;
-  color: #6d6b73;
-  font-size: 11px;
+  background: #eaf8ef;
+  color: #34824d;
+  font-size: 12px;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -287,15 +318,15 @@
   background: #398b57;
 }
 
-/* ==============================
-   TABLA DE RUTAS
-================================= */
+/* =========================================
+   PRÓXIMAS RUTAS
+========================================= */
 
 .rutas-conductor-card {
-  background: #ffffff;
-  border: 1px solid #f0eef1;
+  padding: 28px;
+  border: 1px solid #eeeef0;
   border-radius: 15px;
-  padding: 25px;
+  background: #ffffff;
   box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
 }
 
@@ -303,19 +334,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 23px;
+  gap: 15px;
+  margin-bottom: 26px;
 }
 
 .rutas-card-header h2 {
-  color: #292830;
-  font-size: 18px;
   margin: 0 0 7px;
+  color: #292830;
+  font-size: 20px;
 }
 
 .rutas-card-header p {
-  color: #8b8992;
-  font-size: 12px;
   margin: 0;
+  color: #8b8992;
+  font-size: 13px;
 }
 
 .rutas-icono-header {
@@ -324,6 +356,7 @@
   justify-content: center;
   width: 45px;
   height: 45px;
+  flex-shrink: 0;
   border-radius: 12px;
   background: #fff0f0;
   font-size: 22px;
@@ -339,24 +372,24 @@
   display: grid;
   grid-template-columns: 1.1fr 1fr 1fr 1.15fr 1fr;
   align-items: center;
-  gap: 12px;
-  min-width: 610px;
+  gap: 15px;
+  min-width: 650px;
 }
 
 .tabla-rutas-encabezado {
-  padding: 14px 16px;
-  background: #f8f7f9;
+  padding: 17px;
   border-radius: 9px;
-  color: #88858f;
-  font-size: 11px;
+  background: #f7f6f8;
+  color: #77747e;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .tabla-rutas-fila {
-  padding: 17px 16px;
+  padding: 20px 17px;
   border-bottom: 1px solid #f1eff2;
   color: #77747e;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .tabla-rutas-fila:last-child {
@@ -365,7 +398,7 @@
 
 .tabla-rutas-fila strong {
   color: #302e36;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .tabla-rutas-fila > span {
@@ -377,9 +410,9 @@
 .estado-proceso,
 .estado-pendiente {
   display: inline-block;
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: 30px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -394,15 +427,15 @@
   color: #b27a21;
 }
 
-/* ==============================
+/* =========================================
    AVISO
-================================= */
+========================================= */
 
 .conductor-aviso {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 19px 21px;
+  padding: 22px 24px;
   border: 1px solid #f1e4e4;
   border-left: 4px solid #c9252c;
   border-radius: 11px;
@@ -410,30 +443,43 @@
 }
 
 .aviso-icono {
+  flex-shrink: 0;
   font-size: 21px;
 }
 
 .conductor-aviso strong {
   color: #343139;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .conductor-aviso p {
-  color: #898690;
-  font-size: 12px;
-  line-height: 1.6;
   margin: 6px 0 0;
+  color: #898690;
+  font-size: 13px;
+  line-height: 1.7;
 }
 
-/* ==============================
-   RESPONSIVE
-================================= */
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
 
-@media (max-width: 1150px) {
+@media (max-width: 1100px) {
   .estadisticas-conductor {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .estadistica-card {
+    min-height: 145px;
+  }
+
+  .dashboard-bienvenida {
+    padding: 30px;
+  }
 }
+
+/* =========================================
+   RESPONSIVE - TABLET PEQUEÑA
+========================================= */
 
 @media (max-width: 750px) {
   .dashboard-bienvenida {
@@ -459,7 +505,11 @@
   }
 
   .dashboard-bienvenida h1 {
-    font-size: 24px;
+    font-size: 26px;
+  }
+
+  .dashboard-bienvenida-texto > p {
+    font-size: 14px;
   }
 
   .jornada-conductor {
@@ -467,42 +517,73 @@
   }
 
   .jornada-estado {
-    margin-left: 64px;
+    margin-left: 70px;
   }
 }
 
+/* =========================================
+   RESPONSIVE - CELULAR
+========================================= */
+
 @media (max-width: 550px) {
+  .dashboard-conductor {
+    gap: 20px;
+  }
+
   .estadisticas-conductor {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .estadistica-card {
+    min-height: 135px;
+    padding: 20px;
+  }
+
+  .estadistica-card h3 {
+    font-size: 30px;
   }
 
   .dashboard-bienvenida {
     min-height: auto;
-    padding: 24px 20px;
-  }
-
-  .bienvenida-ilustracion {
-    display: none;
+    padding: 24px;
   }
 
   .dashboard-bienvenida h1 {
-    font-size: 23px;
+    font-size: 25px;
   }
 
   .dashboard-bienvenida-texto > p {
     font-size: 13px;
   }
 
+  .bienvenida-ilustracion {
+    display: none;
+  }
+
+  .dashboard-fecha {
+    font-size: 12px;
+  }
+
   .dashboard-titulo-seccion h2 {
-    font-size: 17px;
+    font-size: 18px;
+  }
+
+  .dashboard-titulo-seccion p {
+    font-size: 12px;
   }
 
   .rutas-conductor-card {
-    padding: 17px;
+    padding: 18px;
+  }
+
+  .rutas-card-header h2 {
+    font-size: 18px;
   }
 
   .jornada-conductor {
     padding: 17px;
+    gap: 12px;
   }
 
   .jornada-estado {
@@ -511,214 +592,5 @@
 
   .conductor-aviso {
     padding: 16px;
-  }
-}
-
-
-
-/* ==================================
-   MEJORAS VISUALES - DASHBOARD
-   ================================== */
-
-/* BANNER DE BIENVENIDA */
-.dashboard-bienvenida {
-  min-height: 245px;
-  padding: 38px 45px;
-}
-
-.dashboard-bienvenida h1 {
-  font-size: 34px;
-  margin: 16px 0 12px;
-}
-
-.dashboard-bienvenida-texto > p {
-  font-size: 15px;
-  line-height: 1.8;
-  max-width: 520px;
-}
-
-.dashboard-etiqueta {
-  font-size: 12px;
-}
-
-.dashboard-fecha {
-  padding: 11px 15px;
-  font-size: 13px;
-  margin-top: 22px;
-}
-
-.bienvenida-ilustracion {
-  width: 210px;
-  height: 210px;
-}
-
-.bienvenida-circulo {
-  width: 165px;
-  height: 165px;
-  font-size: 85px;
-}
-
-/* TITULOS DE SECCION */
-.dashboard-titulo-seccion h2 {
-  font-size: 21px;
-}
-
-.dashboard-titulo-seccion p {
-  font-size: 14px;
-}
-
-/* TARJETAS DE ESTADISTICAS */
-.estadisticas-conductor {
-  gap: 20px;
-}
-
-.estadistica-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 155px;
-  padding: 23px;
-}
-
-.estadistica-superior {
-  width: 100%;
-}
-
-.estadistica-titulo {
-  font-size: 13px;
-  font-weight: 600;
-  color: #686570;
-}
-
-.estadistica-icono {
-  width: 46px;
-  height: 46px;
-  font-size: 21px;
-  border-radius: 13px;
-}
-
-.estadistica-card h3 {
-  font-size: 34px;
-  margin: 15px 0 5px;
-}
-
-.estadistica-card p {
-  font-size: 13px;
-  margin-top: 3px;
-}
-
-/* JORNADA */
-.jornada-conductor {
-  padding: 23px 26px;
-  gap: 18px;
-}
-
-.jornada-icono {
-  width: 52px;
-  height: 52px;
-  font-size: 24px;
-}
-
-.jornada-info h3 {
-  font-size: 15px;
-}
-
-.jornada-info p {
-  font-size: 13px;
-}
-
-.jornada-estado {
-  padding: 11px 15px;
-  font-size: 12px;
-}
-
-/* TABLA DE RUTAS */
-.rutas-conductor-card {
-  padding: 28px;
-}
-
-.rutas-card-header {
-  margin-bottom: 26px;
-}
-
-.rutas-card-header h2 {
-  font-size: 20px;
-}
-
-.rutas-card-header p {
-  font-size: 13px;
-}
-
-.tabla-rutas-encabezado,
-.tabla-rutas-fila {
-  gap: 15px;
-  min-width: 650px;
-}
-
-.tabla-rutas-encabezado {
-  padding: 17px;
-  font-size: 12px;
-}
-
-.tabla-rutas-fila {
-  padding: 20px 17px;
-  font-size: 13px;
-}
-
-.tabla-rutas-fila strong {
-  font-size: 13px;
-}
-
-.estado-proceso,
-.estado-pendiente {
-  padding: 7px 11px;
-  font-size: 11px;
-}
-
-/* AVISO */
-.conductor-aviso {
-  padding: 22px 24px;
-}
-
-.conductor-aviso strong {
-  font-size: 14px;
-}
-
-.conductor-aviso p {
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-/* ADAPTACION PARA TABLET */
-@media (max-width: 1100px) {
-  .estadistica-card {
-    min-height: 145px;
-  }
-
-  .dashboard-bienvenida {
-    padding: 30px;
-  }
-}
-
-/* ADAPTACION PARA CELULAR */
-@media (max-width: 550px) {
-  .dashboard-bienvenida {
-    padding: 24px;
-  }
-
-  .dashboard-bienvenida h1 {
-    font-size: 25px;
-  }
-
-  .estadistica-card {
-    min-height: 135px;
-  }
-
-  .estadistica-card h3 {
-    font-size: 30px;
-  }
-
-  .rutas-conductor-card {
-    padding: 18px;
   }
 }

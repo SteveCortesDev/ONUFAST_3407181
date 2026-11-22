@@ -1,95 +1,132 @@
 
+/* =========================================
+   MIS RUTAS - ONUFAST
+========================================= */
+
 .mis-rutas {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 28px;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  color: #292830;
 }
+
+/* =========================================
+   ENCABEZADO
+========================================= */
 
 .mis-rutas-titulo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 15px;
+  gap: 25px;
 }
 
 .rutas-etiqueta {
   color: #c9252c;
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: 1.5px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
 }
 
 .mis-rutas-titulo h1 {
   color: #1a191f;
-  font-size: 27px;
-  margin: 8px 0;
+  font-size: 32px;
+  margin: 12px 0;
 }
 
 .mis-rutas-titulo p {
   color: #888;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.7;
   margin: 0;
 }
 
 .rutas-total {
-  background: white;
-  padding: 15px 22px;
-  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  min-width: 130px;
+  padding: 20px 24px;
+  background: #ffffff;
+  border: 1px solid #f0eef1;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
 }
 
 .rutas-total span {
   color: #888;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .rutas-total strong {
-  font-size: 25px;
   color: #c9252c;
+  font-size: 30px;
 }
 
-/* RESUMEN */
+/* =========================================
+   RESUMEN DE RUTAS
+========================================= */
 
 .rutas-resumen {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
 }
 
 .ruta-resumen-card {
-  background: white;
-  padding: 20px;
-  border-radius: 11px;
   display: flex;
   align-items: center;
   gap: 15px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+  min-width: 0;
+  min-height: 110px;
+  padding: 23px;
+  background: #ffffff;
+  border: 1px solid #f0eef1;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ruta-resumen-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.07);
 }
 
 .ruta-resumen-icono {
-  font-size: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: #fff0f0;
+  font-size: 23px;
 }
 
 .ruta-resumen-card p {
   color: #888;
-  font-size: 12px;
-  margin: 0 0 6px;
+  font-size: 13px;
+  margin: 0 0 8px;
 }
 
 .ruta-resumen-card strong {
   color: #1a191f;
-  font-size: 23px;
+  font-size: 28px;
 }
 
-/* LISTADO */
+/* =========================================
+   LISTADO Y FILTROS
+========================================= */
 
 .rutas-listado {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #f0eef1;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
 }
 
 .rutas-listado-header {
@@ -97,81 +134,103 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 18px;
-  margin-bottom: 25px;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 
 .rutas-listado-header h2 {
   color: #1a191f;
-  font-size: 19px;
-  margin: 0 0 6px;
+  font-size: 21px;
+  margin: 0 0 8px;
 }
 
 .rutas-listado-header p {
   color: #888;
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.6;
   margin: 0;
 }
+
+/* Filtros */
 
 .rutas-filtros {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 9px;
 }
 
 .rutas-filtros button {
-  background: #f3f3f3;
-  border: none;
-  border-radius: 7px;
-  padding: 9px 13px;
+  padding: 11px 16px;
+  border: 1px solid #eeeeef;
+  border-radius: 8px;
+  background: #f5f5f6;
   color: #666;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-.rutas-filtros button:hover,
-.rutas-filtros button.filtro-activo {
+.rutas-filtros button:hover {
+  transform: translateY(-1px);
+  border-color: #c9252c;
+  color: #c9252c;
+}
+
+.rutas-filtros button.filtro-activo,
+.rutas-filtros button.filtro-activo:hover {
   background: #c9252c;
-  color: white;
+  border-color: #c9252c;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(201, 37, 44, 0.18);
 }
 
-/* TARJETAS */
+/* =========================================
+   TARJETAS DE RUTAS
+========================================= */
 
 .rutas-tarjetas {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
 .ruta-card {
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 20px;
-  transition: 0.2s;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #eee9ed;
+  border-radius: 14px;
+  background: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .ruta-card:hover {
-  border-color: #c9252c;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+  border-color: #e7c5c7;
+  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.055);
 }
 
 .ruta-card-superior {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 23px;
+  gap: 12px;
+  margin-bottom: 26px;
 }
 
 .ruta-card-superior > strong {
   color: #1a191f;
-  font-size: 14px;
+  font-size: 15px;
 }
 
+/* Estados */
+
 .ruta-estado {
-  padding: 6px 10px;
+  display: inline-block;
+  padding: 7px 12px;
   border-radius: 20px;
-  font-size: 10px;
-  font-weight: bold;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .ruta-estado.pendiente {
@@ -189,26 +248,28 @@
   color: #268343;
 }
 
-/* RECORRIDO */
+/* =========================================
+   RECORRIDO: ORIGEN Y DESTINO
+========================================= */
 
 .ruta-recorrido {
   display: flex;
   flex-direction: column;
-  margin-bottom: 23px;
+  margin-bottom: 26px;
 }
 
 .ruta-punto {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .punto-origen,
 .punto-destino {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+  width: 13px;
+  height: 13px;
   flex-shrink: 0;
+  border-radius: 50%;
 }
 
 .punto-origen {
@@ -227,27 +288,29 @@
 
 .ruta-punto small {
   color: #999;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ruta-punto strong {
   color: #333;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .ruta-linea {
-  height: 20px;
-  border-left: 2px dashed #ddd;
+  height: 25px;
   margin: 3px 0 3px 5px;
+  border-left: 2px dashed #ddd;
 }
 
-/* DETALLES */
+/* =========================================
+   DETALLES DE LA RUTA
+========================================= */
 
 .ruta-detalles {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  padding-top: 17px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 19px 15px;
+  padding-top: 20px;
   border-top: 1px solid #eee;
 }
 
@@ -255,277 +318,80 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  min-width: 0;
 }
 
 .ruta-detalles small {
   color: #999;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ruta-detalles strong {
   color: #444;
-  font-size: 12px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
-/* ESTADO VACÍO */
+/* =========================================
+   BOTONES DE ACCIÓN
+========================================= */
+
+.ruta-acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-iniciar-ruta,
+.btn-finalizar-ruta {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-iniciar-ruta {
+  background: #1a191f;
+}
+
+.btn-finalizar-ruta {
+  background: #c9252c;
+}
+
+.btn-iniciar-ruta:hover,
+.btn-finalizar-ruta:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
+  box-shadow: 0 4px 10px rgba(28, 24, 35, 0.15);
+}
+
+.ruta-completada {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: #eaf8ef;
+  color: #268343;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================
+   CARGANDO, ERROR Y SIN RESULTADOS
+========================================= */
 
 .rutas-vacio {
   grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px 15px;
-}
-
-.rutas-vacio span {
-  font-size: 35px;
-}
-
-.rutas-vacio h3 {
-  color: #333;
-}
-
-.rutas-vacio p {
-  color: #888;
-  font-size: 13px;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 1000px) {
-  .rutas-resumen {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .rutas-tarjetas {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 550px) {
-  .mis-rutas-titulo {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .rutas-resumen {
-    grid-template-columns: 1fr;
-  }
-
-  .rutas-listado {
-    padding: 16px;
-  }
-}
-
-
-/* ==========================================
-   MEJORAS VISUALES - MIS RUTAS ONUFAST
-========================================== */
-
-/* CONTENEDOR GENERAL */
-.mis-rutas {
-  gap: 28px;
-}
-
-/* TITULO */
-.mis-rutas-titulo {
-  gap: 25px;
-}
-
-.rutas-etiqueta {
-  font-size: 12px;
-  letter-spacing: 1.8px;
-}
-
-.mis-rutas-titulo h1 {
-  font-size: 32px;
-  margin: 12px 0;
-}
-
-.mis-rutas-titulo p {
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-/* TOTAL RUTAS */
-.rutas-total {
-  min-width: 130px;
-  padding: 20px 24px;
-  border: 1px solid #f0eef1;
-  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
-}
-
-.rutas-total span {
-  font-size: 13px;
-}
-
-.rutas-total strong {
-  font-size: 30px;
-}
-
-/* TARJETAS RESUMEN */
-.rutas-resumen {
-  gap: 20px;
-}
-
-.ruta-resumen-card {
-  min-height: 110px;
-  padding: 23px;
-  border: 1px solid #f0eef1;
-  border-radius: 14px;
-  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.ruta-resumen-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.07);
-}
-
-.ruta-resumen-icono {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 13px;
-  background: #fff0f0;
-  font-size: 23px;
-  flex-shrink: 0;
-}
-
-.ruta-resumen-card p {
-  font-size: 13px;
-  margin-bottom: 8px;
-}
-
-.ruta-resumen-card strong {
-  font-size: 28px;
-}
-
-/* LISTADO */
-.rutas-listado {
-  padding: 28px;
-  border: 1px solid #f0eef1;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
-}
-
-.rutas-listado-header {
-  margin-bottom: 28px;
-  gap: 20px;
-}
-
-.rutas-listado-header h2 {
-  font-size: 21px;
-  margin-bottom: 8px;
-}
-
-.rutas-listado-header p {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-/* FILTROS */
-.rutas-filtros {
-  gap: 9px;
-}
-
-.rutas-filtros button {
-  padding: 11px 16px;
-  font-size: 13px;
-  border: 1px solid transparent;
-  transition: background 0.2s, color 0.2s, transform 0.2s;
-}
-
-.rutas-filtros button:hover {
-  transform: translateY(-1px);
-}
-
-.rutas-filtros button.filtro-activo {
-  background: #c9252c;
-  color: white;
-  box-shadow: 0 3px 8px rgba(201, 37, 44, 0.18);
-}
-
-/* TARJETAS DE RUTA */
-.rutas-tarjetas {
-  gap: 20px;
-}
-
-.ruta-card {
-  padding: 24px;
-  border: 1px solid #eee9ed;
-  border-radius: 14px;
-  background: #fff;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
-}
-
-.ruta-card:hover {
-  transform: translateY(-2px);
-  border-color: #e7c5c7;
-  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.055);
-}
-
-.ruta-card-superior {
-  margin-bottom: 26px;
-}
-
-.ruta-card-superior > strong {
-  font-size: 15px;
-}
-
-.ruta-estado {
-  padding: 7px 12px;
-  font-size: 11px;
-}
-
-/* ORIGEN Y DESTINO */
-.ruta-recorrido {
-  margin-bottom: 26px;
-}
-
-.ruta-punto {
-  gap: 14px;
-}
-
-.punto-origen,
-.punto-destino {
-  width: 13px;
-  height: 13px;
-}
-
-.ruta-linea {
-  height: 25px;
-  margin-left: 5px;
-}
-
-.ruta-punto small {
-  font-size: 12px;
-}
-
-.ruta-punto strong {
-  font-size: 15px;
-}
-
-/* DETALLES */
-.ruta-detalles {
-  gap: 19px 15px;
-  padding-top: 20px;
-}
-
-.ruta-detalles small {
-  font-size: 12px;
-}
-
-.ruta-detalles strong {
-  font-size: 13px;
-}
-
-/* ESTADO VACIO */
-.rutas-vacio {
   padding: 55px 20px;
   border: 1px dashed #e7e3e8;
   border-radius: 12px;
   background: #faf9fb;
+  text-align: center;
 }
 
 .rutas-vacio span {
@@ -533,16 +399,22 @@
 }
 
 .rutas-vacio h3 {
-  font-size: 17px;
   margin: 15px 0 8px;
+  color: #333;
+  font-size: 17px;
 }
 
 .rutas-vacio p {
+  color: #888;
   font-size: 13px;
+  line-height: 1.6;
 }
 
-/* TABLET */
-@media (max-width: 1000px) {
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width: 1100px) {
   .rutas-resumen {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -550,13 +422,12 @@
   .rutas-tarjetas {
     grid-template-columns: 1fr;
   }
-
-  .ruta-card {
-    padding: 23px;
-  }
 }
 
-/* CELULAR */
+/* =========================================
+   RESPONSIVE - CELULAR
+========================================= */
+
 @media (max-width: 550px) {
   .mis-rutas {
     gap: 21px;
@@ -597,11 +468,13 @@
 
   .rutas-filtros {
     width: 100%;
+    gap: 7px;
   }
 
   .rutas-filtros button {
     flex: 1;
     padding: 10px 8px;
+    font-size: 11px;
   }
 
   .ruta-card {
@@ -611,354 +484,12 @@
   .ruta-detalles {
     gap: 16px 10px;
   }
-}
 
-
-/* ==========================================
-   MEJORAS VISUALES - MIS ENTREGAS ONUFAST
-========================================== */
-
-/* CONTENEDOR GENERAL */
-.mis-entregas {
-  gap: 28px;
-}
-
-/* ENCABEZADO */
-.entregas-titulo {
-  gap: 25px;
-}
-
-.entregas-etiqueta {
-  font-size: 12px;
-  letter-spacing: 1.8px;
-}
-
-.entregas-titulo h1 {
-  font-size: 32px;
-  margin: 12px 0;
-}
-
-.entregas-titulo p {
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-/* TOTAL DE PAQUETES */
-.entregas-total {
-  min-width: 140px;
-  padding: 20px 24px;
-  border: 1px solid #f0eef1;
-  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
-}
-
-.entregas-total span {
-  font-size: 13px;
-}
-
-.entregas-total strong {
-  font-size: 30px;
-}
-
-/* RESUMEN DE ESTADOS */
-.entregas-resumen {
-  gap: 20px;
-}
-
-.entrega-resumen-card {
-  min-height: 115px;
-  padding: 23px;
-  border: 1px solid #f0eef1;
-  border-radius: 14px;
-  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.entrega-resumen-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.07);
-}
-
-.entrega-resumen-card > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  border-radius: 13px;
-  background: #fff0f0;
-  font-size: 23px;
-}
-
-.entrega-resumen-card p {
-  font-size: 13px;
-  margin-bottom: 8px;
-}
-
-.entrega-resumen-card strong {
-  font-size: 28px;
-}
-
-/* CONTENEDOR DEL LISTADO */
-.entregas-listado {
-  padding: 28px;
-  border: 1px solid #f0eef1;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(28, 24, 35, 0.035);
-}
-
-.entregas-listado-header {
-  margin-bottom: 5px;
-}
-
-.entregas-listado-header h2 {
-  font-size: 21px;
-  margin-bottom: 8px;
-}
-
-.entregas-listado-header p {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-/* BUSCADOR Y FILTRO */
-.entregas-controles {
-  gap: 16px;
-  margin: 25px 0;
-}
-
-.entregas-buscador {
-  max-width: 600px;
-  padding: 0 16px;
-  border-radius: 10px;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-
-.entregas-buscador:focus-within {
-  border-color: #c9252c;
-  box-shadow: 0 0 0 3px rgba(201, 37, 44, 0.08);
-}
-
-.entregas-buscador span {
-  font-size: 25px;
-}
-
-.entregas-buscador input {
-  padding: 15px 0;
-  font-size: 13px;
-}
-
-.entregas-buscador input::placeholder {
-  color: #aaa;
-}
-
-.entregas-controles select {
-  min-width: 175px;
-  padding: 13px 15px;
-  font-size: 13px;
-  border-radius: 9px;
-  outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-
-.entregas-controles select:focus {
-  border-color: #c9252c;
-  box-shadow: 0 0 0 3px rgba(201, 37, 44, 0.08);
-}
-
-/* TARJETAS DE PAQUETES */
-.entregas-tarjetas {
-  gap: 20px;
-}
-
-.entrega-card {
-  padding: 24px;
-  border: 1px solid #eee9ed;
-  border-radius: 14px;
-  background: #fff;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
-}
-
-.entrega-card:hover {
-  transform: translateY(-2px);
-  border-color: #e7c5c7;
-  box-shadow: 0 8px 22px rgba(28, 24, 35, 0.055);
-}
-
-/* ENCABEZADO DE CADA PAQUETE */
-.entrega-card-header {
-  gap: 14px;
-  padding-bottom: 20px;
-}
-
-.entrega-codigo {
-  font-size: 12px;
-  letter-spacing: 0.3px;
-}
-
-.entrega-card-header h3 {
-  font-size: 17px;
-  margin-top: 9px;
-}
-
-.entrega-estado {
-  padding: 8px 12px;
-  font-size: 11px;
-}
-
-/* INFORMACIÓN DEL DESTINATARIO */
-.entrega-informacion {
-  gap: 20px;
-  padding: 22px 0;
-}
-
-.entrega-informacion div {
-  gap: 7px;
-}
-
-.entrega-informacion span {
-  font-size: 12px;
-}
-
-.entrega-informacion strong {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-/* DIRECCIÓN */
-.entrega-direccion {
-  padding: 14px;
-  background: #faf9fb;
-  border-radius: 9px;
-}
-
-/* BOTONES DE ACCIÓN */
-.entrega-acciones {
-  padding-top: 18px;
-}
-
-.entrega-acciones button {
-  padding: 13px 16px;
-  border-radius: 9px;
-  font-size: 13px;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-}
-
-.entrega-acciones button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(28, 24, 35, 0.12);
-}
-
-.btn-iniciar-entrega {
-  background: #1a191f;
-}
-
-.btn-finalizar-entrega {
-  background: #c9252c;
-}
-
-.entrega-completada {
-  padding: 13px;
-  font-size: 13px;
-  border-radius: 9px;
-}
-
-/* SIN RESULTADOS */
-.entregas-vacio {
-  padding: 55px 20px;
-  border: 1px dashed #e7e3e8;
-  border-radius: 12px;
-  background: #faf9fb;
-}
-
-.entregas-vacio span {
-  font-size: 42px;
-}
-
-.entregas-vacio h3 {
-  font-size: 17px;
-  margin: 15px 0 8px;
-}
-
-.entregas-vacio p {
-  font-size: 13px;
-}
-
-/* TABLET */
-@media (max-width: 1000px) {
-  .entregas-tarjetas {
-    grid-template-columns: 1fr;
+  .ruta-acciones {
+    justify-content: stretch;
   }
 
-  .entrega-card {
-    padding: 23px;
-  }
-}
-
-/* CELULAR */
-@media (max-width: 650px) {
-  .mis-entregas {
-    gap: 21px;
-  }
-
-  .entregas-titulo {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .entregas-titulo h1 {
-    font-size: 27px;
-  }
-
-  .entregas-total {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .entregas-resumen {
-    grid-template-columns: 1fr;
-    gap: 13px;
-  }
-
-  .entrega-resumen-card {
-    min-height: 90px;
-  }
-
-  .entregas-listado {
-    padding: 18px;
-  }
-
-  .entregas-controles {
-    flex-direction: column;
-  }
-
-  .entregas-buscador {
-    max-width: none;
+  .ruta-acciones button {
     width: 100%;
-    box-sizing: border-box;
-  }
-
-  .entregas-controles select {
-    width: 100%;
-    min-width: 0;
-    padding: 13px;
-  }
-
-  .entrega-card {
-    padding: 19px;
-  }
-
-  .entrega-card-header h3 {
-    font-size: 15px;
-  }
-
-  .entrega-informacion {
-    gap: 16px 12px;
-  }
-
-  .entrega-informacion strong {
-    font-size: 12px;
   }
 }
-

@@ -18,6 +18,7 @@ export default function MisRutas() {
         const respuesta = await api.get("/rutas/mis-rutas");
 
         const rutasAdaptadas = respuesta.data.map((ruta) => ({
+          id_rutas: ruta.id_rutas,
           codigo: ruta.codigo_ruta,
           origen: ruta.ciudad_origen,
           destino: ruta.ciudad_destino,
@@ -34,6 +35,7 @@ export default function MisRutas() {
           vehiculo: ruta.tipo_vehiculo,
           paquetes: ruta.cantidad_paquetes,
           estado: ruta.estado,
+          
         }));
 
         setRutas(rutasAdaptadas);
@@ -51,6 +53,40 @@ export default function MisRutas() {
 
     cargarRutas();
   }, []);
+
+
+const cambiarEstado = async (ruta) => {
+  const nuevoEstado =
+    ruta.estado === "Pendiente"
+      ? "En proceso"
+      : ruta.estado === "En proceso"
+      ? "Finalizada"
+      : null;
+
+  if (!nuevoEstado) return;
+
+  try {
+    await api.patch(
+      `/rutas/${ruta.id_rutas}/estado`,
+      { estado: nuevoEstado }
+    );
+
+    setRutas((rutasActuales) =>
+      rutasActuales.map((r) =>
+        r.codigo === ruta.codigo
+          ? { ...r, estado: nuevoEstado }
+          : r
+      )
+    );
+  } catch (error) {
+    console.error("Error al cambiar el estado:", error);
+    alert(
+      error.response?.data?.detail ||
+      "No se pudo actualizar el estado de la ruta."
+    );
+  }
+};
+
 
   const rutasFiltradas =
     filtro === "Todas"
@@ -215,6 +251,33 @@ export default function MisRutas() {
                     <strong>{ruta.paquetes}</strong>
                   </div>
 
+                </div>
+
+                {/*BOTÓN DE CAMBIO DE ESTADO*/}
+                <div className="ruta-acciones">
+                  {ruta.estado === "Pendiente" && (
+                <button
+                  onClick={() => cambiarEstado(ruta)}
+                  className="btn-iniciar-ruta"
+                >
+                Iniciar ruta
+                </button>
+                )}
+
+                {ruta.estado === "En proceso" && (
+                <button
+                  onClick={() => cambiarEstado(ruta)}
+                  className="btn-finalizar-ruta"
+                >
+                Finalizar ruta
+                </button>
+                )}
+
+                {ruta.estado === "Finalizada" && (
+                <span className="ruta-completada">
+                ✓ Ruta completada
+                </span>
+                )}
                 </div>
 
               </article>

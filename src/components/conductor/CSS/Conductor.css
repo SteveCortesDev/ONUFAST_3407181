@@ -1,4 +1,8 @@
 
+/* ==========================================
+   CONFIGURACIÓN GENERAL
+========================================== */
+
 * {
   box-sizing: border-box;
 }
@@ -6,61 +10,74 @@
 .conductor-container {
   display: flex;
   min-height: 100vh;
-  background: #ededed;
+  width: 100%;
+  background: #808080;
   font-family: Arial, sans-serif;
 }
 
-/* BARRA LATERAL */
+/* ==========================================
+   MENÚ LATERAL
+========================================== */
 
 .conductor-sidebar {
-  width: 255px;
+  width: 184px;
   min-height: 100vh;
-  background: #1a191f;
-  color: white;
+  background: #101116;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
-  padding: 25px 18px;
+  padding: 0 12px 20px;
   flex-shrink: 0;
 }
 
+/* LOGO */
+
 .conductor-logo {
-  text-align: center;
-  padding-bottom: 25px;
-  border-bottom: 1px solid #38373d;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 7px;
+  border-bottom: 1px solid #292a30;
+  margin: 0 -12px;
 }
 
 .conductor-logo img {
-  width: 155px;
-  max-height: 75px;
+  width: 125px;
+  max-height: 52px;
   object-fit: contain;
 }
 
+/* INFORMACIÓN DEL CONDUCTOR */
+
 .conductor-info {
   text-align: center;
-  padding: 25px 0;
+  padding: 23px 0 18px;
+  border-bottom: 1px solid #292a30;
 }
 
 .conductor-avatar {
-  width: 65px;
-  height: 65px;
-  background: #c9252c;
+  width: 58px;
+  height: 58px;
+  background: #e9232b;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 25px;
+  font-size: 23px;
   font-weight: bold;
   margin: 0 auto 12px;
+  color: white;
 }
 
 .foto-perfil {
-  width: 105px;
-  height: 105px;
+  width: 95px;
+  height: 95px;
   border-radius: 50%;
   overflow: hidden;
   margin: 15px auto;
   background-color: #f1f1f1;
-  border: 2px solid white;
+  border: 2px solid #e9232b;
 }
 
 .foto-perfil img {
@@ -72,120 +89,164 @@
 
 .conductor-info h3 {
   margin: 5px 0;
-  font-size: 17px;
+  font-size: 14px;
+  color: #ffffff;
 }
 
 .conductor-info span {
   color: #aaa;
-  font-size: 12px;
+  font-size: 11px;
 }
 
-/* MENÚ */
+/* ==========================================
+   NAVEGACIÓN
+========================================== */
 
 .conductor-menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 7px;
+  margin-top: 20px;
 }
 
 .conductor-menu button,
 .conductor-logout {
+  width: 100%;
   border: none;
   background: transparent;
-  color: #ccc;
-  padding: 14px;
+  color: #d0d0d3;
+  padding: 13px 12px;
   text-align: left;
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
 }
 
 .conductor-menu button span {
-  margin-right: 12px;
-  font-size: 18px;
+  display: inline-block;
+  width: 23px;
+  margin-right: 7px;
+  font-size: 15px;
+  text-align: center;
 }
 
 .conductor-menu button:hover,
 .conductor-menu button.activo {
-  background: #c9252c;
-  color: white;
+  background: #e9232b;
+  color: #ffffff;
 }
+
+.conductor-menu button:hover {
+  transform: translateX(2px);
+}
+
+/* CERRAR SESIÓN */
 
 .conductor-logout {
   margin-top: auto;
   color: #ff7777;
+  border-top: 1px solid #292a30;
+  border-radius: 0;
+  padding-top: 18px;
 }
 
 .conductor-logout:hover {
-  background: #38373d;
+  background: #292a30;
+  color: #ffffff;
 }
 
-/* CONTENIDO */
+/* ==========================================
+   CONTENIDO PRINCIPAL
+========================================== */
 
 .conductor-main {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ==========================================
+   BARRA SUPERIOR
+========================================== */
+
 .conductor-header {
-  background: white;
-  min-height: 95px;
-  padding: 20px 35px;
+  background: #101116;
+  min-height: 60px;
+  padding: 10px 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  gap: 15px;
+  border-bottom: 1px solid #292a30;
 }
 
 .conductor-header h2 {
-  margin: 0 0 7px;
-  color: #1a191f;
+  margin: 0 0 5px;
+  color: #ffffff;
+  font-size: 17px;
 }
 
 .conductor-header p {
   margin: 0;
-  color: #777;
-  font-size: 13px;
+  color: #b8b8bd;
+  font-size: 12px;
 }
 
 .conductor-header-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .conductor-avatar.pequeño {
-  width: 42px;
-  height: 42px;
-  font-size: 17px;
+  width: 35px;
+  height: 35px;
+  font-size: 15px;
   margin: 0;
+  background: #25232c;
+  border: 1px solid #66616e;
 }
+
+/* ==========================================
+   ÁREA DE TRABAJO
+========================================== */
 
 .conductor-content {
-  padding: 30px 35px;
+  flex: 1;
+  padding: 20px;
+  min-width: 0;
+  background: #808080;
 }
 
-/* RESPONSIVE */
+/* ==========================================
+   RESPONSIVE - TABLET
+========================================== */
 
-@media (max-width: 750px) {
+@media (max-width: 900px) {
   .conductor-sidebar {
-    width: 190px;
-    padding: 20px 10px;
+    width: 170px;
   }
 
   .conductor-header {
-    padding: 18px;
+    padding: 12px 20px;
   }
 
   .conductor-content {
-    padding: 20px;
+    padding: 18px;
   }
 }
 
-@media (max-width: 520px) {
+/* ==========================================
+   RESPONSIVE - MÓVIL
+========================================== */
+
+@media (max-width: 600px) {
   .conductor-container {
     flex-direction: column;
   }
@@ -193,10 +254,11 @@
   .conductor-sidebar {
     width: 100%;
     min-height: auto;
+    padding: 0 10px 10px;
   }
 
-  .conductor-logo img {
-    width: 120px;
+  .conductor-logo {
+    height: 55px;
   }
 
   .conductor-info {
@@ -206,15 +268,44 @@
   .conductor-menu {
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
   }
 
   .conductor-menu button {
-    flex: 1;
+    width: auto;
+    flex: 1 1 120px;
     text-align: center;
-    padding: 10px 5px;
+    padding: 11px 5px;
+  }
+
+  .conductor-menu button span {
+    width: auto;
+    margin-right: 5px;
   }
 
   .conductor-logout {
     margin-top: 10px;
+    text-align: center;
+    border-top: none;
+    padding: 10px;
+  }
+
+  .conductor-header {
+    min-height: 58px;
+    padding: 10px 15px;
+  }
+
+  .conductor-header h2 {
+    font-size: 14px;
+  }
+
+  .conductor-header-user {
+    font-size: 10px;
+  }
+
+  .conductor-content {
+    padding: 13px;
   }
 }
