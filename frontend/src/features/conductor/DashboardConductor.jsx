@@ -177,7 +177,7 @@ export default function DashboardConductor() {
         console.error("Error al cargar el Dashboard:", error);
 
         setError(
-          "No fue posible cargar toda la informaciÃ³n del panel. Verifica tu conexiÃ³n."
+          "No fue posible cargar toda la informacion del panel. Verifica tu conexiÃ³n."
         );
       } finally {
         setCargando(false);
@@ -276,11 +276,11 @@ export default function DashboardConductor() {
 
       <section className="dashboard-bienvenida">
         <div className="dashboard-bienvenida-texto">
-          <h1>Â¡Hola, {primerNombre}!</h1>
+          <h1>¡Hola, {primerNombre}!</h1>
 
           <p>
             Este es el resumen de tu actividad. Consulta tus rutas y
-            mantente al dÃ­a con tus entregas.
+            mantente al di­a con tus entregas.
           </p>
 
           <div className="dashboard-chips">
@@ -360,8 +360,8 @@ export default function DashboardConductor() {
           <h3>Tu jornada de trabajo</h3>
           <p>
             {perfil?.jornada
-              ? `Tu jornada asignada es: ${perfil.jornada}. Consulta tus rutas y mantÃ©n actualizada la informaciÃ³n de tus entregas.`
-              : "Recuerda consultar tus rutas asignadas y mantener actualizada la informaciÃ³n de tus entregas."}
+              ? `Tu jornada asignada es: ${perfil.jornada}. Consulta tus rutas y manten actualizada la informacion de tus entregas.`
+              : "Recuerda consultar tus rutas asignadas y mantener actualizada la informacion de tus entregas."}
           </p>
         </div>
 
@@ -376,7 +376,7 @@ export default function DashboardConductor() {
       <section className="rutas-conductor-card">
         <div className="rutas-card-header">
           <div>
-            <h2>Mis prÃ³ximas rutas</h2>
+            <h2>Mis proximas rutas</h2>
             <p>Resumen de tus recorridos programados.</p>
           </div>
 
@@ -398,7 +398,7 @@ export default function DashboardConductor() {
             <table>
               <thead>
                 <tr>
-                  <th scope="col">CÃ³digo</th>
+                  <th scope="col">Codigo</th>
                   <th scope="col">Origen</th>
                   <th scope="col">Destino</th>
                   <th scope="col">Hora</th>

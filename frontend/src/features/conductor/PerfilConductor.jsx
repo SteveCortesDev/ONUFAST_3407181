@@ -119,7 +119,7 @@ export default function PerfilConductor() {
       setPerfil(respuesta.data);
     } catch (error) {
       console.error("Error al cargar el perfil:", error);
-      setError("No fue posible cargar tu informaciÃ³n.");
+      setError("No fue posible cargar tu informacion.");
     } finally {
       setCargando(false);
     }
@@ -163,7 +163,7 @@ export default function PerfilConductor() {
             <IconAlerta size={28} />
           </span>
           <h3>No se pudo cargar tu perfil</h3>
-          <p>{error || "No recibimos informaciÃ³n del servidor."}</p>
+          <p>{error || "No recibimos informacion del servidor."}</p>
           <button type="button" onClick={cargarPerfil}>
             <IconActualizar size={16} />
             Intentar de nuevo
@@ -224,12 +224,12 @@ export default function PerfilConductor() {
           <dl>
             <Dato
               Icon={IconCorreo}
-              etiqueta="Correo electrÃ³nico"
+              etiqueta="Correo electronico"
               valor={perfil.correo}
             />
             <Dato
               Icon={IconTelefono}
-              etiqueta="TelÃ©fono"
+              etiqueta="Telefono"
               valor={perfil.telefono}
             />
           </dl>

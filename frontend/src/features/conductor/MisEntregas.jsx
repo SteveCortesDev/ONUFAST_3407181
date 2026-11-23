@@ -122,7 +122,7 @@ export default function MisEntregas() {
       console.error("Error al cargar las entregas:", error);
 
       if (error.response?.status === 401) {
-        setError("Tu sesiÃ³n ha expirado. Inicia sesiÃ³n nuevamente.");
+        setError("Tu sesion ha expirado. Inicia sesion nuevamente.");
       } else if (error.response?.status === 403) {
         setError("No tienes permisos para consultar estas entregas.");
       } else {
@@ -189,7 +189,7 @@ export default function MisEntregas() {
   const enCamino = contar("En camino");
   const completadas = contar("Entregado");
 
-  // Cantidad que se muestra junto a cada opciÃ³n del filtro
+  // Cantidad que se muestra junto a cada opción del filtro
   const cantidadPorFiltro = {
     Todas: entregas.length,
     Pendiente: pendientes,
@@ -254,7 +254,7 @@ export default function MisEntregas() {
           <IconBuscar size={18} />
           <input
             type="text"
-            placeholder="Buscar por cÃ³digo, destinatario o ciudad"
+            placeholder="Buscar por codigo, destinatario o ciudad"
             aria-label="Buscar entregas"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
@@ -328,10 +328,10 @@ export default function MisEntregas() {
 
                 <div className="entrega-informacion">
                   <div className="entrega-direccion">
-                    <span>DirecciÃ³n de entrega</span>
+                    <span>Dirección de entrega</span>
                     <strong>
                       <IconPin size={16} />
-                      {entrega.direccion || "Sin direcciÃ³n"}
+                      {entrega.direccion || "Sin dirección"}
                     </strong>
                   </div>
 
@@ -346,8 +346,8 @@ export default function MisEntregas() {
                   </div>
 
                   <div className="entrega-descripcion">
-                    <span>DescripciÃ³n</span>
-                    <strong>{entrega.descripcion || "Sin descripciÃ³n"}</strong>
+                    <span>Descripción</span>
+                    <strong>{entrega.descripcion || "Sin descripcion"}</strong>
                   </div>
                 </div>
 
