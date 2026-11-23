@@ -22,11 +22,15 @@ router = APIRouter(prefix="/rutas", tags=["Rutas"])
 
 
 # ============================================================
-# ESQUEMA PARA ASIGNAR VEHÍCULO
+# ESQUEMAS PARA ASIGNACIONES
 # ============================================================
 
 class AsignarVehiculoRequest(BaseModel):
     id_vehiculo: int | None = None
+
+
+class AsignarConductorRequest(BaseModel):
+    id_conductor: int
 
 
 # ============================================================
@@ -169,7 +173,6 @@ def asignar_vehiculo_ruta(
 
     obtener_conductor(ruta.id_conductor, db)
 
-    # Si el valor es null, retirar el vehículo
     if payload.id_vehiculo is None:
         ruta.id_vehiculo = None
 
@@ -191,17 +194,14 @@ def asignar_vehiculo_ruta(
                 detail="No fue posible retirar el vehículo"
             )
 
-    # Consultar vehículo
     vehiculo = obtener_vehiculo(payload.id_vehiculo, db)
 
-    # Verificar disponibilidad
     if vehiculo.estado != "Disponible":
         raise HTTPException(
             status_code=409,
             detail=f"El vehículo no está disponible. Estado actual: {vehiculo.estado}"
         )
 
-    # Verificar que no esté asignado a otra ruta
     asignacion_existente = db.query(Ruta).filter(
         Ruta.id_vehiculo == payload.id_vehiculo,
         Ruta.id_rutas != id_rutas
@@ -243,6 +243,61 @@ def asignar_vehiculo_ruta(
         raise HTTPException(
             status_code=500,
             detail="No fue posible asignar el vehículo"
+        )
+
+
+# ============================================================
+# ASIGNAR O CAMBIAR CONDUCTOR DE UNA RUTA
+# PUT /rutas/{id_rutas}/conductor
+# SOLO ADMINISTRADOR
+# ============================================================
+
+@router.put("/{id_rutas}/conductor")
+def asignar_conductor_ruta(
+    id_rutas: int,
+    payload: AsignarConductorRequest,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    verificar_administrador(current_user, db)
+
+    ruta = db.query(Ruta).filter(
+        Ruta.id_rutas == id_rutas
+    ).first()
+
+    if not ruta:
+        raise HTTPException(
+            status_code=404,
+            detail="Ruta no encontrada"
+        )
+
+    conductor = obtener_conductor(
+        payload.id_conductor,
+        db
+    )
+
+    try:
+        ruta.id_conductor = conductor.id_usuario
+        ruta.nombre_conductor = (
+            f"{conductor.nombre} {conductor.apellido}"
+        )
+
+        db.commit()
+        db.refresh(ruta)
+
+        return {
+            "mensaje": "Conductor asignado correctamente",
+            "id_rutas": ruta.id_rutas,
+            "codigo_ruta": ruta.codigo_ruta,
+            "id_conductor": ruta.id_conductor,
+            "nombre_conductor": ruta.nombre_conductor
+        }
+
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="No fue posible asignar el conductor"
         )
 
 

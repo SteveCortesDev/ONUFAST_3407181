@@ -36,7 +36,6 @@ def obtener_perfil(
             detail="Usuario no encontrado"
         )
 
-    # Consultar el rol del usuario
     resultado_rol = (
         db.query(UsuarioRol, Rol)
         .join(
@@ -98,7 +97,6 @@ def obtener_conductores(
 
     for conductor in conductores:
 
-        # Consultar todas las rutas del conductor
         rutas = (
             db.query(Ruta)
             .filter(
@@ -157,7 +155,6 @@ def obtener_conductores(
                 )
             })
 
-        # Buscar una ruta que tenga vehículo asignado
         ruta_principal = next(
             (
                 ruta for ruta in rutas
@@ -166,7 +163,6 @@ def obtener_conductores(
             rutas[0] if rutas else None
         )
 
-        # Obtener los detalles de la ruta principal
         ruta_principal_detalle = next(
             (
                 item for item in rutas_lista
@@ -176,7 +172,6 @@ def obtener_conductores(
             None
         )
 
-        # Consultar documento del conductor
         documento = (
             db.query(Documento)
             .filter(
@@ -185,7 +180,6 @@ def obtener_conductores(
             .first()
         )
 
-        # Consultar rol del conductor
         resultado_rol = (
             db.query(UsuarioRol, Rol)
             .join(
@@ -234,7 +228,6 @@ def obtener_conductores(
 
             "activo": conductor.activo,
 
-            # Ruta principal
             "id_rutas": (
                 ruta_principal.id_rutas
                 if ruta_principal
@@ -247,7 +240,6 @@ def obtener_conductores(
                 else None
             ),
 
-            # Vehículo principal
             "id_vehiculo": (
                 ruta_principal_detalle["id_vehiculo"]
                 if ruta_principal_detalle
@@ -272,7 +264,6 @@ def obtener_conductores(
                 else None
             ),
 
-            # Todas las rutas
             "rutas": rutas_lista
         })
 
@@ -280,7 +271,7 @@ def obtener_conductores(
 
 
 # ============================================================
-# LISTAR TODOS LOS USUARIOS
+# LISTAR TODOS LOS USUARIOS CON DOCUMENTO Y ROL
 # ============================================================
 
 @router.get("/")
@@ -290,18 +281,73 @@ def listar_usuarios(
 
     usuarios = db.query(Usuario).all()
 
-    return [
-        {
+    resultado = []
+
+    for usuario in usuarios:
+
+        # Consultar documento
+        documento = (
+            db.query(Documento)
+            .filter(
+                Documento.id_usuario == usuario.id_usuario
+            )
+            .first()
+        )
+
+        # Consultar rol
+        resultado_rol = (
+            db.query(UsuarioRol, Rol)
+            .join(
+                Rol,
+                UsuarioRol.id_rol == Rol.id_rol
+            )
+            .filter(
+                UsuarioRol.id_usuario == usuario.id_usuario
+            )
+            .order_by(
+                UsuarioRol.id_usuario_rol.asc()
+            )
+            .first()
+        )
+
+        rol = resultado_rol[1] if resultado_rol else None
+
+        resultado.append({
+
             "id_usuario": usuario.id_usuario,
             "nombre": usuario.nombre,
             "apellido": usuario.apellido,
             "correo": usuario.correo,
             "telefono": usuario.telefono,
             "jornada": usuario.jornada,
-            "activo": usuario.activo
-        }
-        for usuario in usuarios
-    ]
+            "activo": usuario.activo,
+
+            "num_documento": (
+                documento.num_documento
+                if documento
+                else None
+            ),
+
+            "tipo_documento": (
+                documento.tipo_documento
+                if documento
+                else None
+            ),
+
+            "id_rol": (
+                rol.id_rol
+                if rol
+                else None
+            ),
+
+            "nombre_rol": (
+                rol.nombre_rol
+                if rol
+                else "Sin rol asignado"
+            )
+        })
+
+    return resultado
 
 
 # ============================================================
@@ -337,6 +383,8 @@ def actualizar_rol_usuario(
 
     usuario_rol = db.query(UsuarioRol).filter(
         UsuarioRol.id_usuario == id_usuario
+    ).order_by(
+        UsuarioRol.id_usuario_rol.asc()
     ).first()
 
     if usuario_rol:

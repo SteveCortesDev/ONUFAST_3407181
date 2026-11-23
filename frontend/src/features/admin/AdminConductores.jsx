@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import api from '../../shared/api';
 
 export default function AdminConductores() {
@@ -12,29 +12,41 @@ export default function AdminConductores() {
     const [mensaje, setMensaje] = useState('');
 
     const [rutaExpandida, setRutaExpandida] = useState(null);
+
     const [vehiculosSeleccionados, setVehiculosSeleccionados] = useState({});
+    const [rutasSeleccionadas, setRutasSeleccionadas] = useState({});
+
     const [asignando, setAsignando] = useState(null);
+    const [asignandoRuta, setAsignandoRuta] = useState(null);
 
     // ========================================================
     // CARGAR CONDUCTORES, VEHÍCULOS Y RUTAS
     // ========================================================
 
-    const cargarConductores = async () => {
+    const cargarConductores = async (limpiarMensajes = true) => {
         try {
             setCargando(true);
             setError('');
-            setMensaje('');
 
-            const [respuestaConductores, respuestaVehiculos, respuestaRutas] =
-                await Promise.all([
-                    api.get('/usuarios/conductores'),
-                    api.get('/vehiculos/'),
-                    api.get('/rutas/')
-                ]);
+            if (limpiarMensajes) {
+                setMensaje('');
+            }
+
+            const [
+                respuestaConductores,
+                respuestaVehiculos,
+                respuestaRutas
+            ] = await Promise.all([
+                api.get('/usuarios/conductores'),
+                api.get('/vehiculos/'),
+                api.get('/rutas/')
+            ]);
 
             setConductores(respuestaConductores.data);
             setVehiculos(respuestaVehiculos.data);
             setRutas(respuestaRutas.data);
+
+            return true;
 
         } catch (err) {
             console.error('Error al cargar información:', err);
@@ -43,6 +55,8 @@ export default function AdminConductores() {
                 err.response?.data?.detail ||
                 'No fue posible cargar la información. Verifica tu conexión.'
             );
+
+            return false;
 
         } finally {
             setCargando(false);
@@ -92,6 +106,78 @@ export default function AdminConductores() {
     };
 
     // ========================================================
+    // OBTENER RUTAS QUE SE PUEDEN ASIGNAR O REASIGNAR
+    // ========================================================
+
+    const obtenerRutasDisponibles = (idUsuario) => {
+        return rutas.filter(ruta =>
+            Number(ruta.id_conductor) !== Number(idUsuario)
+        );
+    };
+
+    // ========================================================
+    // SELECCIONAR RUTA PARA UN CONDUCTOR
+    // ========================================================
+
+    const seleccionarRuta = (idUsuario, idRuta) => {
+        setRutasSeleccionadas(anterior => ({
+            ...anterior,
+            [idUsuario]: idRuta
+        }));
+    };
+
+    // ========================================================
+    // ASIGNAR O REASIGNAR RUTA A UN CONDUCTOR
+    // ========================================================
+
+    const asignarRuta = async (conductor) => {
+        const idRuta = rutasSeleccionadas[conductor.id_usuario];
+
+        if (!idRuta) {
+            setError('Selecciona una ruta antes de asignarla.');
+            return;
+        }
+
+        try {
+            setAsignandoRuta(conductor.id_usuario);
+            setError('');
+            setMensaje('');
+
+            const respuesta = await api.put(
+                `/rutas/${idRuta}/conductor`,
+                {
+                    id_conductor: conductor.id_usuario
+                }
+            );
+
+            setRutasSeleccionadas(anterior => ({
+                ...anterior,
+                [conductor.id_usuario]: ''
+            }));
+
+            const actualizado = await cargarConductores(false);
+
+            if (actualizado) {
+                setMensaje(
+                    respuesta.data.mensaje ||
+                    'Ruta asignada o reasignada correctamente.'
+                );
+            }
+
+        } catch (err) {
+            console.error('Error al asignar o reasignar ruta:', err);
+
+            setError(
+                err.response?.data?.detail ||
+                'No fue posible asignar o reasignar la ruta.'
+            );
+
+        } finally {
+            setAsignandoRuta(null);
+        }
+    };
+
+    // ========================================================
     // VEHÍCULOS YA ASIGNADOS A OTRAS RUTAS
     // ========================================================
 
@@ -108,6 +194,7 @@ export default function AdminConductores() {
 
         return vehiculos.filter(vehiculo => {
             const disponible = vehiculo.estado === 'Disponible';
+
             const noAsignado = !vehiculosAsignados.has(
                 vehiculo.id_vehiculo
             );
@@ -151,17 +238,19 @@ export default function AdminConductores() {
                 }
             );
 
-            setMensaje(
-                respuesta.data.mensaje ||
-                'Vehículo asignado correctamente.'
-            );
-
             setVehiculosSeleccionados(anterior => ({
                 ...anterior,
                 [ruta.id_rutas]: ''
             }));
 
-            await cargarConductores();
+            const actualizado = await cargarConductores(false);
+
+            if (actualizado) {
+                setMensaje(
+                    respuesta.data.mensaje ||
+                    'Vehículo asignado correctamente.'
+                );
+            }
 
         } catch (err) {
             console.error('Error al asignar vehículo:', err);
@@ -196,6 +285,10 @@ export default function AdminConductores() {
         maxWidth: '100%'
     };
 
+    // ========================================================
+    // RENDERIZADO
+    // ========================================================
+
     return (
         <div>
 
@@ -205,7 +298,7 @@ export default function AdminConductores() {
 
                 <button
                     className="admin-btn"
-                    onClick={cargarConductores}
+                    onClick={() => cargarConductores()}
                     disabled={cargando}
                 >
                     {cargando ? 'Cargando...' : '↻ Actualizar'}
@@ -301,9 +394,13 @@ export default function AdminConductores() {
                                     conductor.rutas &&
                                     conductor.rutas.length > 0;
 
+                                const rutasDisponibles =
+                                    obtenerRutasDisponibles(conductor.id_usuario);
+
                                 return (
-                                    <>
-                                        <tr key={conductor.id_usuario}>
+                                    <Fragment key={conductor.id_usuario}>
+
+                                        <tr>
 
                                             <td>{conductor.id_usuario}</td>
 
@@ -350,7 +447,9 @@ export default function AdminConductores() {
                                             <td>
                                                 <button
                                                     type="button"
-                                                    onClick={() => alternarRutas(conductor.id_usuario)}
+                                                    onClick={() =>
+                                                        alternarRutas(conductor.id_usuario)
+                                                    }
                                                     style={{
                                                         ...estiloBoton,
                                                         backgroundColor: '#252525',
@@ -367,7 +466,7 @@ export default function AdminConductores() {
 
                                         {/* DETALLE DE RUTAS */}
                                         {rutaExpandida === conductor.id_usuario && (
-                                            <tr key={`rutas-${conductor.id_usuario}`}>
+                                            <tr>
                                                 <td colSpan="7">
 
                                                     <div style={{
@@ -383,12 +482,134 @@ export default function AdminConductores() {
                                                             Rutas de {conductor.nombre}
                                                         </h3>
 
+                                                        {/* ASIGNAR O REASIGNAR RUTA */}
+                                                        <div style={{
+                                                            padding: '15px',
+                                                            marginBottom: '20px',
+                                                            backgroundColor: '#fff',
+                                                            border: '1px solid #e2e8f0',
+                                                            borderRadius: '8px'
+                                                        }}>
+
+                                                            <h4 style={{
+                                                                marginTop: '0',
+                                                                marginBottom: '10px'
+                                                            }}>
+                                                                Asignar o reasignar ruta
+                                                            </h4>
+
+                                                            <p style={{
+                                                                fontSize: '13px',
+                                                                color: '#64748b',
+                                                                marginTop: '0'
+                                                            }}>
+                                                                Puedes seleccionar una ruta libre o una ruta que actualmente pertenezca a otro conductor.
+                                                            </p>
+
+                                                            <div style={{
+                                                                display: 'flex',
+                                                                gap: '10px',
+                                                                flexWrap: 'wrap',
+                                                                alignItems: 'center'
+                                                            }}>
+
+                                                                <select
+                                                                    value={
+                                                                        rutasSeleccionadas[conductor.id_usuario] ?? ''
+                                                                    }
+                                                                    onChange={e =>
+                                                                        seleccionarRuta(
+                                                                            conductor.id_usuario,
+                                                                            e.target.value
+                                                                        )
+                                                                    }
+                                                                    style={estiloSelect}
+                                                                    disabled={
+                                                                        cargando ||
+                                                                        asignandoRuta === conductor.id_usuario ||
+                                                                        !conductor.activo
+                                                                    }
+                                                                >
+
+                                                                    <option value="">
+                                                                        Seleccionar ruta
+                                                                    </option>
+
+                                                                    {rutasDisponibles.map(ruta => (
+                                                                        <option
+                                                                            key={ruta.id_rutas}
+                                                                            value={ruta.id_rutas}
+                                                                        >
+                                                                            {ruta.codigo_ruta} - {ruta.ciudad_origen} a {ruta.ciudad_destino}
+                                                                            {' | '}
+                                                                            {ruta.nombre_conductor
+                                                                                ? `Actualmente: ${ruta.nombre_conductor}`
+                                                                                : 'Sin conductor'}
+                                                                        </option>
+                                                                    ))}
+
+                                                                </select>
+
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => asignarRuta(conductor)}
+                                                                    disabled={
+                                                                        !rutasSeleccionadas[conductor.id_usuario] ||
+                                                                        asignandoRuta === conductor.id_usuario ||
+                                                                        !conductor.activo
+                                                                    }
+                                                                    style={{
+                                                                        ...estiloBoton,
+                                                                        backgroundColor:
+                                                                            rutasSeleccionadas[conductor.id_usuario] &&
+                                                                            conductor.activo
+                                                                                ? '#2563eb'
+                                                                                : '#94a3b8',
+                                                                        color: '#fff',
+                                                                        cursor:
+                                                                            rutasSeleccionadas[conductor.id_usuario] &&
+                                                                            conductor.activo
+                                                                                ? 'pointer'
+                                                                                : 'not-allowed'
+                                                                    }}
+                                                                >
+                                                                    {asignandoRuta === conductor.id_usuario
+                                                                        ? 'Asignando...'
+                                                                        : 'Asignar / Reasignar ruta'}
+                                                                </button>
+
+                                                            </div>
+
+                                                            {rutasDisponibles.length === 0 && (
+                                                                <small style={{
+                                                                    display: 'block',
+                                                                    marginTop: '8px',
+                                                                    color: '#b45309'
+                                                                }}>
+                                                                    No hay otras rutas disponibles para asignar.
+                                                                </small>
+                                                            )}
+
+                                                            {!conductor.activo && (
+                                                                <small style={{
+                                                                    display: 'block',
+                                                                    marginTop: '8px',
+                                                                    color: '#b91c1c'
+                                                                }}>
+                                                                    No puedes asignar rutas a un conductor inactivo.
+                                                                </small>
+                                                            )}
+
+                                                        </div>
+
+                                                        {/* MENSAJE SI NO TIENE RUTAS */}
                                                         {!tieneRutas && (
                                                             <p>
                                                                 Este conductor no tiene rutas asignadas.
                                                             </p>
                                                         )}
 
+                                                        {/* TABLA DE RUTAS */}
                                                         {tieneRutas && (
                                                             <div style={{
                                                                 width: '100%',
@@ -438,9 +659,12 @@ export default function AdminConductores() {
                                                                             }
 
                                                                             return (
-                                                                                <tr key={ruta.id_rutas} style={{
-                                                                                    borderBottom: '1px solid #ddd'
-                                                                                }}>
+                                                                                <tr
+                                                                                    key={ruta.id_rutas}
+                                                                                    style={{
+                                                                                        borderBottom: '1px solid #ddd'
+                                                                                    }}
+                                                                                >
 
                                                                                     <td style={{ padding: '10px' }}>
                                                                                         <strong>
@@ -459,7 +683,7 @@ export default function AdminConductores() {
                                                                                     <td style={{ padding: '10px' }}>
                                                                                         <div>
                                                                                             <strong>
-                                                                                                {ruta.placa}
+                                                                                                {ruta.placa || 'Sin vehículo asignado'}
                                                                                             </strong>
 
                                                                                             <div style={{
@@ -569,7 +793,7 @@ export default function AdminConductores() {
                                             </tr>
                                         )}
 
-                                    </>
+                                    </Fragment>
                                 );
                             })}
 
