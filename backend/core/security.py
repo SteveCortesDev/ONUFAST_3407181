@@ -1,3 +1,4 @@
+
 from datetime import datetime, timedelta
 
 from jose import JWTError, jwt
@@ -6,13 +7,15 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+from sqlalchemy.orm import Session
+
 from schemas.schemas import TokenData
+from core.database import get_db
+from models.usuario import Usuario
 
 
-SECRET_KEY = "onufast-secret-2024"  # cámbialo en producción
-
+SECRET_KEY = "onufast-secret-2024"
 ALGORITHM = "HS256"
-
 TOKEN_EXPIRE_HOURS = 8
 
 
@@ -52,7 +55,8 @@ def create_token(id_usuario: int, nombre: str) -> str:
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
 ) -> TokenData:
 
     token = credentials.credentials
@@ -70,16 +74,27 @@ def get_current_user(
         if id_usuario is None:
             raise ValueError
 
+        # Consultar el usuario directamente en PostgreSQL
+        usuario = db.query(Usuario).filter(
+            Usuario.id_usuario == id_usuario
+        ).first()
+
+        # Comprobar que la cuenta exista y esté activa
+        if usuario is None or not usuario.activo:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Usuario inactivo o no encontrado",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+
         return TokenData(
-            id_usuario=id_usuario,
-            nombre=nombre
+            id_usuario=usuario.id_usuario,
+            nombre=f"{usuario.nombre} {usuario.apellido}"
         )
 
     except (JWTError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido o expirado",
-            headers={
-                "WWW-Authenticate": "Bearer"
-            },
+            headers={"WWW-Authenticate": "Bearer"}
         )

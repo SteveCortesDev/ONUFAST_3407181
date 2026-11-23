@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Numeric, DateTime
+
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey
 from core.database import Base
 
 
@@ -12,6 +13,22 @@ class Ruta(Base):
     ciudad_origen = Column(String(100), nullable=False)
     ciudad_destino = Column(String(100), nullable=False)
     cantidad_paquetes = Column(Integer, nullable=False)
-    codigo_ruta = Column(String(100), unique=True, nullable=False)
+
+    codigo_ruta = Column(String(50), unique=True, nullable=True)
+
+    # Campos antiguos conservados para compatibilidad
     tipo_vehiculo = Column(String(30), nullable=False)
     nombre_conductor = Column(String(50), nullable=False)
+
+    # Nuevas relaciones
+    id_conductor = Column(
+        Integer,
+        ForeignKey("usuario.id_usuario", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    id_vehiculo = Column(
+        Integer,
+        ForeignKey("vehiculo.id_vehiculo", ondelete="SET NULL"),
+        nullable=True
+    )

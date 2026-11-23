@@ -1,12 +1,32 @@
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text  # <-- ¡ESTA ES LA LÍNEA QUE FALTABA!
-from routers import auth, usuarios, paquetes, envios, rutas, rol, usuario_roles, documento, tipo_envio, estado_envio, factura
+from sqlalchemy import text
+
+from routers import (
+    auth,
+    usuarios,
+    paquetes,
+    envios,
+    rutas,
+    rol,
+    usuario_roles,
+    documento,
+    tipo_envio,
+    estado_envio,
+    factura,
+    vehiculos
+)
+
 from core.database import engine
-from models.usuario import Usuario
+
 import webbrowser
 import threading
 
+
+# ============================================================
+# CONFIGURACIÓN DE LA API
+# ============================================================
 
 app = FastAPI(
     title="ONUFAST API",
@@ -19,24 +39,34 @@ app = FastAPI(
 3. `GET /envios/tipos` — Ver tipos de envío disponibles
 4. `POST /envios/pedido/iniciar` — Crear envío
 5. `POST /paquetes/registrar` — Registrar paquete
-6. `GET /paquetes/envio/{id_envio}` — Consultar paquetes de un envío
+6. `GET /paquetes/envio/{id_envio}` — Consultar paquetes
 7. `GET /envios/mis-pedidos` — Consultar envíos del usuario
+8. `GET /vehiculos/` — Consultar vehículos
+9. `POST /vehiculos/` — Registrar vehículo (administrador)
     """,
     version="1.0.0",
 )
 
-from fastapi.middleware.cors import CORSMiddleware
+
+# ============================================================
+# CONFIGURACIÓN CORS
+# ============================================================
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# ─────────────────────────────────────────────
-# ROUTERS
-# ─────────────────────────────────────────────
+
+
+# ============================================================
+# REGISTRO DE ROUTERS
+# ============================================================
 
 app.include_router(rol.router)
 app.include_router(auth.router)
@@ -49,21 +79,12 @@ app.include_router(documento.router)
 app.include_router(tipo_envio.router)
 app.include_router(estado_envio.router)
 app.include_router(factura.router)
+app.include_router(vehiculos.router)
 
-# ─────────────────────────────────────────────
-# CORS (Solo uno, bien configurado)
-# ─────────────────────────────────────────────
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], # Permite tu frontend
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-# ─────────────────────────────────────────────
-# ROOT
-# ─────────────────────────────────────────────
+# ============================================================
+# RUTA PRINCIPAL
+# ============================================================
 
 @app.get("/", tags=["Root"])
 def root():
@@ -71,13 +92,13 @@ def root():
         "sistema": "ONUFAST",
         "version": "1.0.0",
         "modo": "PostgreSQL",
-        "docs": "/docs",
+        "docs": "/docs"
     }
 
 
-# ─────────────────────────────────────────────
-# PRUEBA DE BASE DE DATOS
-# ─────────────────────────────────────────────
+# ============================================================
+# PRUEBA DE CONEXIÓN A POSTGRESQL
+# ============================================================
 
 @app.get("/test-db", tags=["Root"])
 def test_db():
@@ -86,19 +107,19 @@ def test_db():
             connection.execute(text("SELECT 1"))
 
         return {
-            "conexion": "exitosa ✅"
+            "conexion": "exitosa"
         }
 
     except Exception as e:
         return {
-            "conexion": "fallida ",
+            "conexion": "fallida",
             "error": str(e)
         }
 
 
-# ─────────────────────────────────────────────
+# ============================================================
 # ABRIR SWAGGER AUTOMÁTICAMENTE
-# ─────────────────────────────────────────────
+# ============================================================
 
 @app.on_event("startup")
 def abrir_navegador():
