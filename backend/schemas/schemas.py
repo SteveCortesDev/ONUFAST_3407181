@@ -200,7 +200,10 @@ class RutaResponse(BaseModel):
 class RutaEstadoRequest(BaseModel):
     estado: str = Field(..., min_length=2, max_length=30)
 
-    
+class RutaAsignacionRequest(BaseModel):
+    id_usuario_conductor: int = Field(..., gt=0)
+
+
 # ESTADO_ENVIO
 
 class EstadoEnvioRequest(BaseModel):

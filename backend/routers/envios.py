@@ -152,15 +152,15 @@ def mis_entregas(
             estado = "Pendiente"
 
         resultado.append({
-            "id_envio": envio.id_envio,
-            "codigo": envio.codigo_rastreo,
-            "destinatario": envio.nombre_destinatario,
-            "direccion": paquete.destino,
-            "ciudad": paquete.destino,
-            "documento": envio.documento_destinatario,
-            "descripcion": paquete.descripcion,
-            "estado": estado
-        })
+    "id_envio": envio.id_envio,
+    "codigo": envio.codigo_rastreo,
+    "destinatario": envio.nombre_destinatario,
+    "direccion": paquete.destino if paquete else "No registrada",
+    "ciudad": paquete.destino if paquete else "No registrada",
+    "documento": envio.documento_destinatario,
+    "descripcion": paquete.descripcion if paquete else "Paquete no registrado",
+    "estado": estado
+})
 
     return resultado
 

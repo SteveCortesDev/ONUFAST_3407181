@@ -7,12 +7,17 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from models.rutas import Ruta
-from schemas.schemas import RutaRequest, RutaResponse
+from schemas.schemas import (    RutaRequest,
+    RutaResponse,
+    RutaEstadoRequest,
+    RutaAsignacionRequest,
+    TokenData
+)
 
 from models.usuario import Usuario
 from models.usuario_roles import UsuarioRol
 from core.security import get_current_user
-from schemas.schemas import RutaRequest, RutaResponse, RutaEstadoRequest, TokenData
+
 
 
 router = APIRouter(prefix="/rutas", tags=["Rutas"])
@@ -285,4 +290,59 @@ def eliminar_ruta(
 
     return {
         "mensaje": "Ruta eliminada correctamente"
+    }
+
+
+# PATCH /rutas/{id_rutas}/asignar
+# Asignar una ruta a un conductor (solo administrador)
+
+@router.patch(
+    "/{id_rutas}/asignar",
+    summary="Asignar una ruta a un conductor"
+)
+def asignar_ruta_conductor(
+    id_rutas: int,
+    payload: RutaAsignacionRequest,
+    current_user: TokenData = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Verificar que el usuario sea administrador
+    rol_admin = db.query(UsuarioRol).filter(
+        UsuarioRol.id_usuario == current_user.id_usuario,
+        UsuarioRol.id_rol == 1
+    ).first()
+
+    if not rol_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos de administrador"
+        )
+
+    # Buscar la ruta
+    ruta = db.query(Ruta).filter(
+        Ruta.id_rutas == id_rutas
+    ).first()
+
+    if not ruta:
+        raise HTTPException(
+            status_code=404,
+            detail="Ruta no encontrada"
+        )
+
+    # Verificar que el usuario seleccionado sea conductor
+    conductor = obtener_conductor(db, payload.id_usuario_conductor)
+
+    # Asignar el conductor
+    ruta.id_usuario_conductor = conductor.id_usuario
+    ruta.nombre_conductor = f"{conductor.nombre} {conductor.apellido}"
+
+    db.commit()
+    db.refresh(ruta)
+
+    return {
+        "mensaje": "Ruta asignada correctamente",
+        "id_rutas": ruta.id_rutas,
+        "codigo_ruta": ruta.codigo_ruta,
+        "id_usuario_conductor": ruta.id_usuario_conductor,
+        "nombre_conductor": ruta.nombre_conductor
     }
