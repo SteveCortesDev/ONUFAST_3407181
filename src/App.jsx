@@ -14,6 +14,7 @@ import Servicios from './pages/Servicios';
 import Ubicacion from './pages/Ubicacion';
 import Admin from './pages/Admin';
 import Usuario from "./components/usuario/Usuario";
+import Bodega from "./components/bodega/Bodega";
 
 import api from './api';
 
@@ -54,6 +55,7 @@ function AppContent() {
     const location = useLocation();
 
     const esPanelUsuario = location.pathname === '/usuario';
+    const esPanelBodega = location.pathname === '/bodega';
     const estaLogueado = !!localStorage.getItem('token');
 
 
@@ -136,7 +138,7 @@ function AppContent() {
             {/* ═══════════════════════════════════
                 HEADER / NAVBAR
             ═══════════════════════════════════ */}
-            {!esPanelUsuario && (
+            {!esPanelUsuario && !esPanelBodega && (
 
     <header className="onufast-header">
 
@@ -557,6 +559,14 @@ function AppContent() {
                 />
 
 
+                {/* BODEGA */}
+
+                <Route
+                    path="/bodega"
+                    element={<Bodega />}
+                />
+
+
                 {/* ADMIN */}
 
                 <Route
@@ -578,14 +588,14 @@ function AppContent() {
 
             {/* FOOTER */}
 
-            {!esPanelUsuario && <Footer />}
+            {!esPanelUsuario && !esPanelBodega && <Footer />}
 
 
             {/* ═══════════════════════════════════
                 MODAL DE AUTENTICACIÓN
             ═══════════════════════════════════ */}
 
-            {!esPanelUsuario && (
+            {!esPanelUsuario && !esPanelBodega && (
                 <AuthModal
                     isOpen={mostrarModal}
                     onClose={() => setMostrarModal(false)}
