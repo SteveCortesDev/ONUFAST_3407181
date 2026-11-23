@@ -1,0 +1,649 @@
+/* =========================================
+   DASHBOARD CONDUCTOR - ONUFAST
+   Usa las variables de Conductor.css (--rojo, etc.)
+   y, si no existen, los valores de respaldo.
+========================================= */
+
+.dashboard-conductor {
+  --d-rojo: var(--rojo, #e9232b);
+  --d-texto: #23222a;
+  --d-texto-2: #6b6973;
+  --d-texto-3: #8f8d96;
+  --d-borde: #e8e8ed;
+  --d-tarjeta: #ffffff;
+  --d-sombra: 0 1px 2px rgba(20, 18, 28, 0.04), 0 4px 14px rgba(20, 18, 28, 0.04);
+
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  color: var(--d-texto);
+}
+
+/* =========================================
+   BIENVENIDA
+   Es el elemento protagonista: oscuro, con
+   un toque de rojo, y el resto queda sobrio
+========================================= */
+
+.dashboard-bienvenida {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 230px;
+  padding: 36px 44px;
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      circle at 88% 20%,
+      rgba(233, 35, 43, 0.28),
+      transparent 45%
+    ),
+    linear-gradient(120deg, #17161c, #2b2833);
+  color: #ffffff;
+  box-shadow: 0 10px 30px -12px rgba(16, 17, 22, 0.5);
+}
+
+/* Anillos decorativos */
+.dashboard-bienvenida::after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: 90px;
+  top: -170px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 35px rgba(255, 255, 255, 0.025),
+    0 0 0 70px rgba(255, 255, 255, 0.02);
+  pointer-events: none;
+}
+
+.dashboard-bienvenida-texto {
+  position: relative;
+  z-index: 2;
+  max-width: 580px;
+}
+
+.dashboard-bienvenida h1 {
+  margin: 0 0 12px;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.dashboard-bienvenida-texto > p {
+  max-width: 500px;
+  margin: 0;
+  color: #cfccd6;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Fecha y ruta en curso */
+
+.dashboard-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.dashboard-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e9e7ee;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dashboard-fecha {
+  text-transform: capitalize;
+}
+
+.dashboard-chip--ruta {
+  border-color: rgba(233, 35, 43, 0.45);
+  background: rgba(233, 35, 43, 0.18);
+  color: #ffffff;
+}
+
+/* Punto que late: indica que la ruta está activa */
+.punto-vivo {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff6a70;
+  box-shadow: 0 0 0 0 rgba(255, 106, 112, 0.7);
+  animation: latido 2s ease-out infinite;
+}
+
+@keyframes latido {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 106, 112, 0.7);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px rgba(255, 106, 112, 0);
+  }
+}
+
+/* Ilustración */
+
+.bienvenida-ilustracion {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 210px;
+  height: 210px;
+  flex-shrink: 0;
+}
+
+.bienvenida-circulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 165px;
+  height: 165px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: rgba(233, 35, 43, 0.2);
+  color: #ffffff;
+}
+
+.bienvenida-decoracion {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: #ffffff;
+  color: var(--d-rojo);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.decoracion-1 {
+  top: 14px;
+  right: 6px;
+}
+
+.decoracion-2 {
+  bottom: 8px;
+  left: 4px;
+}
+
+/* =========================================
+   SECCIONES Y TÍTULOS
+========================================= */
+
+.dashboard-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-titulo-seccion h2 {
+  margin: 0 0 4px;
+  color: var(--d-texto);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-titulo-seccion p {
+  margin: 0;
+  color: var(--d-texto-3);
+  font-size: 14px;
+}
+
+/* =========================================
+   ESTADÍSTICAS
+   Número grande alineado a la izquierda:
+   es lo primero que el conductor busca
+========================================= */
+
+.estadisticas-conductor {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.estadistica-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 22px;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--d-borde);
+  border-radius: 14px;
+  background: var(--d-tarjeta);
+  box-shadow: var(--d-sombra);
+}
+
+.estadistica-superior {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.estadistica-titulo {
+  color: var(--d-texto-2);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.estadistica-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.estadistica-icono.rojo {
+  background: #fff0f0;
+  color: #d4222a;
+}
+
+.estadistica-icono.amarillo {
+  background: #fff5df;
+  color: #b4720f;
+}
+
+.estadistica-icono.verde {
+  background: #e8f7ee;
+  color: #1f8a4c;
+}
+
+.estadistica-icono.azul {
+  background: #e8f1ff;
+  color: #2f6fc0;
+}
+
+.estadistica-valor {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.estadistica-valor strong {
+  color: var(--d-texto);
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  /* Números del mismo ancho: no "bailan" al cambiar */
+  font-variant-numeric: tabular-nums;
+}
+
+.estadistica-valor span {
+  margin-top: 6px;
+  color: var(--d-texto-3);
+  font-size: 13px;
+}
+
+/* =========================================
+   JORNADA
+========================================= */
+
+.jornada-conductor {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 26px;
+  border: 1px solid var(--d-borde);
+  border-radius: 14px;
+  background: var(--d-tarjeta);
+  box-shadow: var(--d-sombra);
+}
+
+.jornada-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: #fff0f0;
+  color: #d4222a;
+}
+
+.jornada-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.jornada-info h3 {
+  margin: 0 0 4px;
+  color: var(--d-texto);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.jornada-info p {
+  margin: 0;
+  color: var(--d-texto-3);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.jornada-estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 30px;
+  background: #e8f7ee;
+  color: #1c7a45;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.jornada-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1f9a55;
+}
+
+/* =========================================
+   PRÓXIMAS RUTAS
+========================================= */
+
+.rutas-conductor-card {
+  padding: 28px;
+  border: 1px solid var(--d-borde);
+  border-radius: 15px;
+  background: var(--d-tarjeta);
+  box-shadow: var(--d-sombra);
+}
+
+.rutas-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.rutas-card-header h2 {
+  margin: 0 0 5px;
+  color: var(--d-texto);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.rutas-card-header p {
+  margin: 0;
+  color: var(--d-texto-3);
+  font-size: 13px;
+}
+
+.rutas-icono-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #fff0f0;
+  color: #d4222a;
+}
+
+/* Tabla */
+
+.tabla-rutas {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-rutas table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.tabla-rutas th {
+  padding: 14px 16px;
+  background: #f6f6f9;
+  color: var(--d-texto-2);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.tabla-rutas th:first-child {
+  border-radius: 9px 0 0 9px;
+}
+
+.tabla-rutas th:last-child {
+  border-radius: 0 9px 9px 0;
+}
+
+.tabla-rutas td {
+  padding: 18px 16px;
+  border-bottom: 1px solid #f0f0f4;
+  color: var(--d-texto-2);
+  font-size: 13.5px;
+}
+
+.tabla-rutas tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-rutas td strong {
+  color: var(--d-texto);
+  font-weight: 700;
+}
+
+/* La ruta en curso se distingue con una barra roja a la izquierda */
+.tabla-rutas tr.fila-activa td {
+  background: #fff8f8;
+}
+
+.tabla-rutas tr.fila-activa td:first-child {
+  box-shadow: inset 3px 0 0 var(--d-rojo);
+}
+
+/* Estados */
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.estado::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.estado-proceso {
+  background: #e8f7ee;
+  color: #1c7a45;
+}
+
+.estado-pendiente {
+  background: #fff3dc;
+  color: #a86a0c;
+}
+
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width: 1100px) {
+  .estadisticas-conductor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-bienvenida {
+    padding: 30px;
+  }
+}
+
+/* =========================================
+   RESPONSIVE - TABLET PEQUEÑA
+========================================= */
+
+@media (max-width: 750px) {
+  .dashboard-bienvenida {
+    padding: 26px;
+  }
+
+  .bienvenida-ilustracion {
+    width: 130px;
+    height: 130px;
+  }
+
+  .bienvenida-circulo {
+    width: 104px;
+    height: 104px;
+  }
+
+  .bienvenida-circulo svg {
+    width: 50px;
+    height: 50px;
+  }
+
+  .bienvenida-decoracion {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dashboard-bienvenida h1 {
+    font-size: 28px;
+  }
+
+  .jornada-conductor {
+    flex-wrap: wrap;
+  }
+
+  .jornada-estado {
+    margin-left: 70px;
+  }
+}
+
+/* =========================================
+   RESPONSIVE - CELULAR
+========================================= */
+
+@media (max-width: 550px) {
+  .dashboard-conductor {
+    gap: 20px;
+  }
+
+  .dashboard-bienvenida {
+    min-height: auto;
+    padding: 22px;
+  }
+
+  .dashboard-bienvenida h1 {
+    font-size: 25px;
+  }
+
+  .dashboard-bienvenida-texto > p {
+    font-size: 13.5px;
+  }
+
+  .bienvenida-ilustracion {
+    display: none;
+  }
+
+  .dashboard-chip {
+    font-size: 12px;
+  }
+
+  .estadisticas-conductor {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .estadistica-card {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .estadistica-titulo {
+    font-size: 12.5px;
+  }
+
+  .estadistica-icono {
+    width: 38px;
+    height: 38px;
+  }
+
+  .estadistica-valor strong {
+    font-size: 32px;
+  }
+
+  .estadistica-valor span {
+    font-size: 12px;
+  }
+
+  .dashboard-titulo-seccion h2 {
+    font-size: 18px;
+  }
+
+  .dashboard-titulo-seccion p {
+    font-size: 12.5px;
+  }
+
+  .jornada-conductor {
+    padding: 18px;
+    gap: 12px;
+  }
+
+  .jornada-estado {
+    margin-left: 0;
+  }
+
+  .rutas-conductor-card {
+    padding: 18px;
+  }
+
+  .rutas-card-header h2 {
+    font-size: 18px;
+  }
+}
+
+/* Respeta a quien tiene desactivadas las animaciones */
+@media (prefers-reduced-motion: reduce) {
+  .punto-vivo {
+    animation: none;
+  }
+}

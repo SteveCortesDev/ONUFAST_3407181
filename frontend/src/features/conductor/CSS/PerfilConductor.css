@@ -1,0 +1,431 @@
+/* =========================================
+   PERFIL DEL CONDUCTOR - ONUFAST
+   Usa las variables de Conductor.css (--rojo, etc.)
+   y, si no existen, los valores de respaldo.
+========================================= */
+
+.perfil-conductor {
+  --p-rojo: var(--rojo, #e9232b);
+  --p-texto: #23222a;
+  --p-texto-2: #6b6973;
+  --p-texto-3: #8f8d96;
+  --p-borde: #e8e8ed;
+  --p-tarjeta: #ffffff;
+  --p-sombra: 0 1px 2px rgba(20, 18, 28, 0.04), 0 4px 14px rgba(20, 18, 28, 0.04);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  color: var(--p-texto);
+}
+
+/* =========================================
+   PORTADA
+========================================= */
+
+.perfil-portada {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 34px 40px;
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(233, 35, 43, 0.26),
+      transparent 45%
+    ),
+    linear-gradient(120deg, #17161c, #2b2833);
+  box-shadow: 0 10px 30px -12px rgba(16, 17, 22, 0.5);
+}
+
+/* Anillos decorativos (los mismos del dashboard) */
+.perfil-portada::after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: 90px;
+  top: -170px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 35px rgba(255, 255, 255, 0.025),
+    0 0 0 70px rgba(255, 255, 255, 0.02);
+  pointer-events: none;
+}
+
+/* FOTO */
+
+.perfil-avatar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108px;
+  height: 108px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #25232c;
+  /* Anillo exterior para separar la foto del fondo */
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.08);
+}
+
+.perfil-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Si la foto no carga, se muestra la inicial */
+.perfil-avatar-inicial {
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+/* NOMBRE */
+
+.perfil-nombre {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.perfil-nombre h1 {
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.perfil-nombre p {
+  margin: 0;
+  color: #cfccd6;
+  font-size: 14px;
+}
+
+.perfil-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.perfil-rol,
+.perfil-id {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.perfil-rol {
+  border: 1px solid rgba(233, 35, 43, 0.45);
+  background: rgba(233, 35, 43, 0.2);
+  color: #ffffff;
+}
+
+.perfil-rol--vacio {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #cfccd6;
+}
+
+.perfil-id {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: #cfccd6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================
+   SECCIONES DE DATOS
+========================================= */
+
+.perfil-secciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.perfil-seccion {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--p-borde);
+  border-radius: 14px;
+  background: var(--p-tarjeta);
+  box-shadow: var(--p-sombra);
+}
+
+.perfil-seccion h2 {
+  margin: 0 0 18px;
+  color: var(--p-texto);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.perfil-seccion dl {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+/* Cada dato: icono + etiqueta + valor, separados por una línea fina */
+.perfil-dato {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid #f0f0f4;
+}
+
+.perfil-dato:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.perfil-dato:last-child {
+  padding-bottom: 0;
+}
+
+.perfil-dato-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #fff0f0;
+  color: #d4222a;
+}
+
+.perfil-dato > div {
+  min-width: 0;
+}
+
+.perfil-dato dt {
+  margin-bottom: 3px;
+  color: var(--p-texto-3);
+  font-size: 12.5px;
+}
+
+.perfil-dato dd {
+  margin: 0;
+  color: var(--p-texto);
+  font-size: 14.5px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Dato vacío: atenuado, para que no se confunda con información real */
+.perfil-dato dd.sin-dato {
+  color: var(--p-texto-3);
+  font-weight: 500;
+}
+
+/* =========================================
+   ERROR
+========================================= */
+
+.perfil-error {
+  padding: 52px 20px;
+  border: 1px dashed #f2c5c5;
+  border-radius: 14px;
+  background: var(--p-tarjeta);
+  text-align: center;
+}
+
+.perfil-error-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  background: #fff0f0;
+  color: #d4222a;
+}
+
+.perfil-error h3 {
+  margin: 0 0 6px;
+  color: var(--p-texto);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.perfil-error p {
+  margin: 0;
+  color: var(--p-texto-3);
+  font-size: 13.5px;
+}
+
+.perfil-error button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #17161c;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.perfil-error button:hover {
+  background: #35333c;
+}
+
+.perfil-error button:focus-visible {
+  outline: 2px solid var(--p-rojo);
+  outline-offset: 2px;
+}
+
+/* =========================================
+   ESQUELETO DE CARGA
+========================================= */
+
+.perfil-portada.perfil-esqueleto {
+  min-height: 176px;
+}
+
+.esq-textos {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 320px;
+}
+
+.perfil-seccion.perfil-esqueleto {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 210px;
+}
+
+.esq {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #efeff3 25%,
+    #f8f8fa 50%,
+    #efeff3 75%
+  );
+  background-size: 200% 100%;
+  animation: brillo 1.4s ease-in-out infinite;
+}
+
+/* Sobre la portada oscura el brillo es más tenue */
+.perfil-portada .esq {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0.08) 75%
+  );
+  background-size: 200% 100%;
+}
+
+.esq-avatar {
+  width: 108px;
+  height: 108px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.esq-linea {
+  height: 18px;
+}
+
+.esq-linea.corta {
+  width: 45%;
+}
+
+.esq-bloque {
+  height: 56px;
+}
+
+@keyframes brillo {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 700px) {
+  .perfil-conductor {
+    gap: 16px;
+  }
+
+  .perfil-portada {
+    flex-direction: column;
+    gap: 18px;
+    padding: 28px 20px;
+    text-align: center;
+  }
+
+  .perfil-avatar {
+    width: 92px;
+    height: 92px;
+  }
+
+  .perfil-nombre h1 {
+    font-size: 24px;
+  }
+
+  .perfil-etiquetas {
+    justify-content: center;
+  }
+
+  .perfil-secciones {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .perfil-seccion {
+    padding: 20px;
+  }
+
+  .esq-textos {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Respeta a quien tiene desactivadas las animaciones */
+@media (prefers-reduced-motion: reduce) {
+  .esq {
+    animation: none;
+  }
+}

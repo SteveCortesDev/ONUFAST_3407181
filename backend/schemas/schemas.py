@@ -167,15 +167,19 @@ class TokenData(BaseModel):
 #  RUTAS
 # ─────────────────────────────────────────────
 
+
 class RutaRequest(BaseModel):
     ciudad_origen: str = Field(..., max_length=100)
     ciudad_destino: str = Field(..., max_length=100)
     tiempo_estimado: str = Field(..., max_length=50)
     distancia_ruta: float = Field(..., gt=0)
     tipo_vehiculo: str = Field(..., max_length=30)
-    nombre_conductor: str = Field(..., max_length=50)
+    nombre_conductor: Optional[str] = Field(None, max_length=50)
     cantidad_paquetes: int = Field(..., ge=0)
     codigo_ruta: str = Field(..., max_length=100)
+
+    # Identificador del conductor asignado
+    id_usuario_conductor: Optional[int] = None
 
 
 class RutaResponse(BaseModel):
@@ -189,7 +193,14 @@ class RutaResponse(BaseModel):
     codigo_ruta: str
     tipo_vehiculo: str
     nombre_conductor: str
+    estado: str
+    id_usuario_conductor: Optional[int] = None
 
+
+class RutaEstadoRequest(BaseModel):
+    estado: str = Field(..., min_length=2, max_length=30)
+
+    
 # ESTADO_ENVIO
 
 class EstadoEnvioRequest(BaseModel):

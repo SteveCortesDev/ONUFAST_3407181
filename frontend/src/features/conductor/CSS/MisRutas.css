@@ -1,0 +1,712 @@
+/* =========================================
+   MIS RUTAS - ONUFAST
+   Usa las variables de Conductor.css (--rojo, etc.)
+   y, si no existen, los valores de respaldo.
+========================================= */
+
+.mis-rutas {
+  --r-rojo: var(--rojo, #e9232b);
+  --r-rojo-oscuro: var(--rojo-oscuro, #c81c23);
+  --r-texto: #23222a;
+  --r-texto-2: #6b6973;
+  --r-texto-3: #8f8d96;
+  --r-borde: #e8e8ed;
+  --r-tarjeta: #ffffff;
+  --r-sombra: 0 1px 2px rgba(20, 18, 28, 0.04), 0 4px 14px rgba(20, 18, 28, 0.04);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  color: var(--r-texto);
+}
+
+/* =========================================
+   ENCABEZADO
+========================================= */
+
+.mis-rutas-titulo {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 30px 34px;
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(233, 35, 43, 0.26),
+      transparent 45%
+    ),
+    linear-gradient(120deg, #17161c, #2b2833);
+  box-shadow: 0 10px 30px -12px rgba(16, 17, 22, 0.5);
+}
+
+.mis-rutas-titulo h1 {
+  margin: 0 0 8px;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.mis-rutas-titulo p {
+  margin: 0;
+  color: #cfccd6;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rutas-total {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  padding: 14px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.rutas-total span {
+  color: #cfccd6;
+  font-size: 12px;
+}
+
+.rutas-total strong {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================
+   RESUMEN
+========================================= */
+
+.rutas-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ruta-resumen-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px 22px;
+  border: 1px solid var(--r-borde);
+  border-radius: 14px;
+  background: var(--r-tarjeta);
+  box-shadow: var(--r-sombra);
+}
+
+.ruta-resumen-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.ruta-resumen-icono.amarillo {
+  background: #fff5df;
+  color: #b4720f;
+}
+
+.ruta-resumen-icono.azul {
+  background: #e8f1ff;
+  color: #2f6fc0;
+}
+
+.ruta-resumen-icono.verde {
+  background: #e8f7ee;
+  color: #1f8a4c;
+}
+
+.ruta-resumen-card strong {
+  display: block;
+  color: var(--r-texto);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ruta-resumen-card p {
+  margin: 6px 0 0;
+  color: var(--r-texto-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================
+   BARRA DE FILTROS
+========================================= */
+
+.rutas-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  padding: 16px 20px;
+  border: 1px solid var(--r-borde);
+  border-radius: 14px;
+  background: var(--r-tarjeta);
+  box-shadow: var(--r-sombra);
+}
+
+.rutas-barra h2 {
+  margin: 0 0 3px;
+  color: var(--r-texto);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.rutas-barra p {
+  margin: 0;
+  color: var(--r-texto-3);
+  font-size: 13px;
+}
+
+.rutas-filtros {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.rutas-filtros::-webkit-scrollbar {
+  display: none;
+}
+
+.rutas-filtros button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 9px 14px;
+  border: 1px solid var(--r-borde);
+  border-radius: 30px;
+  background: #ffffff;
+  color: var(--r-texto-2);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.rutas-filtros button small {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: #f0f0f4;
+  color: var(--r-texto-2);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rutas-filtros button:hover {
+  border-color: #cfcfd8;
+  color: var(--r-texto);
+}
+
+.rutas-filtros button.filtro-activo {
+  border-color: #17161c;
+  background: #17161c;
+  color: #ffffff;
+}
+
+.rutas-filtros button.filtro-activo small {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+/* Foco visible con teclado */
+.mis-rutas button:focus-visible {
+  outline: 2px solid var(--r-rojo);
+  outline-offset: 2px;
+}
+
+/* =========================================
+   ERROR AL CAMBIAR ESTADO
+========================================= */
+
+.rutas-error {
+  padding: 13px 16px;
+  border: 1px solid #f2c5c5;
+  border-left: 4px solid var(--r-rojo);
+  border-radius: 10px;
+  background: #fff5f5;
+  color: #a51d24;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+/* =========================================
+   TARJETAS DE RUTAS
+   La franja de color a la izquierda indica el estado
+========================================= */
+
+.rutas-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.ruta-card {
+  --franja: #cfcfd8;
+
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 22px 22px 22px 25px;
+  border: 1px solid var(--r-borde);
+  border-left: 4px solid var(--franja);
+  border-radius: 14px;
+  background: var(--r-tarjeta);
+  box-shadow: var(--r-sombra);
+}
+
+.ruta-card.pendiente {
+  --franja: #e8a22a;
+}
+
+.ruta-card.proceso {
+  --franja: #3b82d6;
+}
+
+.ruta-card.finalizada {
+  --franja: #27a35f;
+}
+
+.ruta-card-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.ruta-card-superior > strong {
+  color: var(--r-texto);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Estados */
+
+.ruta-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 30px;
+  background: #f0f0f4;
+  color: var(--r-texto-2);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ruta-estado::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ruta-estado.pendiente {
+  background: #fff3dc;
+  color: #a86a0c;
+}
+
+.ruta-estado.proceso {
+  background: #e6efff;
+  color: #2b62ad;
+}
+
+.ruta-estado.finalizada {
+  background: #e8f7ee;
+  color: #1c7a45;
+}
+
+/* =========================================
+   RECORRIDO: ORIGEN Y DESTINO
+========================================= */
+
+.ruta-recorrido {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 22px;
+}
+
+.ruta-punto {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.punto-origen,
+.punto-destino {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+/* Origen: círculo vacío. Destino: círculo lleno */
+.punto-origen {
+  border: 3px solid var(--r-rojo);
+  background: #ffffff;
+}
+
+.punto-destino {
+  background: var(--r-rojo);
+  box-shadow: 0 0 0 4px rgba(233, 35, 43, 0.15);
+}
+
+.ruta-punto > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ruta-punto small {
+  color: var(--r-texto-3);
+  font-size: 12px;
+}
+
+.ruta-punto strong {
+  color: var(--r-texto);
+  font-size: 16px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* La línea queda centrada bajo los puntos (14px de ancho) */
+.ruta-linea {
+  height: 26px;
+  margin: 3px 0 3px 6px;
+  border-left: 2px dashed #d5d5dc;
+}
+
+/* =========================================
+   DETALLES
+========================================= */
+
+.ruta-detalles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
+  margin-bottom: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #f0f0f4;
+}
+
+.ruta-detalles > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ruta-detalles small {
+  color: var(--r-texto-3);
+  font-size: 12px;
+}
+
+.ruta-detalles strong {
+  color: #3a3841;
+  font-size: 13.5px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   BOTONES DE ACCIÓN
+   Altos (46px) para tocarlos fácil desde el celular
+========================================= */
+
+.ruta-acciones {
+  margin-top: auto;
+}
+
+.ruta-acciones button {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.ruta-acciones button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-iniciar-ruta {
+  background: #17161c;
+}
+
+.btn-iniciar-ruta:hover:not(:disabled) {
+  background: #35333c;
+}
+
+.btn-finalizar-ruta {
+  background: var(--r-rojo);
+  box-shadow: 0 6px 16px -8px rgba(233, 35, 43, 0.8);
+}
+
+.btn-finalizar-ruta:hover:not(:disabled) {
+  background: var(--r-rojo-oscuro);
+}
+
+.ruta-completada {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  border-radius: 10px;
+  background: #e8f7ee;
+  color: #1c7a45;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+/* =========================================
+   SIN RESULTADOS Y ERROR DE CARGA
+========================================= */
+
+.rutas-vacio {
+  grid-column: 1 / -1;
+  padding: 52px 20px;
+  border: 1px dashed #d5d5dc;
+  border-radius: 14px;
+  background: var(--r-tarjeta);
+  text-align: center;
+}
+
+.vacio-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  background: #f0f0f4;
+  color: var(--r-texto-2);
+}
+
+.rutas-vacio--error {
+  border-color: #f2c5c5;
+}
+
+.rutas-vacio--error .vacio-icono {
+  background: #fff0f0;
+  color: #d4222a;
+}
+
+.rutas-vacio h3 {
+  margin: 0 0 6px;
+  color: var(--r-texto);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.rutas-vacio p {
+  margin: 0;
+  color: var(--r-texto-3);
+  font-size: 13.5px;
+}
+
+.rutas-reintentar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #17161c;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.rutas-reintentar:hover {
+  background: #35333c;
+}
+
+/* =========================================
+   ESQUELETOS DE CARGA
+========================================= */
+
+.ruta-esqueleto {
+  gap: 14px;
+  min-height: 300px;
+  border-left-color: var(--r-borde);
+}
+
+.esq {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #efeff3 25%,
+    #f8f8fa 50%,
+    #efeff3 75%
+  );
+  background-size: 200% 100%;
+  animation: brillo 1.4s ease-in-out infinite;
+}
+
+.esq-linea {
+  height: 16px;
+}
+
+.esq-linea.corta {
+  width: 35%;
+}
+
+.esq-bloque {
+  height: 90px;
+}
+
+.esq-boton {
+  height: 46px;
+  margin-top: auto;
+}
+
+@keyframes brillo {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1000px) {
+  .rutas-tarjetas {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .mis-rutas {
+    gap: 16px;
+  }
+
+  .mis-rutas-titulo {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 20px;
+  }
+
+  .mis-rutas-titulo h1 {
+    font-size: 24px;
+  }
+
+  .rutas-total {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 18px;
+  }
+
+  .rutas-total strong {
+    font-size: 24px;
+  }
+
+  /* Resumen: 3 columnas compactas con el icono arriba */
+  .rutas-resumen {
+    gap: 10px;
+  }
+
+  .ruta-resumen-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .ruta-resumen-icono {
+    width: 38px;
+    height: 38px;
+  }
+
+  .ruta-resumen-card strong {
+    font-size: 26px;
+  }
+
+  .ruta-resumen-card p {
+    font-size: 12px;
+  }
+
+  .rutas-barra {
+    padding: 14px;
+  }
+
+  /* En celular el título de la barra sobra: los chips se explican solos */
+  .rutas-barra-texto {
+    display: none;
+  }
+
+  .rutas-filtros {
+    width: 100%;
+  }
+}
+
+@media (max-width: 450px) {
+  .ruta-resumen-icono {
+    display: none;
+  }
+
+  .ruta-card {
+    padding: 18px 16px 18px 18px;
+  }
+}
+
+/* Respeta a quien tiene desactivadas las animaciones */
+@media (prefers-reduced-motion: reduce) {
+  .esq {
+    animation: none;
+  }
+}

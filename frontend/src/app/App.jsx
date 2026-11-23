@@ -14,6 +14,7 @@ import Servicios from '@/features/landing/Servicios';
 import Ubicacion from '@/features/landing/Ubicacion';
 import Admin from '@/features/admin/Admin';
 import Usuario from "@/features/usuario/Usuario";
+import Conductor from "@/features/conductor/Conductor";
 
 import api from '@/shared/api';
 
@@ -56,6 +57,7 @@ function AppContent() {
     const esPanelUsuario = location.pathname === '/usuario';
     const estaLogueado = !!localStorage.getItem('token');
     const esPanelAdmin = location.pathname === '/admin'; 
+    const esPanelConductor = location.pathname === '/conductor';
 
 
     // ─────────────────────────────────────────
@@ -81,16 +83,45 @@ function AppContent() {
     // LOGIN
     // ─────────────────────────────────────────
 
-            const handleLogin = (usuario) => {
+    const handleLogin = async (usuario) => {
+    try {
         console.log('Usuario autenticado:', usuario);
-        
-        // Si el correo es del admin, lo mandamos directo al panel de admin
-        if (usuario.correo === 'admin@onufast.com') {
-            navigate('/admin');
-        } else {
-            navigate('/usuario');
-        }
-    };
+
+        // Consultar el perfil para conocer el rol
+        const respuesta = await api.get('/usuarios/perfil');
+
+        const idRol = respuesta.data.id_rol;
+
+        console.log('Rol del usuario:', idRol);
+
+        // Redirigir según el rol
+        switch (idRol) {
+    case 1:
+        navigate('/admin');
+        break;
+
+    case 2:
+        navigate('/usuario');
+        break;
+
+    case 3:
+        navigate('/conductor');
+        break;
+
+    case 6:
+        navigate('/despachador');
+        break;
+
+    default:
+        console.error('Rol no reconocido:', idRol);
+        alert('Tu usuario no tiene un rol válido asignado.');
+}
+
+    } catch (error) {
+        console.error('Error al consultar el perfil:', error);
+        alert('No fue posible obtener tu perfil. Intenta iniciar sesión nuevamente.');
+    }
+};
 
 
     // ─────────────────────────────────────────
@@ -140,7 +171,7 @@ function AppContent() {
             {/* ═══════════════════════════════════
                 HEADER / NAVBAR
             ═══════════════════════════════════ */}
-            {!esPanelUsuario && !esPanelAdmin && (
+            {!esPanelUsuario && !esPanelAdmin && !esPanelConductor && (
 
     <header className="onufast-header">
 
@@ -573,6 +604,12 @@ function AppContent() {
                     element={<Usuario />}
                 /> 
 
+
+                <Route
+                    path="/conductor"
+                    element={<Conductor />}
+                />
+
             </Routes>
 
 
@@ -582,14 +619,14 @@ function AppContent() {
 
             {/* FOOTER */}
 
-            {!esPanelUsuario && !esPanelAdmin && <Footer />}
+            {!esPanelUsuario && !esPanelAdmin && !esPanelConductor && <Footer />}
 
 
             {/* ═══════════════════════════════════
                 MODAL DE AUTENTICACIÓN
             ═══════════════════════════════════ */}
 
-            {!esPanelUsuario && !esPanelAdmin && (
+            {!esPanelUsuario && !esPanelAdmin && !esPanelConductor && (
                 <AuthModal
                     isOpen={mostrarModal}
                     onClose={() => setMostrarModal(false)}

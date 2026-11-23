@@ -1,0 +1,351 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+/* ==========================================
+   VARIABLES (cambia aquí y se actualiza todo)
+========================================== */
+
+.conductor-container {
+  --rojo: #e9232b;
+  --rojo-oscuro: #c81c23;
+  --rojo-suave: rgba(233, 35, 43, 0.14);
+
+  --fondo-oscuro: #101116;
+  --fondo-oscuro-2: #181920;
+  --linea-oscura: #272830;
+  --texto-claro: #ffffff;
+  --texto-tenue: #9b9ca6;
+
+  --fondo-contenido: #f3f4f7;
+
+  --sidebar-ancho: 232px;
+  --header-alto: 68px;
+  --radio: 10px;
+  --transicion: 0.18s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   CONTENEDOR GENERAL
+========================================== */
+
+.conductor-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--fondo-contenido);
+  font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco visible para quien navega con teclado */
+.conductor-container button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   MENÚ LATERAL
+   Queda fijo mientras el contenido hace scroll
+========================================== */
+
+.conductor-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  width: var(--sidebar-ancho);
+  height: 100vh;
+  background: var(--fondo-oscuro);
+  color: var(--texto-claro);
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 20px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+/* LOGO */
+
+.conductor-logo {
+  height: var(--header-alto);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid var(--linea-oscura);
+  margin: 0 -16px;
+  flex-shrink: 0;
+}
+
+.conductor-logo img {
+  width: 130px;
+  max-height: 48px;
+  object-fit: contain;
+}
+
+
+
+
+
+
+/* ==========================================
+   NAVEGACIÓN
+========================================== */
+
+.conductor-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+}
+
+.conductor-menu button,
+.conductor-logout {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #c9cad1;
+  padding: 12px 14px;
+  text-align: left;
+  border-radius: var(--radio);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background var(--transicion), color var(--transicion);
+}
+
+.conductor-menu button svg,
+.conductor-logout svg {
+  flex-shrink: 0;
+}
+
+/* Hover discreto */
+.conductor-menu button:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texto-claro);
+}
+
+/* La opción activa es el único elemento en rojo sólido del menú */
+.conductor-menu button.activo {
+  background: var(--rojo);
+  color: var(--texto-claro);
+  box-shadow: 0 6px 16px -6px rgba(233, 35, 43, 0.7);
+}
+
+/* CERRAR SESIÓN */
+
+.conductor-logout {
+  margin-top: auto;
+  color: #ff7a7f;
+  border-top: 1px solid var(--linea-oscura);
+  border-radius: 0 0 var(--radio) var(--radio);
+  padding-top: 18px;
+}
+
+.conductor-logout:hover {
+  background: var(--rojo-suave);
+  color: #ff9a9e;
+}
+
+/* ==========================================
+   CONTENIDO PRINCIPAL
+========================================== */
+
+.conductor-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================
+   BARRA SUPERIOR
+   Se queda pegada arriba al hacer scroll
+========================================== */
+
+.conductor-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--fondo-oscuro);
+  min-height: var(--header-alto);
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--linea-oscura);
+}
+
+.conductor-header h2 {
+  margin: 0 0 3px;
+  color: var(--texto-claro);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.conductor-header p {
+  margin: 0;
+  color: var(--texto-tenue);
+  font-size: 12.5px;
+}
+
+.conductor-header-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--texto-claro);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.conductor-avatar {
+  width: 58px;
+  height: 58px;
+  background: var(--rojo);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.conductor-avatar--sm {
+  width: 38px;
+  height: 38px;
+  font-size: 15px;
+  background: var(--fondo-oscuro-2);
+  border: 1px solid #4a4b55;
+}
+
+/* ==========================================
+   ÁREA DE TRABAJO
+   Fondo claro: así las tarjetas blancas del
+   dashboard se ven nítidas y no "apagadas"
+========================================== */
+
+.conductor-content {
+  flex: 1;
+  padding: 28px 32px 40px;
+  min-width: 0;
+  background: var(--fondo-contenido);
+}
+
+/* ==========================================
+   RESPONSIVE - TABLET
+========================================== */
+
+@media (max-width: 960px) {
+  .conductor-container {
+    --sidebar-ancho: 200px;
+  }
+
+  .conductor-header {
+    padding: 10px 22px;
+  }
+
+  .conductor-content {
+    padding: 22px;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE - MÓVIL
+   El menú pasa a una barra fija inferior,
+   como en una app: se alcanza con el pulgar
+========================================== */
+
+@media (max-width: 700px) {
+  .conductor-container {
+    flex-direction: column;
+    --header-alto: 60px;
+  }
+
+  .conductor-sidebar {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--linea-oscura);
+    overflow: visible;
+  }
+
+  .conductor-logo,
+  .conductor-info {
+    display: none;
+  }
+
+  .conductor-menu {
+    flex: 1;
+    flex-direction: row;
+    gap: 2px;
+    margin-top: 0;
+  }
+
+  .conductor-menu button,
+  .conductor-logout {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 2px;
+    font-size: 10.5px;
+    text-align: center;
+  }
+
+  .conductor-menu button.activo {
+    box-shadow: none;
+  }
+
+  .conductor-logout {
+    flex: 0 0 64px;
+    margin-top: 0;
+    border-top: none;
+    border-radius: var(--radio);
+  }
+
+  .conductor-header {
+    padding: 10px 16px;
+  }
+
+  .conductor-header h2 {
+    font-size: 15px;
+  }
+
+  .conductor-header p {
+    font-size: 11.5px;
+  }
+
+  .conductor-header-user span {
+    display: none;
+  }
+
+  /* Espacio para que la barra inferior no tape el contenido */
+  .conductor-content {
+    padding: 16px 14px 96px;
+  }
+}
+
+/* Respeta a quien tiene desactivadas las animaciones */
+@media (prefers-reduced-motion: reduce) {
+  .conductor-container * {
+    transition: none !important;
+  }
+}

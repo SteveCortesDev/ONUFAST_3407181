@@ -2,7 +2,7 @@ import uuid
 from typing import List
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -12,6 +12,7 @@ from models.paquete import Paquete
 from models.tipo_envio import TipoEnvio
 from models.estado_envio import EstadoEnvio
 from models.rutas import Ruta
+from models.usuario_roles import UsuarioRol
 
 from schemas.schemas import (
     EnvioRequest,
@@ -83,6 +84,148 @@ def mis_pedidos(
         })
 
     return {"pedidos": resultado}
+
+
+
+# ==========================================
+# VALIDAR QUE EL USUARIO SEA CONDUCTOR
+# ==========================================
+
+def validar_rol_conductor(db: Session, id_usuario: int):
+    conductor = db.query(UsuarioRol).filter(
+        UsuarioRol.id_usuario == id_usuario,
+        UsuarioRol.id_rol == 3
+    ).first()
+
+    if not conductor:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos de conductor"
+        )
+
+
+# ==========================================
+# GET /envios/mis-entregas
+# Consultar entregas asignadas al conductor
+# ==========================================
+
+@router.get("/mis-entregas")
+def mis_entregas(
+    current_user: TokenData = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    validar_rol_conductor(db, current_user.id_usuario)
+
+    envios = (
+        db.query(Envio)
+        .join(Ruta, Envio.id_rutas == Ruta.id_rutas)
+        .filter(
+            Ruta.id_usuario_conductor == current_user.id_usuario,
+            Ruta.codigo_ruta != "SIN-ASIGNAR"
+        )
+        .all()
+    )
+
+    resultado = []
+
+    for envio in envios:
+
+        paquete = db.query(
+    Paquete.destino,
+    Paquete.descripcion
+).filter(
+    Paquete.id_envio == envio.id_envio
+).first()
+
+        estado_db = db.query(EstadoEnvio).filter(
+            EstadoEnvio.id_estadoenvio == envio.id_estadoenvio
+        ).first()
+
+        estado = (
+            estado_db.estado
+            if estado_db
+            else envio.estado_paquete
+        )
+
+        # Adaptar los estados existentes a la interfaz
+        if estado in ["Confirmado", "En bodega"]:
+            estado = "Pendiente"
+
+        resultado.append({
+            "id_envio": envio.id_envio,
+            "codigo": envio.codigo_rastreo,
+            "destinatario": envio.nombre_destinatario,
+            "direccion": paquete.destino,
+            "ciudad": paquete.destino,
+            "documento": envio.documento_destinatario,
+            "descripcion": paquete.descripcion,
+            "estado": estado
+        })
+
+    return resultado
+
+
+# ==========================================
+# PATCH /envios/{id_envio}/estado
+# Actualizar estado de una entrega
+# ==========================================
+
+@router.patch("/{id_envio}/estado")
+def actualizar_estado_entrega(
+    id_envio: int,
+    estado: str = Body(..., embed=True),
+    current_user: TokenData = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    validar_rol_conductor(db, current_user.id_usuario)
+
+    envio = (
+        db.query(Envio)
+        .join(Ruta, Envio.id_rutas == Ruta.id_rutas)
+        .filter(
+            Envio.id_envio == id_envio,
+            Ruta.id_usuario_conductor == current_user.id_usuario,
+            Ruta.codigo_ruta != "SIN-ASIGNAR"
+        )
+        .first()
+    )
+
+    if not envio:
+        raise HTTPException(
+            status_code=404,
+            detail="Entrega no encontrada o no asignada a este conductor"
+        )
+
+    # Solo permitir estos cambios desde la pantalla del conductor
+    estados_permitidos = ["En camino", "Entregado"]
+
+    if estado not in estados_permitidos:
+        raise HTTPException(
+            status_code=400,
+            detail="Estado no permitido"
+        )
+
+    nuevo_estado = db.query(EstadoEnvio).filter(
+        EstadoEnvio.estado == estado
+    ).first()
+
+    if not nuevo_estado:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No existe el estado: {estado}"
+        )
+
+    envio.id_estadoenvio = nuevo_estado.id_estadoenvio
+    envio.estado_paquete = estado
+
+    db.commit()
+    db.refresh(envio)
+
+    return {
+        "mensaje": "Estado actualizado correctamente",
+        "id_envio": envio.id_envio,
+        "estado": estado
+    }
 
 
 # ─────────────────────────────────────────────

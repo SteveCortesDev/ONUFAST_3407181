@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Numeric, DateTime
+
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey
 from core.database import Base
 
 
@@ -15,3 +16,11 @@ class Ruta(Base):
     codigo_ruta = Column(String(100), unique=True, nullable=False)
     tipo_vehiculo = Column(String(30), nullable=False)
     nombre_conductor = Column(String(50), nullable=False)
+    estado = Column(String(30), nullable=False, default="Pendiente")
+
+    # Relación con el usuario que tiene el rol de conductor
+    id_usuario_conductor = Column(
+        Integer,
+        ForeignKey("usuario.id_usuario"),
+        nullable=True
+    )
