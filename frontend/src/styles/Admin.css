@@ -347,3 +347,52 @@
         font-size: 12px;
     }
 }
+
+
+/* ============================================
+   DASHBOARD - ESTADOS Y MENSAJES
+   ============================================ */
+
+.admin-dashboard-error {
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid #e74c3c;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.admin-dashboard-error p {
+    margin: 0 0 12px;
+}
+
+.admin-dashboard-message {
+    text-align: center !important;
+    padding: 25px !important;
+    color: var(--text-muted) !important;
+}
+
+.status-en-transito {
+    background-color: #3498db;
+    color: white;
+}
+
+.status-en-preparacion {
+    background-color: #9b59b6;
+    color: white;
+}
+
+.status-confirmado {
+    background-color: #2980b9;
+    color: white;
+}
+
+.status-despachado {
+    background-color: #16a085;
+    color: white;
+}
+
+.status-devuelto {
+    background-color: #e67e22;
+    color: white;
+}
