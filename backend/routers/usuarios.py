@@ -405,3 +405,59 @@ def actualizar_rol_usuario(
         "id_rol": id_rol,
         "nombre_rol": rol.nombre_rol
     }
+    
+
+# ============================================================
+# ACTIVAR O DESACTIVAR USUARIO
+# ============================================================
+
+@router.put("/{id_usuario}/estado")
+def cambiar_estado_usuario(
+    id_usuario: int,
+    activo: bool,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    # Verificar que quien realiza la acción sea administrador
+    administrador = db.query(UsuarioRol).filter(
+        UsuarioRol.id_usuario == current_user.id_usuario,
+        UsuarioRol.id_rol == 1
+    ).first()
+
+    if not administrador:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para modificar usuarios"
+        )
+
+    # Buscar el usuario que se desea modificar
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    # Evitar que el administrador desactive su propia cuenta
+    if id_usuario == current_user.id_usuario and activo is False:
+        raise HTTPException(
+            status_code=400,
+            detail="No puedes desactivar tu propia cuenta"
+        )
+
+    # Actualizar estado
+    usuario.activo = activo
+
+    db.commit()
+    db.refresh(usuario)
+
+    return {
+        "mensaje": "Estado del usuario actualizado correctamente",
+        "id_usuario": usuario.id_usuario,
+        "activo": usuario.activo
+    }
+
