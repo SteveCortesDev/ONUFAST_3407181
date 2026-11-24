@@ -1,18 +1,21 @@
-export default function PerfilBodega() {
-  const nombre =
-    localStorage.getItem("nombre_usuario") ||
-    localStorage.getItem("nombre") ||
-    "Encargado de bodega";
+export default function PerfilBodega({ perfil }) {
+  const nombre = perfil?.nombre_completo || "Encargado de bodega";
 
-  const idUsuario =
-    localStorage.getItem("id_usuario") || "No disponible";
+  const documento = perfil?.documento
+    ? `${perfil.documento.tipo_documento} ${perfil.documento.num_documento}`
+    : "No registrado";
+
+  const roles =
+    perfil?.roles && perfil.roles.length > 0
+      ? perfil.roles.join(", ")
+      : "Sin rol asignado";
 
   return (
     <div className="perfil-bodega">
 
       <div className="perfil-titulo">
         <h2>Mi perfil</h2>
-        <p>Consulta tu información personal y datos de la bodega.</p>
+        <p>Información real de tu cuenta en la base de datos.</p>
       </div>
 
       <div className="perfil-card">
@@ -22,7 +25,7 @@ export default function PerfilBodega() {
 
           <div className="perfil-nombre">
             <h2>{nombre}</h2>
-            <span>Encargado de bodega · ONUFAST</span>
+            <span>{perfil?.correo || "Sin correo"} · ONUFAST</span>
           </div>
         </div>
 
@@ -37,37 +40,34 @@ export default function PerfilBodega() {
 
             <div className="perfil-dato">
               <span>Identificación de usuario</span>
-              <strong>{idUsuario}</strong>
+              <strong>{perfil?.id_usuario ?? "—"}</strong>
             </div>
 
             <div className="perfil-dato">
               <span>Correo electrónico</span>
-              <strong>No disponible</strong>
+              <strong>{perfil?.correo || "—"}</strong>
             </div>
 
             <div className="perfil-dato">
               <span>Teléfono</span>
-              <strong>No disponible</strong>
+              <strong>{perfil?.telefono || "—"}</strong>
+            </div>
+
+            <div className="perfil-dato">
+              <span>Documento</span>
+              <strong>{documento}</strong>
+            </div>
+
+            <div className="perfil-dato">
+              <span>Jornada</span>
+              <strong>{perfil?.jornada || "—"}</strong>
             </div>
 
             <div className="perfil-dato">
               <span>Rol</span>
-              <strong>Encargado de bodega</strong>
-            </div>
-
-            <div className="perfil-dato">
-              <span>Bodega asignada</span>
-              <strong>Bodega principal · Bogotá</strong>
+              <strong>{roles}</strong>
             </div>
           </div>
-        </div>
-
-        <div className="perfil-nota">
-          <span>ℹ</span>
-          <p>
-            Tu información personal se mostrará aquí cuando el sistema
-            entregue los datos completos del usuario.
-          </p>
         </div>
 
       </div>

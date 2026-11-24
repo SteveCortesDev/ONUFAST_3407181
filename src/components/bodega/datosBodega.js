@@ -1,198 +1,95 @@
 // ============================================
-// DATOS DE EJEMPLO DEL PANEL DE BODEGA
+// CONSTANTES Y UTILIDADES DEL PANEL DE BODEGA
+// Los datos ya no son de ejemplo: vienen del backend.
 // ============================================
 
 export const CIUDADES = [
-  "Bogotá",
-  "Medellín",
+  "Bogota",
+  "Medellin",
   "Cali",
   "Barranquilla",
   "Bucaramanga",
   "Cartagena",
   "Pereira",
-  "Manizales"
+  "Manizales",
+  "Tunja",
+  "Ibague",
+  "Chia"
 ];
 
-export const ESTADOS = ["En bodega", "En tránsito", "Entregado"];
+// Estados a los que la bodega puede mover un paquete
+export const ESTADOS = [
+  "En bodega",
+  "En camino",
+  "Entregado",
+  "Devuelto",
+  "Cancelado"
+];
+
+// Todos los estados que existen en la tabla estado_envio
+export const TODOS_LOS_ESTADOS = [
+  "Confirmado",
+  "Pendiente",
+  ...ESTADOS
+];
+
+export const COLOR_ESTADO = {
+  Pendiente: "gris",
+  Confirmado: "gris",
+  "En bodega": "amarillo",
+  "En camino": "azul",
+  Entregado: "verde",
+  Devuelto: "rojo",
+  Cancelado: "rojo",
+  Programada: "gris",
+  Despachada: "verde"
+};
 
 // Fecha actual en formato AAAA-MM-DD
 export const hoyISO = () => new Date().toISOString().slice(0, 10);
 
-// Fecha legible: 2026-11-14 → 14/11/2026
-export const formatearFecha = (fecha) => {
-  if (!fecha) return "—";
-  const [anio, mes, dia] = fecha.split("-");
-  return `${dia}/${mes}/${anio}`;
+// 2026-11-14T08:30:00 → 14/11/2026
+export const formatearFecha = (valor) => {
+  if (!valor) return "—";
+
+  const fecha = new Date(valor);
+
+  if (Number.isNaN(fecha.getTime())) return "—";
+
+  return fecha.toLocaleDateString("es-CO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
 };
 
-export const PAQUETES_INICIALES = [
-  {
-    id_paquete: 1,
-    guia: "ONU-2401",
-    remitente: "María Gómez",
-    destinatario: "Carlos Ruiz",
-    origen: "Bogotá",
-    destino: "Medellín",
-    peso: 2.4,
-    dimensiones: "30x20x15 cm",
-    estado: "En bodega",
-    fecha: hoyISO(),
-    rutaId: null
-  },
-  {
-    id_paquete: 2,
-    guia: "ONU-2402",
-    remitente: "Tienda Andina",
-    destinatario: "Laura Restrepo",
-    origen: "Bogotá",
-    destino: "Cali",
-    peso: 5.1,
-    dimensiones: "40x35x20 cm",
-    estado: "En bodega",
-    fecha: hoyISO(),
-    rutaId: null
-  },
-  {
-    id_paquete: 3,
-    guia: "ONU-2403",
-    remitente: "Ferretería El Tornillo",
-    destinatario: "Jorge Medina",
-    origen: "Bogotá",
-    destino: "Barranquilla",
-    peso: 8.7,
-    dimensiones: "50x40x30 cm",
-    estado: "En bodega",
-    fecha: hoyISO(),
-    rutaId: null
-  },
-  {
-    id_paquete: 4,
-    guia: "ONU-2404",
-    remitente: "Ana Torres",
-    destinatario: "Pedro Salazar",
-    origen: "Bogotá",
-    destino: "Medellín",
-    peso: 1.2,
-    dimensiones: "20x15x10 cm",
-    estado: "En bodega",
-    fecha: "2026-11-13",
-    rutaId: null
-  },
-  {
-    id_paquete: 5,
-    guia: "ONU-2405",
-    remitente: "Distribuidora Sur",
-    destinatario: "Camila Ospina",
-    origen: "Bogotá",
-    destino: "Cali",
-    peso: 3.6,
-    dimensiones: "35x25x20 cm",
-    estado: "En tránsito",
-    fecha: "2026-11-13",
-    rutaId: "RUT-002"
-  },
-  {
-    id_paquete: 6,
-    guia: "ONU-2406",
-    remitente: "Librería Central",
-    destinatario: "Andrés Peña",
-    origen: "Bogotá",
-    destino: "Bucaramanga",
-    peso: 4.0,
-    dimensiones: "45x30x25 cm",
-    estado: "En bodega",
-    fecha: "2026-11-12",
-    rutaId: null
-  },
-  {
-    id_paquete: 7,
-    guia: "ONU-2407",
-    remitente: "Moda Express",
-    destinatario: "Sofía Cárdenas",
-    origen: "Bogotá",
-    destino: "Medellín",
-    peso: 0.9,
-    dimensiones: "25x20x10 cm",
-    estado: "En tránsito",
-    fecha: "2026-11-12",
-    rutaId: "RUT-001"
-  },
-  {
-    id_paquete: 8,
-    guia: "ONU-2408",
-    remitente: "Tecno Store",
-    destinatario: "Ricardo López",
-    origen: "Bogotá",
-    destino: "Cali",
-    peso: 2.2,
-    dimensiones: "30x20x20 cm",
-    estado: "Entregado",
-    fecha: "2026-11-11",
-    rutaId: "RUT-002"
-  },
-  {
-    id_paquete: 9,
-    guia: "ONU-2409",
-    remitente: "Papelería Norte",
-    destinatario: "Valentina Ríos",
-    origen: "Bogotá",
-    destino: "Barranquilla",
-    peso: 6.3,
-    dimensiones: "55x40x35 cm",
-    estado: "En bodega",
-    fecha: "2026-11-11",
-    rutaId: null
-  },
-  {
-    id_paquete: 10,
-    guia: "ONU-2410",
-    remitente: "Café de Origen",
-    destinatario: "Mauricio Gómez",
-    origen: "Bogotá",
-    destino: "Bucaramanga",
-    peso: 12.5,
-    dimensiones: "60x50x40 cm",
-    estado: "Entregado",
-    fecha: "2026-11-10",
-    rutaId: null
-  }
-];
+// 2026-11-14T08:30:00 → 08:30 a. m.
+export const formatearHora = (valor) => {
+  if (!valor) return "—";
 
-export const RUTAS_INICIALES = [
-  {
-    id: "RUT-001",
-    destino: "Medellín",
-    conductor: "Carlos Pérez",
-    vehiculo: "ABC-123",
-    hora: "08:00 AM",
-    capacidad: 20,
-    estado: "Programada"
-  },
-  {
-    id: "RUT-002",
-    destino: "Cali",
-    conductor: "Julián Ramírez",
-    vehiculo: "XYZ-456",
-    hora: "10:30 AM",
-    capacidad: 15,
-    estado: "En ruta"
-  },
-  {
-    id: "RUT-003",
-    destino: "Barranquilla",
-    conductor: "Diana Castro",
-    vehiculo: "JKL-789",
-    hora: "02:00 PM",
-    capacidad: 25,
-    estado: "Programada"
-  }
-];
+  const fecha = new Date(valor);
 
-export const COLOR_ESTADO = {
-  "En bodega": "amarillo",
-  "En tránsito": "azul",
-  Entregado: "verde",
-  Programada: "gris",
-  "En ruta": "azul",
-  Despachada: "verde"
+  if (Number.isNaN(fecha.getTime())) return "—";
+
+  return fecha.toLocaleTimeString("es-CO", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+};
+
+// Mensaje legible para los errores de FastAPI
+export const mensajeError = (error, porDefecto = "Ocurrió un error.") => {
+  const detalle = error?.response?.data?.detail;
+
+  if (typeof detalle === "string") return detalle;
+
+  if (Array.isArray(detalle)) {
+    return detalle.map((d) => d.msg).join(", ");
+  }
+
+  if (error?.message === "Network Error") {
+    return "No se pudo conectar con el servidor. Revisa que el backend esté encendido.";
+  }
+
+  return porDefecto;
 };

@@ -1,13 +1,24 @@
-
-
-
+-- ============================================================
+--  ONUFAST · Base de datos real (esquema + datos)
+--
+--  Este archivo es el script de creación tal como está la base
+--  de datos del proyecto: mismas tablas, mismas columnas y los
+--  mismos datos (usuarios, rutas, envíos, paquetes y facturas).
+--
+--  Úsalo solo cuando la base esté VACÍA (crear todo de cero).
+--  Si tu base ya existe, NO lo ejecutes: ve a
+--  "db/Actualizacion bodega.sql".
+--
+--  Ejecutar con:
+--    psql -U postgres -d onufast -f "db/Base de datos onufast.sql"
+--  (o en pgAdmin: Query Tool → abrir archivo → F5)
+-- ============================================================
 
 
 CREATE TABLE rol (
     id_rol SERIAL PRIMARY KEY,
     nombre_rol VARCHAR(50) NOT NULL
 );
-
 
 
 CREATE TABLE usuario (
@@ -19,7 +30,6 @@ CREATE TABLE usuario (
     telefono VARCHAR(20) NOT NULL,
     jornada VARCHAR(20) NOT NULL
 );
-
 
 
 CREATE TABLE usuario_roles (
@@ -38,7 +48,6 @@ CREATE TABLE usuario_roles (
 );
 
 
-
 CREATE TABLE documento (
     id_documento SERIAL PRIMARY KEY,
 
@@ -53,21 +62,16 @@ CREATE TABLE documento (
 );
 
 
-
-
 CREATE TABLE tipo_envio (
     id_tipenvio SERIAL PRIMARY KEY,
     descripcion VARCHAR(100) NOT NULL
 );
 
 
-
-
 CREATE TABLE estado_envio (
     id_estadoenvio SERIAL PRIMARY KEY,
     estado VARCHAR(50) NOT NULL
 );
-
 
 
 CREATE TABLE rutas (
@@ -84,12 +88,10 @@ CREATE TABLE rutas (
 
     codigo_ruta VARCHAR(50) UNIQUE,
 
-   tipo_vehiculo VARCHAR(30) NOT NULL,
+    tipo_vehiculo VARCHAR(30) NOT NULL,
 
-	nombre_conductor varchar(50) NOT NULL
+    nombre_conductor varchar(50) NOT NULL
 );
-
-
 
 
 CREATE TABLE envio (
@@ -126,7 +128,6 @@ CREATE TABLE envio (
 );
 
 
-
 CREATE TABLE paquete (
     id_paquete SERIAL PRIMARY KEY,
 
@@ -151,8 +152,6 @@ CREATE TABLE paquete (
 );
 
 
-
-
 CREATE TABLE factura (
     id_factura SERIAL PRIMARY KEY,
 
@@ -171,12 +170,6 @@ CREATE TABLE factura (
         FOREIGN KEY (id_envio)
         REFERENCES envio(id_envio)
 );
-
-
-
-
-
-
 
 
 INSERT INTO rol (nombre_rol)
@@ -210,7 +203,6 @@ VALUES
 ('CC', '1001001005', 5);
 
 
-
 INSERT INTO usuario_roles
 (id_usuario, id_rol)
 VALUES
@@ -239,7 +231,6 @@ VALUES
 ('Devuelto');
 
 
-
 INSERT INTO rutas
 (
     fecha_creacion,
@@ -250,7 +241,7 @@ INSERT INTO rutas
     cantidad_paquetes,
     codigo_ruta,
     tipo_vehiculo,
-	nombre_conductor
+    nombre_conductor
 )
 VALUES
 (
@@ -262,7 +253,7 @@ VALUES
     2,
     'RUTA-001',
     'Camion',
-	'Camilo'
+    'Camilo'
 ),
 (
     '2026-08-31 09:00:00',
@@ -273,7 +264,7 @@ VALUES
     3,
     'RUTA-002',
     'Camion',
-	'Nicolas'
+    'Nicolas'
 ),
 (
     '2026-08-31 10:00:00',
@@ -284,7 +275,7 @@ VALUES
     1,
     'RUTA-003',
     'Moto',
-	'Santiago'
+    'Santiago'
 ),
 (
     '2026-08-31 11:00:00',
@@ -295,9 +286,8 @@ VALUES
     2,
     'RUTA-004',
     'Camion',
-	'Andres'
+    'Andres'
 );
-
 
 
 INSERT INTO envio
@@ -368,9 +358,6 @@ VALUES
     '1010101014',
     'Dañado'
 );
-
-
-
 
 
 INSERT INTO paquete
@@ -449,16 +436,6 @@ VALUES
 );
 
 
-
-
-
-
-
-
-
-
-
-
 INSERT INTO factura
 (
     id_envio,
@@ -517,10 +494,6 @@ VALUES
 );
 
 
-
-
-
-
 SELECT * FROM rol;
 SELECT * FROM usuario;
 SELECT * FROM documento;
@@ -531,4 +504,3 @@ SELECT * FROM rutas;
 SELECT * FROM envio;
 SELECT * FROM paquete;
 SELECT * FROM factura;
-

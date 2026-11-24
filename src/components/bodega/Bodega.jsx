@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import api from "../../api";
+
+import AuthModal from "../AuthModal";
+
 import "./CSS/Bodega.css";
 
 import DashboardBodega from "./DashboardBodega";
@@ -7,7 +11,7 @@ import PaquetesBodega from "./PaquetesBodega";
 import DespachosBodega from "./DespachosBodega";
 import PerfilBodega from "./PerfilBodega";
 
-import { PAQUETES_INICIALES, RUTAS_INICIALES } from "./datosBodega";
+import { mensajeError } from "./datosBodega";
 
 // ============================================
 // TÍTULOS DE CADA SECCIÓN
@@ -36,84 +40,131 @@ const SECCIONES = {
   }
 };
 
+const DATOS_VACIOS = {
+  resumen: null,
+  paquetes: [],
+  pendientes: [],
+  rutas: [],
+  sinRuta: [],
+  perfil: null
+};
+
 export default function Bodega() {
   const [seccionActiva, setSeccionActiva] = useState("inicio");
 
-  // Estado compartido del módulo: paquetes y rutas
-  const [paquetes, setPaquetes] = useState(PAQUETES_INICIALES);
-  const [rutas, setRutas] = useState(RUTAS_INICIALES);
+  const [datos, setDatos] = useState(DATOS_VACIOS);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [sinSesion, setSinSesion] = useState(false);
+  const [loginAbierto, setLoginAbierto] = useState(false);
 
   const seccion = SECCIONES[seccionActiva];
 
+  // ─────────────────────────────────────────
+  // CARGAR TODO DESDE LA BASE DE DATOS
+  // ─────────────────────────────────────────
+
+  const cargar = useCallback(async () => {
+    setError("");
+
+    try {
+      const [
+        resumen,
+        paquetes,
+        recepciones,
+        despachos,
+        perfil
+      ] = await Promise.all([
+        api.get("/bodega/resumen"),
+        api.get("/bodega/paquetes"),
+        api.get("/bodega/recepciones"),
+        api.get("/bodega/despachos"),
+        api.get("/bodega/perfil")
+      ]);
+
+      setDatos({
+        resumen: resumen.data,
+        paquetes: paquetes.data.paquetes || [],
+        pendientes: recepciones.data.pendientes || [],
+        rutas: despachos.data.rutas || [],
+        sinRuta: despachos.data.sin_ruta || [],
+        perfil: perfil.data
+      });
+
+      setSinSesion(false);
+
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        setSinSesion(true);
+        setLoginAbierto(true);
+      } else {
+        setError(mensajeError(err, "No se pudieron cargar los datos de bodega."));
+      }
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargar();
+  }, [cargar]);
+
   const nombre =
+    datos.perfil?.nombre_completo ||
     localStorage.getItem("nombre_usuario") ||
-    localStorage.getItem("nombre") ||
     "Encargado de bodega";
 
   // ─────────────────────────────────────────
-  // REGISTRAR PAQUETE
+  // ACCIONES CONTRA LA API
   // ─────────────────────────────────────────
 
-  const registrarPaquete = (nuevo) => {
-    setPaquetes((prev) => {
-      const idMayor = prev.reduce(
-        (mayor, p) => Math.max(mayor, p.id_paquete),
-        0
-      );
+  const registrarPaquete = async (paquete) => {
+    const { data } = await api.post("/bodega/paquetes", paquete);
+    await cargar();
+    return data;
+  };
 
-      return [
-        { ...nuevo, id_paquete: idMayor + 1, estado: "En bodega", rutaId: null },
-        ...prev
-      ];
+  const recibirPaquete = async (idPaquete) => {
+    const { data } = await api.post(
+      `/bodega/recepciones/${idPaquete}/recibir`
+    );
+    await cargar();
+    return data;
+  };
+
+  const cambiarEstado = async (idPaquete, estado) => {
+    const { data } = await api.patch(
+      `/bodega/paquetes/${idPaquete}/estado`,
+      { estado }
+    );
+    await cargar();
+    return data;
+  };
+
+  const asignarPaquete = async (idRutas, idPaquete) => {
+    const { data } = await api.post("/bodega/despachos/asignar", {
+      id_rutas: idRutas,
+      id_paquete: idPaquete
     });
+    await cargar();
+    return data;
   };
 
-  // ─────────────────────────────────────────
-  // CAMBIAR ESTADO DE UN PAQUETE
-  // ─────────────────────────────────────────
-
-  const cambiarEstado = (idPaquete, nuevoEstado) => {
-    setPaquetes((prev) =>
-      prev.map((p) =>
-        p.id_paquete === idPaquete ? { ...p, estado: nuevoEstado } : p
-      )
-    );
+  const quitarPaquete = async (idPaquete, idRutas) => {
+    const { data } = await api.post("/bodega/despachos/quitar", {
+      id_paquete: idPaquete,
+      id_rutas: idRutas
+    });
+    await cargar();
+    return data;
   };
 
-  // ─────────────────────────────────────────
-  // ASIGNAR / QUITAR PAQUETE DE UNA RUTA
-  // ─────────────────────────────────────────
-
-  const asignarPaquete = (rutaId, idPaquete) => {
-    setPaquetes((prev) =>
-      prev.map((p) => (p.id_paquete === idPaquete ? { ...p, rutaId } : p))
+  const despacharRuta = async (idRutas) => {
+    const { data } = await api.post(
+      `/bodega/despachos/${idRutas}/despachar`
     );
-  };
-
-  const quitarPaquete = (idPaquete) => {
-    setPaquetes((prev) =>
-      prev.map((p) => (p.id_paquete === idPaquete ? { ...p, rutaId: null } : p))
-    );
-  };
-
-  // ─────────────────────────────────────────
-  // DESPACHAR UNA RUTA
-  // ─────────────────────────────────────────
-
-  const despacharRuta = (rutaId) => {
-    setPaquetes((prev) =>
-      prev.map((p) =>
-        p.rutaId === rutaId && p.estado === "En bodega"
-          ? { ...p, estado: "En tránsito" }
-          : p
-      )
-    );
-
-    setRutas((prev) =>
-      prev.map((r) =>
-        r.id === rutaId ? { ...r, estado: "Despachada" } : r
-      )
-    );
+    await cargar();
+    return data;
   };
 
   // ─────────────────────────────────────────
@@ -127,6 +178,49 @@ export default function Bodega() {
 
     window.location.href = "/";
   };
+
+  // ─────────────────────────────────────────
+  // SIN SESIÓN
+  // ─────────────────────────────────────────
+
+  if (sinSesion) {
+    return (
+      <div className="bodega-container">
+        <main className="bodega-main">
+          <section className="bodega-content">
+            <div className="bodega-card bodega-estado-pantalla">
+              <span className="bodega-card-icono">🔐</span>
+
+              <h2>Inicia sesión para usar el panel de bodega</h2>
+
+              <p>
+                Este panel trabaja con los datos reales de la base de datos,
+                por eso necesitas una cuenta registrada.
+              </p>
+
+              <button
+                className="btn-primario"
+                onClick={() => setLoginAbierto(true)}
+              >
+                Iniciar sesión
+              </button>
+
+              <p className="bodega-nota">
+                Usuario de prueba: <strong>Sofia Ramirez</strong> ·
+                contraseña <strong>123456</strong>
+              </p>
+            </div>
+          </section>
+        </main>
+
+        <AuthModal
+          isOpen={loginAbierto}
+          onClose={() => setLoginAbierto(false)}
+          onLogin={cargar}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="bodega-container">
@@ -204,40 +298,58 @@ export default function Bodega() {
 
         <section className="bodega-content">
 
-          {seccionActiva === "inicio" && (
+          {error && (
+            <div className="bodega-aviso error">
+              <span>{error}</span>
+              <button className="btn-secundario" onClick={cargar}>
+                Reintentar
+              </button>
+            </div>
+          )}
+
+          {cargando && (
+            <p className="bodega-cargando">
+              Cargando datos de la base de datos…
+            </p>
+          )}
+
+          {!cargando && seccionActiva === "inicio" && (
             <DashboardBodega
-              paquetes={paquetes}
-              rutas={rutas}
+              resumen={datos.resumen}
+              paquetes={datos.paquetes}
+              rutas={datos.rutas}
               onIrA={setSeccionActiva}
             />
           )}
 
-          {seccionActiva === "recepcion" && (
+          {!cargando && seccionActiva === "recepcion" && (
             <RecepcionPaquetes
-              paquetes={paquetes}
+              pendientes={datos.pendientes}
               onRegistrar={registrarPaquete}
+              onRecibir={recibirPaquete}
             />
           )}
 
-          {seccionActiva === "paquetes" && (
+          {!cargando && seccionActiva === "paquetes" && (
             <PaquetesBodega
-              paquetes={paquetes}
-              rutas={rutas}
+              paquetes={datos.paquetes}
               onCambiarEstado={cambiarEstado}
             />
           )}
 
-          {seccionActiva === "despachos" && (
+          {!cargando && seccionActiva === "despachos" && (
             <DespachosBodega
-              paquetes={paquetes}
-              rutas={rutas}
+              rutas={datos.rutas}
+              sinRuta={datos.sinRuta}
               onAsignar={asignarPaquete}
               onQuitar={quitarPaquete}
               onDespachar={despacharRuta}
             />
           )}
 
-          {seccionActiva === "perfil" && <PerfilBodega />}
+          {!cargando && seccionActiva === "perfil" && (
+            <PerfilBodega perfil={datos.perfil} />
+          )}
 
         </section>
 

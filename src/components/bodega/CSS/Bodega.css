@@ -959,3 +959,82 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ───────────── CONEXIÓN CON LA BASE DE DATOS ───────────── */
+
+.badge.rojo {
+  background: #fdeaea;
+  color: #a32020;
+}
+
+.btn-mini {
+  background: #c9252c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-mini:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primario:disabled,
+.btn-secundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bodega-estado-pantalla {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 55px 26px !important;
+}
+
+.bodega-estado-pantalla h2 {
+  font-size: 20px;
+  color: #1c1c1c;
+}
+
+.bodega-estado-pantalla p {
+  max-width: 430px;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bodega-estado-pantalla .bodega-card-icono {
+  font-size: 34px;
+}
+
+.bodega-nota {
+  font-size: 12px !important;
+  color: #888 !important;
+}
+
+.bodega-cargando {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  padding: 30px 0;
+}
+
+.bodega-aviso.error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #fdeaea;
+  color: #a32020;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 13px;
+}

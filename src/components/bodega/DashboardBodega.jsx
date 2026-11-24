@@ -1,50 +1,47 @@
-import {
-  COLOR_ESTADO,
-  formatearFecha,
-  hoyISO
-} from "./datosBodega";
+import { COLOR_ESTADO, formatearFecha } from "./datosBodega";
 
-export default function DashboardBodega({ paquetes, rutas, onIrA }) {
-  const hoy = hoyISO();
-
-  const recibidosHoy = paquetes.filter((p) => p.fecha === hoy).length;
-  const enBodega = paquetes.filter((p) => p.estado === "En bodega").length;
-  const enTransito = paquetes.filter((p) => p.estado === "En tránsito").length;
-  const entregados = paquetes.filter((p) => p.estado === "Entregado").length;
+export default function DashboardBodega({
+  resumen,
+  paquetes,
+  rutas,
+  onIrA
+}) {
+  const datos = resumen || {
+    pendientes: 0,
+    en_bodega: 0,
+    en_camino: 0,
+    entregados: 0,
+    rutas: 0
+  };
 
   const estadisticas = [
     {
-      titulo: "Recibidos hoy",
-      valor: recibidosHoy,
-      descripcion: "Paquetes que ingresaron",
+      titulo: "Por recibir",
+      valor: datos.pendientes,
+      descripcion: "Pendientes de ingreso",
       icono: "📥"
     },
     {
       titulo: "En bodega",
-      valor: enBodega,
+      valor: datos.en_bodega,
       descripcion: "Listos para despacho",
       icono: "📦"
     },
     {
-      titulo: "En tránsito",
-      valor: enTransito,
-      descripcion: "Paquetes en camino",
+      titulo: "En camino",
+      valor: datos.en_camino,
+      descripcion: "Paquetes en tránsito",
       icono: "🚚"
     },
     {
       titulo: "Entregados",
-      valor: entregados,
+      valor: datos.entregados,
       descripcion: "Entregas completadas",
       icono: "✅"
     }
   ];
 
-  const recientes = [...paquetes]
-    .sort((a, b) => b.id_paquete - a.id_paquete)
-    .slice(0, 5);
-
-  const paquetesDeRuta = (rutaId) =>
-    paquetes.filter((p) => p.rutaId === rutaId).length;
+  const recientes = paquetes.slice(0, 5);
 
   return (
     <div className="dashboard-bodega">
@@ -57,7 +54,7 @@ export default function DashboardBodega({ paquetes, rutas, onIrA }) {
           <h1>¡Hola, encargado de bodega! 👋</h1>
 
           <p>
-            Revisa lo que llegó hoy, organiza los paquetes y
+            Revisa lo que está por llegar, organiza los paquetes y
             prepara los despachos del día.
           </p>
 
@@ -96,12 +93,12 @@ export default function DashboardBodega({ paquetes, rutas, onIrA }) {
         ))}
       </div>
 
-      {/* RECEPCIONES RECIENTES */}
+      {/* ÚLTIMOS PAQUETES */}
       <div className="bodega-card">
         <div className="bodega-card-header">
           <div>
-            <h2>Últimos paquetes recibidos</h2>
-            <p>Los 5 ingresos más recientes a la bodega.</p>
+            <h2>Últimos paquetes registrados</h2>
+            <p>Los 5 ingresos más recientes de la base de datos.</p>
           </div>
 
           <span className="bodega-card-icono">📋</span>
@@ -127,7 +124,7 @@ export default function DashboardBodega({ paquetes, rutas, onIrA }) {
                   <td>{p.destino}</td>
                   <td>{formatearFecha(p.fecha)}</td>
                   <td>
-                    <span className={`badge ${COLOR_ESTADO[p.estado]}`}>
+                    <span className={`badge ${COLOR_ESTADO[p.estado] || "gris"}`}>
                       {p.estado}
                     </span>
                   </td>
@@ -137,7 +134,7 @@ export default function DashboardBodega({ paquetes, rutas, onIrA }) {
               {recientes.length === 0 && (
                 <tr>
                   <td colSpan="5" className="tabla-vacia">
-                    Todavía no hay paquetes registrados.
+                    Todavía no hay paquetes registrados en la base de datos.
                   </td>
                 </tr>
               )}
@@ -146,12 +143,12 @@ export default function DashboardBodega({ paquetes, rutas, onIrA }) {
         </div>
       </div>
 
-      {/* RUTAS DEL DÍA */}
+      {/* RUTAS */}
       <div className="bodega-card">
         <div className="bodega-card-header">
           <div>
-            <h2>Rutas del día</h2>
-            <p>Paquetes asignados a cada ruta programada.</p>
+            <h2>Rutas registradas</h2>
+            <p>Paquetes asignados a cada ruta de la base de datos.</p>
           </div>
 
           <span className="bodega-card-icono">🛣️</span>
@@ -159,11 +156,11 @@ export default function DashboardBodega({ paquetes, rutas, onIrA }) {
 
         <div className="rutas-grid">
           {rutas.map((r) => (
-            <div className="ruta-resumen" key={r.id}>
+            <div className="ruta-resumen" key={r.id_rutas}>
 
               <div className="ruta-resumen-superior">
-                <strong>{r.id}</strong>
-                <span className={`badge ${COLOR_ESTADO[r.estado]}`}>
+                <strong>{r.codigo_ruta}</strong>
+                <span className={`badge ${COLOR_ESTADO[r.estado] || "gris"}`}>
                   {r.estado}
                 </span>
               </div>
@@ -183,19 +180,25 @@ export default function DashboardBodega({ paquetes, rutas, onIrA }) {
                     style={{
                       width: `${Math.min(
                         100,
-                        (paquetesDeRuta(r.id) / r.capacidad) * 100
+                        (r.paquetes.length / Math.max(r.capacidad, 1)) * 100
                       )}%`
                     }}
                   ></span>
                 </div>
 
                 <small>
-                  {paquetesDeRuta(r.id)} de {r.capacidad} paquetes
+                  {r.paquetes.length} de {r.capacidad} paquetes
                 </small>
               </div>
 
             </div>
           ))}
+
+          {rutas.length === 0 && (
+            <p className="tabla-vacia">
+              No hay rutas registradas todavía.
+            </p>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, usuarios, paquetes, envios, rutas, rol, usuario_roles, documento, tipo_envio, estado_envio, factura
+from sqlalchemy import text
+from routers import auth, usuarios, paquetes, envios, rutas, rol, usuario_roles, documento, tipo_envio, estado_envio, factura, bodega
 from core.database import engine
 from models.usuario import Usuario
 import webbrowser
@@ -49,6 +50,7 @@ app.include_router(documento.router)
 app.include_router(tipo_envio.router)
 app.include_router(estado_envio.router)
 app.include_router(factura.router)
+app.include_router(bodega.router)
 
 # ─────────────────────────────────────────────
 # CORS

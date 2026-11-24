@@ -4,27 +4,32 @@ import {
   CIUDADES,
   COLOR_ESTADO,
   formatearFecha,
-  hoyISO
+  mensajeError
 } from "./datosBodega";
 
 const FORMULARIO_VACIO = {
   guia: "",
-  remitente: "",
   destinatario: "",
+  documento: "",
   origen: "Bogotá",
-  destino: "Medellín",
+  destino: "Tunja",
+  descripcion: "",
   peso: "",
-  dimensiones: ""
+  alto: "",
+  largo: "",
+  ancho: ""
 };
 
-export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
+export default function RecepcionPaquetes({
+  pendientes,
+  onRegistrar,
+  onRecibir
+}) {
   const [formulario, setFormulario] = useState(FORMULARIO_VACIO);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
-
-  const hoy = hoyISO();
-
-  const recibidosHoy = paquetes.filter((p) => p.fecha === hoy);
+  const [enviando, setEnviando] = useState(false);
+  const [recibiendo, setRecibiendo] = useState(null);
 
   const cambiar = (campo, valor) => {
     setFormulario((prev) => ({ ...prev, [campo]: valor }));
@@ -32,16 +37,21 @@ export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
     setMensaje("");
   };
 
-  const enviar = (evento) => {
+  const enviar = async (evento) => {
     evento.preventDefault();
 
-    const guia = formulario.guia.trim().toUpperCase();
-    const remitente = formulario.remitente.trim();
-    const destinatario = formulario.destinatario.trim();
-    const peso = Number(formulario.peso);
+    setError("");
+    setMensaje("");
 
-    if (!guia || !remitente || !destinatario) {
-      setError("Completa la guía, el remitente y el destinatario.");
+    const destinatario = formulario.destinatario.trim();
+    const documento = formulario.documento.trim();
+    const peso = Number(formulario.peso);
+    const alto = Number(formulario.alto);
+    const largo = Number(formulario.largo);
+    const ancho = Number(formulario.ancho);
+
+    if (!destinatario || !documento) {
+      setError("Completa el destinatario y su documento.");
       return;
     }
 
@@ -50,28 +60,51 @@ export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
       return;
     }
 
-    const guiaRepetida = paquetes.some(
-      (p) => p.guia.toUpperCase() === guia
-    );
-
-    if (guiaRepetida) {
-      setError(`Ya existe un paquete con la guía ${guia}.`);
+    if (!alto || !largo || !ancho || alto <= 0 || largo <= 0 || ancho <= 0) {
+      setError("Escribe el alto, el largo y el ancho en centímetros.");
       return;
     }
 
-    onRegistrar({
-      guia,
-      remitente,
-      destinatario,
-      origen: formulario.origen,
-      destino: formulario.destino,
-      peso,
-      dimensiones: formulario.dimensiones.trim() || "No registradas",
-      fecha: hoy
-    });
+    setEnviando(true);
 
-    setFormulario(FORMULARIO_VACIO);
-    setMensaje(`Paquete ${guia} registrado correctamente en bodega.`);
+    try {
+      const respuesta = await onRegistrar({
+        guia: formulario.guia.trim() || null,
+        destinatario,
+        documento_destinatario: documento,
+        origen: formulario.origen,
+        destino: formulario.destino,
+        descripcion: formulario.descripcion.trim() || null,
+        peso,
+        alto,
+        largo,
+        ancho
+      });
+
+      setFormulario(FORMULARIO_VACIO);
+      setMensaje(
+        `Paquete ${respuesta?.paquete?.guia || ""} registrado en bodega.`
+      );
+    } catch (err) {
+      setError(mensajeError(err, "No se pudo registrar el paquete."));
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const recibir = async (paquete) => {
+    setError("");
+    setMensaje("");
+    setRecibiendo(paquete.id_paquete);
+
+    try {
+      await onRecibir(paquete.id_paquete);
+      setMensaje(`Paquete ${paquete.guia} recibido en bodega.`);
+    } catch (err) {
+      setError(mensajeError(err, "No se pudo recibir el paquete."));
+    } finally {
+      setRecibiendo(null);
+    }
   };
 
   return (
@@ -90,37 +123,24 @@ export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
         <form className="formulario-bodega" onSubmit={enviar}>
 
           <div className="campo">
-            <label htmlFor="guia">Número de guía *</label>
+            <label htmlFor="guia">Número de guía</label>
             <input
               id="guia"
               type="text"
-              placeholder="Ej. ONU-2411"
+              placeholder="Si la dejas vacía se genera sola"
               value={formulario.guia}
               onChange={(e) => cambiar("guia", e.target.value)}
             />
           </div>
 
           <div className="campo">
-            <label htmlFor="peso">Peso (kg) *</label>
+            <label htmlFor="documento">Documento del destinatario *</label>
             <input
-              id="peso"
-              type="number"
-              min="0.1"
-              step="0.1"
-              placeholder="Ej. 2.5"
-              value={formulario.peso}
-              onChange={(e) => cambiar("peso", e.target.value)}
-            />
-          </div>
-
-          <div className="campo">
-            <label htmlFor="remitente">Remitente *</label>
-            <input
-              id="remitente"
+              id="documento"
               type="text"
-              placeholder="Nombre o empresa que envía"
-              value={formulario.remitente}
-              onChange={(e) => cambiar("remitente", e.target.value)}
+              placeholder="Ej. 1029384756"
+              value={formulario.documento}
+              onChange={(e) => cambiar("documento", e.target.value)}
             />
           </div>
 
@@ -162,13 +182,65 @@ export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
           </div>
 
           <div className="campo campo-completo">
-            <label htmlFor="dimensiones">Dimensiones</label>
+            <label htmlFor="descripcion">Descripción del contenido</label>
             <input
-              id="dimensiones"
+              id="descripcion"
               type="text"
-              placeholder="Ej. 30x20x15 cm"
-              value={formulario.dimensiones}
-              onChange={(e) => cambiar("dimensiones", e.target.value)}
+              placeholder="Ej. Caja con documentos"
+              value={formulario.descripcion}
+              onChange={(e) => cambiar("descripcion", e.target.value)}
+            />
+          </div>
+
+          <div className="campo">
+            <label htmlFor="peso">Peso (kg) *</label>
+            <input
+              id="peso"
+              type="number"
+              min="0.1"
+              step="0.1"
+              placeholder="Ej. 2.5"
+              value={formulario.peso}
+              onChange={(e) => cambiar("peso", e.target.value)}
+            />
+          </div>
+
+          <div className="campo">
+            <label htmlFor="alto">Alto (cm) *</label>
+            <input
+              id="alto"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Ej. 30"
+              value={formulario.alto}
+              onChange={(e) => cambiar("alto", e.target.value)}
+            />
+          </div>
+
+          <div className="campo">
+            <label htmlFor="largo">Largo (cm) *</label>
+            <input
+              id="largo"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Ej. 40"
+              value={formulario.largo}
+              onChange={(e) => cambiar("largo", e.target.value)}
+            />
+          </div>
+
+          <div className="campo">
+            <label htmlFor="ancho">Ancho (cm) *</label>
+            <input
+              id="ancho"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Ej. 20"
+              value={formulario.ancho}
+              onChange={(e) => cambiar("ancho", e.target.value)}
             />
           </div>
 
@@ -176,8 +248,12 @@ export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
           {mensaje && <p className="formulario-exito">{mensaje}</p>}
 
           <div className="formulario-acciones campo-completo">
-            <button type="submit" className="btn-primario">
-              Registrar en bodega
+            <button
+              type="submit"
+              className="btn-primario"
+              disabled={enviando}
+            >
+              {enviando ? "Guardando…" : "Registrar en bodega"}
             </button>
 
             <button
@@ -196,12 +272,15 @@ export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
         </form>
       </div>
 
-      {/* INGRESOS DEL DÍA */}
+      {/* PAQUETES POR RECIBIR */}
       <div className="bodega-card">
         <div className="bodega-card-header">
           <div>
-            <h2>Ingresos de hoy</h2>
-            <p>{recibidosHoy.length} paquete(s) recibido(s) el {formatearFecha(hoy)}.</p>
+            <h2>Por recibir en bodega</h2>
+            <p>
+              {pendientes.length} paquete(s) registrados por los clientes que
+              todavía no ingresan a bodega.
+            </p>
           </div>
 
           <span className="bodega-card-icono">📋</span>
@@ -212,34 +291,44 @@ export default function RecepcionPaquetes({ paquetes, onRegistrar }) {
             <thead>
               <tr>
                 <th>Guía</th>
-                <th>Remitente</th>
                 <th>Destinatario</th>
                 <th>Destino</th>
                 <th>Peso</th>
+                <th>Fecha</th>
                 <th>Estado</th>
+                <th>Acción</th>
               </tr>
             </thead>
 
             <tbody>
-              {recibidosHoy.map((p) => (
+              {pendientes.map((p) => (
                 <tr key={p.id_paquete}>
                   <td><strong>{p.guia}</strong></td>
-                  <td>{p.remitente}</td>
                   <td>{p.destinatario}</td>
                   <td>{p.destino}</td>
                   <td>{p.peso} kg</td>
+                  <td>{formatearFecha(p.fecha)}</td>
                   <td>
-                    <span className={`badge ${COLOR_ESTADO[p.estado]}`}>
+                    <span className={`badge ${COLOR_ESTADO[p.estado] || "gris"}`}>
                       {p.estado}
                     </span>
+                  </td>
+                  <td>
+                    <button
+                      className="btn-mini"
+                      onClick={() => recibir(p)}
+                      disabled={recibiendo === p.id_paquete}
+                    >
+                      {recibiendo === p.id_paquete ? "…" : "Recibir"}
+                    </button>
                   </td>
                 </tr>
               ))}
 
-              {recibidosHoy.length === 0 && (
+              {pendientes.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="tabla-vacia">
-                    Aún no se han registrado paquetes hoy.
+                  <td colSpan="7" className="tabla-vacia">
+                    No hay paquetes pendientes de recibir.
                   </td>
                 </tr>
               )}
