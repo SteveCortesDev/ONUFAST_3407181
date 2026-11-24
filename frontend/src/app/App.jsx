@@ -4,6 +4,7 @@ import {
     Routes,
     Route,
     Navigate,
+    Link,
     useNavigate,
     useLocation
 } from 'react-router-dom';
@@ -124,7 +125,6 @@ function AppContent() {
         try {
             console.log('Usuario autenticado:', usuario);
 
-            // Consultar el perfil para obtener el rol actualizado
             const respuesta = await api.get('/usuarios/perfil');
 
             const idRol = Number(
@@ -157,7 +157,6 @@ function AppContent() {
         } catch (error) {
             console.error('Error al consultar el perfil:', error);
 
-            // Intentar utilizar el rol recibido durante el login
             const idRol = Number(usuario?.id_rol);
 
             if (idRol === 1) {
@@ -208,6 +207,117 @@ function AppContent() {
     return (
         <div className="onufast-container" id="inicio">
 
+            {/* ==================================================
+                HEADER / NAVBAR
+            ================================================== */}
+
+            {!estaEnPanel && (
+                <header className="onufast-header">
+
+                    {/* LOGO */}
+                    <div className="logo-container">
+                        <Link
+                            to={estaLogueado ? "/usuario" : "/"}
+                            onClick={cerrarMenu}
+                        >
+                            <img
+                                src="/logo_calidad_onufast.jpg"
+                                alt="Logo Onufast"
+                                className="logo-img"
+                            />
+                        </Link>
+                    </div>
+
+                    {/* BOTÓN HAMBURGUESA */}
+                    <button
+                        className={`btn-hamburguesa ${menuAbierto ? 'abierto' : ''}`}
+                        onClick={() => setMenuAbierto(!menuAbierto)}
+                        aria-label="Abrir menú de navegación"
+                        aria-expanded={menuAbierto}
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    {/* OVERLAY */}
+                    {menuAbierto && (
+                        <div
+                            className="nav-overlay"
+                            onClick={cerrarMenu}
+                        ></div>
+                    )}
+
+                    {/* MENÚ DE NAVEGACIÓN */}
+                    <nav className={`onufast-nav ${menuAbierto ? 'nav-abierto' : ''}`}>
+
+                        <Link
+                            to={estaLogueado ? "/usuario" : "/"}
+                            onClick={cerrarMenu}
+                        >
+                            Inicio
+                        </Link>
+
+                        <Link to="/servicios" onClick={cerrarMenu}>
+                            Servicios
+                        </Link>
+
+                        <Link to="/nosotros" onClick={cerrarMenu}>
+                            Quiénes Somos
+                        </Link>
+
+                        <Link to="/rastreo" onClick={cerrarMenu}>
+                            Rastrear Envío
+                        </Link>
+
+                        <Link to="/ubicacion" onClick={cerrarMenu}>
+                            Ubícanos
+                        </Link>
+
+                        {/* LOGIN MOBILE */}
+                        {!estaLogueado && (
+                            <button
+                                className="btn-login btn-login-mobile"
+                                onClick={() => {
+                                    setMostrarModal(true);
+                                    cerrarMenu();
+                                }}
+                            >
+                                Iniciar Sesión
+                            </button>
+                        )}
+
+                    </nav>
+
+                    {/* LOGIN DESKTOP */}
+                    {!estaLogueado && (
+                        <button
+                            className="btn-login btn-login-desktop"
+                            onClick={() => setMostrarModal(true)}
+                        >
+                            Iniciar Sesión
+                        </button>
+                    )}
+
+                </header>
+            )}
+
+
+            {/* ==================================================
+                ESTADO DE LA BASE DE DATOS
+            ================================================== */}
+
+            {/*
+            <div className="db-status">
+                Estado de la BD: {dbStatus || 'Comprobando...'}
+            </div>
+            */}
+
+
+            {/* ==================================================
+                RUTAS DE LA APLICACIÓN
+            ================================================== */}
+
             <Routes>
 
                 {/* ==================================================
@@ -218,6 +328,7 @@ function AppContent() {
                     path="/"
                     element={
                         <>
+
                             <main className="onufast-hero">
 
                                 <div className="hero-content">

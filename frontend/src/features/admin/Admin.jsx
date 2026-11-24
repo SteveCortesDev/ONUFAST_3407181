@@ -15,37 +15,69 @@ import '@/styles/Admin.css';
 export default function Admin() {
     const [seccionActiva, setSeccionActiva] = useState('dashboard');
     const [autorizado, setAutorizado] = useState(false);
+    const [verificando, setVerificando] = useState(true);
 
     const navigate = useNavigate();
 
-    // Verificar que el usuario tenga permisos de administrador
     useEffect(() => {
+        let activo = true;
+
         const verificarAdmin = async () => {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                console.error('No existe un token de autenticación.');
+                navigate('/');
+                return;
+            }
+
             try {
                 const response = await api.get('/usuarios/perfil');
 
-                console.log(
-                    'Validando acceso admin. Rol:',
-                    response.data.id_rol
-                );
+                console.log('Perfil recibido:', response.data);
 
-                if (response.data.id_rol === 1) {
-                    setAutorizado(true);
+                const idRol = Number(response.data.id_rol);
+
+                if (idRol === 1) {
+                    if (activo) {
+                        setAutorizado(true);
+                    }
                 } else {
+                    console.warn('El usuario no tiene permisos de administrador.');
                     navigate('/usuario');
                 }
 
             } catch (error) {
-                console.error('Error de autenticación:', error);
+                console.error(
+                    'Error al validar el administrador:',
+                    error.response?.data || error.message
+                );
+
+                if (error.response?.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('id_usuario');
+                    localStorage.removeItem('nombre_usuario');
+                    localStorage.removeItem('id_rol');
+                    localStorage.removeItem('nombre_rol');
+                }
+
                 navigate('/');
+
+            } finally {
+                if (activo) {
+                    setVerificando(false);
+                }
             }
         };
 
         verificarAdmin();
+
+        return () => {
+            activo = false;
+        };
     }, [navigate]);
 
-    // Mostrar pantalla de carga mientras se verifica el acceso
-    if (!autorizado) {
+    if (verificando) {
         return (
             <div
                 style={{
@@ -57,12 +89,15 @@ export default function Admin() {
                     color: 'white'
                 }}
             >
-                <h2>Cargando panel de administrador...</h2>
+                <h2>Verificando acceso al panel...</h2>
             </div>
         );
     }
 
-    // Opciones del menú lateral
+    if (!autorizado) {
+        return null;
+    }
+
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard', icon: '📊' },
         { id: 'envios', label: 'Envíos', icon: '📦' },
@@ -75,7 +110,6 @@ export default function Admin() {
     return (
         <div className="admin-container">
 
-            {/* MENÚ LATERAL */}
             <aside className="admin-sidebar">
 
                 <div className="admin-logo">
@@ -95,13 +129,11 @@ export default function Admin() {
                             <span className="admin-nav-icon">
                                 {item.icon}
                             </span>
-
                             {item.label}
                         </button>
                     ))}
                 </nav>
 
-                {/* CERRAR SESIÓN */}
                 <button
                     className="admin-btn"
                     style={{ marginTop: 'auto' }}
@@ -115,7 +147,6 @@ export default function Admin() {
 
             </aside>
 
-            {/* CONTENIDO PRINCIPAL */}
             <main className="admin-main">
 
                 {seccionActiva === 'dashboard' && <AdminDashboard />}
