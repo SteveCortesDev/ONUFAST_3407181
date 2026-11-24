@@ -1,20 +1,22 @@
-from pydantic import BaseModel, EmailStr, Field
+﻿
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 from datetime import datetime
 
 
-# ─────────────────────────────────────────────
-#  USUARIO / AUTH
-# ─────────────────────────────────────────────
+# ============================================================
+# USUARIO / AUTH
+# ============================================================
 
 class RegistroRequest(BaseModel):
-    nombre: str = Field(..., min_length=2, max_length=100, description="Nombre")
-    apellido: str = Field(..., min_length=2, max_length=100, description="Apellido")
+    nombre: str = Field(..., min_length=2, max_length=100)
+    apellido: str = Field(..., min_length=2, max_length=100)
     tipo_documento: str = Field(..., description="Ej: CC, TI, Pasaporte")
     num_documento: str = Field(..., min_length=4, max_length=50)
     correo: EmailStr
     contrasena: str = Field(..., min_length=6, max_length=100)
     telefono: Optional[str] = Field(None, max_length=20)
+
 
 class RegistroResponse(BaseModel):
     id_usuario: int
@@ -27,16 +29,20 @@ class LoginRequest(BaseModel):
     correo: EmailStr = Field(..., description="Correo del usuario")
     contrasena: str
 
+
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     id_usuario: int
     nombre: str
     correo: str
-    
-# ─────────────────────────────────────────────
-#  ROL
-# ─────────────────────────────────────────────
+    id_rol: int
+    nombre_rol: str
+
+
+# ============================================================
+# ROL
+# ============================================================
 
 class RolRequest(BaseModel):
     nombre_rol: str = Field(..., min_length=2, max_length=50)
@@ -45,16 +51,27 @@ class RolRequest(BaseModel):
 class RolResponse(BaseModel):
     id_rol: int
     nombre_rol: str
-# ─────────────────────────────────────────────
+
+
+# ============================================================
 # USUARIO_ROLES
-# ─────────────────────────────────────────────
+# ============================================================
+
 class UsuarioRolRequest(BaseModel):
     id_usuario: int
     id_rol: int
 
-# ─────────────────────────────────────────────
+
+class UsuarioRolResponse(BaseModel):
+    id_usuario_rol: int
+    id_usuario: int
+    id_rol: int
+
+
+# ============================================================
 # DOCUMENTO
-# ─────────────────────────────────────────────
+# ============================================================
+
 class DocumentoRequest(BaseModel):
     tipo_documento: str = Field(..., min_length=2, max_length=30)
     num_documento: str = Field(..., min_length=4, max_length=50)
@@ -67,14 +84,10 @@ class DocumentoResponse(BaseModel):
     num_documento: str
     id_usuario: int
 
-class UsuarioRolResponse(BaseModel):
-    id_usuario_rol: int
-    id_usuario: int
-    id_rol: int
-    
-# ─────────────────────────────────────────────
+
+# ============================================================
 # TIPO_ENVIO
-# ─────────────────────────────────────────────
+# ============================================================
 
 class TipoEnvioRequest(BaseModel):
     descripcion: str = Field(..., min_length=2, max_length=100)
@@ -83,10 +96,11 @@ class TipoEnvioRequest(BaseModel):
 class TipoEnvioResponse(BaseModel):
     id_tipenvio: int
     descripcion: str
-    
-# ─────────────────────────────────────────────
-#  PAQUETE
-# ─────────────────────────────────────────────
+
+
+# ============================================================
+# PAQUETE
+# ============================================================
 
 class PaqueteRequest(BaseModel):
     id_envio: int
@@ -97,6 +111,7 @@ class PaqueteRequest(BaseModel):
     descripcion: Optional[str] = Field(None, max_length=200)
     origen: Optional[str] = Field(None, max_length=100)
     destino: Optional[str] = Field(None, max_length=100)
+
 
 class PaqueteResponse(BaseModel):
     id_paquete: int
@@ -112,9 +127,9 @@ class PaqueteResponse(BaseModel):
     destino: Optional[str] = None
 
 
-# ─────────────────────────────────────────────
+# ============================================================
 # ENVIO
-# ─────────────────────────────────────────────
+# ============================================================
 
 class EnvioRequest(BaseModel):
     id_usuario: int
@@ -137,36 +152,34 @@ class EnvioResponse(BaseModel):
     nombre_destinatario: str
     documento_destinatario: str
     estado_paquete: str
-    
-    
+
+
 class RastreoResponse(BaseModel):
     id_envio: int
     id_usuario: int
     codigo_rastreo: str
     fecha_creacion: datetime
-
     remitente: str
     nombre_destinatario: str
     documento_destinatario: str
-
     origen: Optional[str] = None
     destino: Optional[str] = None
-
     tipo_envio: str
     estado_paquete: str
 
-# ─────────────────────────────────────────────
-#  TOKEN
-# ─────────────────────────────────────────────
+
+# ============================================================
+# TOKEN
+# ============================================================
 
 class TokenData(BaseModel):
     id_usuario: Optional[int] = None
     nombre: Optional[str] = None
-    
-# ─────────────────────────────────────────────
-#  RUTAS
-# ─────────────────────────────────────────────
 
+
+# ============================================================
+# RUTAS
+# ============================================================
 
 class RutaRequest(BaseModel):
     ciudad_origen: str = Field(..., max_length=100)
@@ -178,8 +191,9 @@ class RutaRequest(BaseModel):
     cantidad_paquetes: int = Field(..., ge=0)
     codigo_ruta: str = Field(..., max_length=100)
 
-    # Identificador del conductor asignado
-    id_usuario_conductor: Optional[int] = None
+    # Conductor y vehículo asignados
+    id_conductor: Optional[int] = None
+    id_vehiculo: Optional[int] = None
 
 
 class RutaResponse(BaseModel):
@@ -190,21 +204,27 @@ class RutaResponse(BaseModel):
     ciudad_origen: str
     ciudad_destino: str
     cantidad_paquetes: int
-    codigo_ruta: str
+    codigo_ruta: Optional[str] = None
     tipo_vehiculo: str
     nombre_conductor: str
     estado: str
-    id_usuario_conductor: Optional[int] = None
+    id_conductor: Optional[int] = None
+    id_vehiculo: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RutaEstadoRequest(BaseModel):
     estado: str = Field(..., min_length=2, max_length=30)
 
+
 class RutaAsignacionRequest(BaseModel):
-    id_usuario_conductor: int = Field(..., gt=0)
+    id_conductor: int = Field(..., gt=0)
 
 
+# ============================================================
 # ESTADO_ENVIO
+# ============================================================
 
 class EstadoEnvioRequest(BaseModel):
     estado: str = Field(..., min_length=2, max_length=50)
@@ -213,8 +233,11 @@ class EstadoEnvioRequest(BaseModel):
 class EstadoEnvioResponse(BaseModel):
     id_estadoenvio: int
     estado: str
-    
+
+
+# ============================================================
 # FACTURA
+# ============================================================
 
 class FacturaRequest(BaseModel):
     id_envio: int = Field(..., description="ID del envío relacionado")
@@ -229,17 +252,16 @@ class FacturaResponse(BaseModel):
     id_factura: int
     id_envio: int
     num_factura: str
-    fecha_emision: datetime | None = None
+    fecha_emision: Optional[datetime] = None
     subtotal: float
     iva: float
     total_pago: float
     metodo_pago: str
 
 
-
-    # ─────────────────────────────────────────────
-#  REGISTRAR PAQUETE (Envío + Paquete juntos)
-# ─────────────────────────────────────────────
+# ============================================================
+# REGISTRAR PAQUETE
+# ============================================================
 
 class RegistrarPaqueteRequest(BaseModel):
     id_tipenvio: int
@@ -252,13 +274,10 @@ class RegistrarPaqueteRequest(BaseModel):
     descripcion: Optional[str] = Field(None, max_length=200)
     origen: str = Field(..., max_length=100)
     destino: str = Field(..., max_length=100)
-
     direccion: str = Field(..., max_length=200)
     barrio: str = Field(..., max_length=100)
     telefono_destinatario: str = Field(..., max_length=20)
     referencias: Optional[str] = Field(None, max_length=200)
-    
-    # El precio y el pago (el precio podría calcularse en el back, pero por ahora lo recibimos)
     precio_envio: float = Field(..., ge=0)
     metodo_pago: str = Field(..., max_length=50)
 
@@ -268,3 +287,28 @@ class RegistrarPaqueteResponse(BaseModel):
     id_paquete: int
     codigo_rastreo: str
     mensaje: str = "Paquete registrado exitosamente"
+
+
+# ============================================================
+# VEHÍCULOS
+# ============================================================
+
+class VehiculoRequest(BaseModel):
+    placa: str = Field(..., min_length=5, max_length=10)
+    tipo_vehiculo: str = Field(..., min_length=2, max_length=30)
+    marca: str = Field(..., min_length=2, max_length=50)
+    modelo: str = Field(..., min_length=1, max_length=50)
+    capacidad_kg: float = Field(..., gt=0)
+    estado: str = Field(default="Disponible", max_length=20)
+
+
+class VehiculoResponse(BaseModel):
+    id_vehiculo: int
+    placa: str
+    tipo_vehiculo: str
+    marca: str
+    modelo: str
+    capacidad_kg: float
+    estado: str
+
+    model_config = ConfigDict(from_attributes=True)

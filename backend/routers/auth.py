@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 
@@ -13,16 +14,17 @@ from core.database import get_db
 
 from models.usuario import Usuario
 from models.documento import Documento
-
-import store
+from models.usuario_roles import UsuarioRol
+from models.rol import Rol
 
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 
 
-# ─────────────────────────────────────────────────────────────
+# ============================================================
 # POST /auth/registro
-# ─────────────────────────────────────────────────────────────
+# ============================================================
+
 @router.post(
     "/registro",
     response_model=RegistroResponse,
@@ -33,7 +35,7 @@ def registro(
     payload: RegistroRequest,
     db: Session = Depends(get_db)
 ):
-    # Verificar correo único
+    # Verificar si el correo ya existe
     usuario_existente = (
         db.query(Usuario)
         .filter(Usuario.correo == payload.correo)
@@ -46,40 +48,70 @@ def registro(
             detail="El correo ya está registrado"
         )
 
-    # Crear usuario
-    usuario = Usuario(
-        nombre=payload.nombre,
-        apellido=payload.apellido,
-        clave=hash_password(payload.contrasena),
-        correo=payload.correo,
-        telefono=payload.telefono or "",
-        jornada="No definida"
+    # Buscar el rol Cliente (ID 2)
+    rol_cliente = (
+        db.query(Rol)
+        .filter(Rol.id_rol == 2)
+        .first()
     )
 
-    db.add(usuario)
-    db.commit()
-    db.refresh(usuario)
+    if not rol_cliente:
+        raise HTTPException(
+            status_code=500,
+            detail="No se encontró el rol Cliente en la base de datos"
+        )
 
-    # Crear documento relacionado con el usuario
-    documento = Documento(
-        tipo_documento=payload.tipo_documento,
-        num_documento=payload.num_documento,
-        id_usuario=usuario.id_usuario
-    )
+    try:
+        # Crear usuario
+        usuario = Usuario(
+            nombre=payload.nombre,
+            apellido=payload.apellido,
+            clave=hash_password(payload.contrasena),
+            correo=payload.correo,
+            telefono=payload.telefono or "",
+            jornada="No definida",
+            activo=True
+        )
 
-    db.add(documento)
-    db.commit()
+        db.add(usuario)
+        db.flush()
 
-    return RegistroResponse(
-        id_usuario=usuario.id_usuario,
-        nombre=f"{usuario.nombre} {usuario.apellido}",
-        correo=usuario.correo
-    )
+        # Crear documento relacionado
+        documento = Documento(
+            tipo_documento=payload.tipo_documento,
+            num_documento=payload.num_documento,
+            id_usuario=usuario.id_usuario
+        )
+
+        db.add(documento)
+
+        # Asignar rol Cliente
+        usuario_rol = UsuarioRol(
+            id_usuario=usuario.id_usuario,
+            id_rol=rol_cliente.id_rol
+        )
+
+        db.add(usuario_rol)
+
+        # Guardar todos los registros en una sola transacción
+        db.commit()
+        db.refresh(usuario)
+
+        return RegistroResponse(
+            id_usuario=usuario.id_usuario,
+            nombre=f"{usuario.nombre} {usuario.apellido}",
+            correo=usuario.correo
+        )
+
+    except Exception:
+        db.rollback()
+        raise
 
 
-# ─────────────────────────────────────────────────────────────
+# ============================================================
 # POST /auth/login
-# ─────────────────────────────────────────────────────────────
+# ============================================================
+
 @router.post(
     "/login",
     response_model=LoginResponse,
@@ -89,7 +121,7 @@ def login(
     payload: LoginRequest,
     db: Session = Depends(get_db)
 ):
-    # Buscar usuario en PostgreSQL por CORREO
+    # Buscar usuario por correo
     usuario = (
         db.query(Usuario)
         .filter(Usuario.correo == payload.correo)
@@ -106,6 +138,30 @@ def login(
             detail="Correo o contraseña incorrectos"
         )
 
+    # Comprobar si la cuenta está activa
+    if not usuario.activo:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tu cuenta está inactiva. Comunícate con el administrador."
+        )
+
+    # Consultar el rol real del usuario
+    resultado_rol = (
+        db.query(UsuarioRol, Rol)
+        .join(Rol, UsuarioRol.id_rol == Rol.id_rol)
+        .filter(UsuarioRol.id_usuario == usuario.id_usuario)
+        .order_by(UsuarioRol.id_usuario_rol.asc())
+        .first()
+    )
+
+    if not resultado_rol:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="El usuario no tiene un rol asignado"
+        )
+
+    usuario_rol, rol = resultado_rol
+
     # Crear token
     token = create_token(
         usuario.id_usuario,
@@ -116,5 +172,7 @@ def login(
         access_token=token,
         id_usuario=usuario.id_usuario,
         nombre=f"{usuario.nombre} {usuario.apellido}",
-        correo=usuario.correo # <-- ¡ESTA ES LA LÍNEA QUE FALTA!
+        correo=usuario.correo,
+        id_rol=rol.id_rol,
+        nombre_rol=rol.nombre_rol
     )

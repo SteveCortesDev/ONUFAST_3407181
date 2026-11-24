@@ -1,5 +1,15 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate,
+    useNavigate,
+    useLocation
+} from 'react-router-dom';
+
 import { useState, useEffect } from 'react';
+
 import '@/styles/App.css';
 import '@/styles/responsive.css';
 
@@ -12,60 +22,88 @@ import Nosotros from '@/features/landing/Nosotros';
 import Rastreo from '@/features/envios/Rastreo';
 import Servicios from '@/features/landing/Servicios';
 import Ubicacion from '@/features/landing/Ubicacion';
+
 import Admin from '@/features/admin/Admin';
-import Usuario from "@/features/usuario/Usuario";
-import Conductor from "@/features/conductor/Conductor";
+import Usuario from '@/features/usuario/Usuario';
+import Conductor from '@/features/conductor/Conductor';
 
 import api from '@/shared/api';
 
 
-// ─────────────────────────────────────────────
+// ============================================================
 // IMÁGENES DEL CARRUSEL
-// ─────────────────────────────────────────────
+// ============================================================
 
 const imagenesCarrusel = [
-    "/carrusel_img1.jpg",
-    "/carrusel_img2.jpg",
-    "/carrusel_img3.jpg",
-    "/carrusel_img4.jpg",
-    "/carrusel_img5.jpg"
+    '/carrusel_img1.jpg',
+    '/carrusel_img2.jpg',
+    '/carrusel_img3.jpg',
+    '/carrusel_img4.jpg',
+    '/carrusel_img5.jpg'
 ];
 
 
-// ─────────────────────────────────────────────
+// ============================================================
+// PROTECCIÓN DE RUTAS
+// ============================================================
+
+function RutaProtegida({ children, rolesPermitidos = [] }) {
+    const token = localStorage.getItem('token');
+    const idRol = Number(localStorage.getItem('id_rol'));
+
+    if (!token || !idRol) {
+        return <Navigate to="/" replace />;
+    }
+
+    if (!rolesPermitidos.includes(idRol)) {
+        switch (idRol) {
+            case 1:
+                return <Navigate to="/admin" replace />;
+
+            case 2:
+                return <Navigate to="/usuario" replace />;
+
+            case 3:
+                return <Navigate to="/conductor" replace />;
+
+            default:
+                return <Navigate to="/" replace />;
+        }
+    }
+
+    return children;
+}
+
+
+// ============================================================
 // COMPONENTE INTERNO
-// Permite utilizar useNavigate()
-// ─────────────────────────────────────────────
+// ============================================================
 
 function AppContent() {
 
-    // Estados del carrusel
     const [indiceActivo, setIndiceActivo] = useState(0);
-
-    // Estado del modal de inicio de sesión
     const [mostrarModal, setMostrarModal] = useState(false);
-
-    // Estado del menú móvil
     const [menuAbierto, setMenuAbierto] = useState(false);
-
-    // Estado de conexión con la base de datos
     const [dbStatus, setDbStatus] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
 
     const esPanelUsuario = location.pathname === '/usuario';
-    const estaLogueado = !!localStorage.getItem('token');
-    const esPanelAdmin = location.pathname === '/admin'; 
+    const esPanelAdmin = location.pathname === '/admin';
     const esPanelConductor = location.pathname === '/conductor';
 
+    const estaLogueado = !!localStorage.getItem('token');
 
-    // ─────────────────────────────────────────
+    const estaEnPanel =
+        esPanelUsuario || esPanelAdmin || esPanelConductor;
+
+
+    // ========================================================
     // COMPROBAR CONEXIÓN CON LA BASE DE DATOS
-    // ─────────────────────────────────────────
+    // ========================================================
 
     useEffect(() => {
-
         api.get('/test-db')
             .then(res => {
                 console.log('Conexión con BD:', res.data);
@@ -75,273 +113,128 @@ function AppContent() {
                 console.error('Error conectando con la BD:', err);
                 setDbStatus('Error de conexión');
             });
-
     }, []);
 
 
-    // ─────────────────────────────────────────
-    // LOGIN
-    // ─────────────────────────────────────────
+    // ========================================================
+    // LOGIN Y REDIRECCIÓN SEGÚN EL ROL
+    // ========================================================
 
     const handleLogin = async (usuario) => {
-    try {
-        console.log('Usuario autenticado:', usuario);
+        try {
+            console.log('Usuario autenticado:', usuario);
 
-        // Consultar el perfil para conocer el rol
-        const respuesta = await api.get('/usuarios/perfil');
+            // Consultar el perfil para obtener el rol actualizado
+            const respuesta = await api.get('/usuarios/perfil');
 
-        const idRol = respuesta.data.id_rol;
+            const idRol = Number(
+                respuesta.data.id_rol ?? usuario.id_rol
+            );
 
-        console.log('Rol del usuario:', idRol);
+            console.log('Rol del usuario:', idRol);
 
-        // Redirigir según el rol
-        switch (idRol) {
-    case 1:
-        navigate('/admin');
-        break;
+            switch (idRol) {
+                case 1:
+                    navigate('/admin', { replace: true });
+                    break;
 
-    case 2:
-        navigate('/usuario');
-        break;
+                case 2:
+                    navigate('/usuario', { replace: true });
+                    break;
 
-    case 3:
-        navigate('/conductor');
-        break;
+                case 3:
+                    navigate('/conductor', { replace: true });
+                    break;
 
-    case 6:
-        navigate('/despachador');
-        break;
+                default:
+                    console.error('Rol no reconocido:', idRol);
+                    alert(
+                        'Tu usuario no tiene un panel disponible o un rol válido asignado.'
+                    );
+                    break;
+            }
 
-    default:
-        console.error('Rol no reconocido:', idRol);
-        alert('Tu usuario no tiene un rol válido asignado.');
-}
+        } catch (error) {
+            console.error('Error al consultar el perfil:', error);
 
-    } catch (error) {
-        console.error('Error al consultar el perfil:', error);
-        alert('No fue posible obtener tu perfil. Intenta iniciar sesión nuevamente.');
-    }
-};
+            // Intentar utilizar el rol recibido durante el login
+            const idRol = Number(usuario?.id_rol);
+
+            if (idRol === 1) {
+                navigate('/admin', { replace: true });
+            } else if (idRol === 2) {
+                navigate('/usuario', { replace: true });
+            } else if (idRol === 3) {
+                navigate('/conductor', { replace: true });
+            } else {
+                alert(
+                    'No fue posible obtener tu perfil. Intenta iniciar sesión nuevamente.'
+                );
+            }
+        }
+    };
 
 
-    // ─────────────────────────────────────────
+    // ========================================================
     // CARRUSEL
-    // ─────────────────────────────────────────
+    // ========================================================
 
     const siguienteImagen = () => {
-
-        setIndiceActivo((prev) =>
-            prev === imagenesCarrusel.length - 1
-                ? 0
-                : prev + 1
+        setIndiceActivo(prev =>
+            prev === imagenesCarrusel.length - 1 ? 0 : prev + 1
         );
-
     };
-
 
     const anteriorImagen = () => {
-
-        setIndiceActivo((prev) =>
-            prev === 0
-                ? imagenesCarrusel.length - 1
-                : prev - 1
+        setIndiceActivo(prev =>
+            prev === 0 ? imagenesCarrusel.length - 1 : prev - 1
         );
-
     };
 
 
-    // ─────────────────────────────────────────
+    // ========================================================
     // CERRAR MENÚ
-    // ─────────────────────────────────────────
+    // ========================================================
 
     const cerrarMenu = () => {
         setMenuAbierto(false);
     };
 
 
-    // ─────────────────────────────────────────
+    // ========================================================
     // INTERFAZ
-    // ─────────────────────────────────────────
+    // ========================================================
 
     return (
-
         <div className="onufast-container" id="inicio">
-
-
-            {/* ═══════════════════════════════════
-                HEADER / NAVBAR
-            ═══════════════════════════════════ */}
-            {!esPanelUsuario && !esPanelAdmin && !esPanelConductor && (
-
-    <header className="onufast-header">
-
-        <div className="logo-container">
-
-            <Link to={estaLogueado ? "/usuario" : "/"} onClick={cerrarMenu}>
-                <img src="/logo_calidad_onufast.jpg" 
-                    alt="Logo Onufast" className="logo-img" />
-                </Link>
-
-        </div>
-
-         {/* BOTÓN HAMBURGUESA */}
-
-                <button
-                    className={`btn-hamburguesa ${menuAbierto ? 'abierto' : ''}`}
-                    onClick={() => setMenuAbierto(!menuAbierto)}
-                    aria-label="Abrir menú de navegación"
-                    aria-expanded={menuAbierto}
-                >
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </button>
-
-
-                {/* OVERLAY */}
-
-                {menuAbierto && (
-
-                    <div
-                        className="nav-overlay"
-                        onClick={cerrarMenu}
-                    ></div>
-
-                )}
-
-
-                {/* MENÚ */}
-
-                <nav
-                    className={`onufast-nav ${menuAbierto ? 'nav-abierto' : ''}`}
-                >
-
-                    <Link to={estaLogueado ? "/usuario" : "/"} onClick={cerrarMenu}>
-                        Inicio
-                    </Link>
-
-                    <Link to="/servicios" onClick={cerrarMenu}>
-                        Servicios
-                    </Link>
-
-                    <Link to="/nosotros" onClick={cerrarMenu}>
-                        Quiénes Somos
-                    </Link>
-
-                    <Link to="/rastreo" onClick={cerrarMenu}>
-                        Rastrear Envío
-                    </Link>
-
-                    <Link to="/ubicacion" onClick={cerrarMenu}>
-                        Ubícanos
-                    </Link>
-
-
-                    {/* LOGIN MOBILE */}
-
-                    <button
-                        className="btn-login btn-login-mobile"
-                        onClick={() => {
-                            setMostrarModal(true);
-                            cerrarMenu();
-                        }}
-                    >
-
-                        Iniciar Sesión
-
-                    </button>
-
-                </nav>
-
-
-                {/* LOGIN DESKTOP */}
-
-                <button
-                    className="btn-login btn-login-desktop"
-                    onClick={() => setMostrarModal(true)}
-                >
-
-                    Iniciar Sesión
-
-                </button>
-
-            </header>
-
-   
-)}
-
-            
-
-
-               
-
-
-            {/* ═══════════════════════════════════
-                ESTADO DE LA BASE DE DATOS
-            ═══════════════════════════════════ */}
-
-            {/*
-
-            Si quieres mostrar el estado en pantalla,
-            puedes quitar los comentarios de este bloque.
-
-            */}
-
-            {/*
-            <div className="db-status">
-                Estado de la BD: {dbStatus || 'Comprobando...'}
-            </div>
-            */}
-
-
-            {/* ═══════════════════════════════════
-                RUTAS DE LA APLICACIÓN
-            ═══════════════════════════════════ */}
 
             <Routes>
 
-
-                {/* ═══════════════════════════════
+                {/* ==================================================
                     PÁGINA PRINCIPAL
-                ═══════════════════════════════ */}
+                ================================================== */}
 
                 <Route
                     path="/"
                     element={
-
                         <>
-
-
-                            {/* ─────────────────────
-                                HERO SECTION
-                            ───────────────────── */}
-
                             <main className="onufast-hero">
-
 
                                 <div className="hero-content">
 
                                     <h1 className="hero-title">
-
                                         El Mejor Sitio Seguro
                                         <br />
                                         Para Tus Pedidos
-
                                     </h1>
 
-
                                     <p className="hero-description">
-
                                         Enviando felicidad a tu puerta,
                                         rápido, seguro y hasta
                                         <br />
                                         tu hogar, tu paquete,
                                         nuestra prioridad.
-
                                     </p>
-
 
                                     <div className="hero-actions-container">
 
@@ -349,11 +242,8 @@ function AppContent() {
                                             className="btn-start"
                                             onClick={() => setMostrarModal(true)}
                                         >
-
                                             Comenzar
-
                                         </button>
-
 
                                         <RastreoRapido />
 
@@ -362,28 +252,18 @@ function AppContent() {
                                 </div>
 
 
-                                {/* ─────────────────────
-                                    CARRUSEL
-                                ───────────────────── */}
+                                {/* CARRUSEL */}
 
                                 <div className="hero-carousel-container">
 
                                     <div className="carousel-placeholder">
 
-
-                                        {/* ANTERIOR */}
-
                                         <span
                                             className="arrow-left"
                                             onClick={anteriorImagen}
                                         >
-
                                             ‹
-
                                         </span>
-
-
-                                        {/* IMAGEN */}
 
                                         <img
                                             src={imagenesCarrusel[indiceActivo]}
@@ -391,25 +271,16 @@ function AppContent() {
                                             className="carousel-img"
                                         />
 
-
-                                        {/* SIGUIENTE */}
-
                                         <span
                                             className="arrow-right"
                                             onClick={siguienteImagen}
                                         >
-
                                             ›
-
                                         </span>
-
-
-                                        {/* PUNTOS */}
 
                                         <div className="carousel-dots">
 
                                             {imagenesCarrusel.map((_, indice) => (
-
                                                 <span
                                                     key={indice}
                                                     className={`dot ${
@@ -421,7 +292,6 @@ function AppContent() {
                                                         setIndiceActivo(indice)
                                                     }
                                                 ></span>
-
                                             ))}
 
                                         </div>
@@ -433,28 +303,21 @@ function AppContent() {
                             </main>
 
 
-                            {/* ═══════════════════════
-                                SERVICIOS
-                            ═══════════════════════ */}
+                            {/* SERVICIOS */}
 
                             <section
                                 className="onufast-services"
                                 id="servicios"
                             >
 
-
-                                {/* SERVICIO 1 */}
-
                                 <div className="service-card">
 
                                     <div className="icon-wrapper">
-
                                         <img
                                             src="/avion.png"
                                             alt="Icono Avión"
                                             className="service-icon"
                                         />
-
                                     </div>
 
                                     <h3>
@@ -471,18 +334,14 @@ function AppContent() {
                                 </div>
 
 
-                                {/* SERVICIO 2 */}
-
                                 <div className="service-card">
 
                                     <div className="icon-wrapper">
-
                                         <img
                                             src="/correo-electronico.png"
                                             alt="Icono Sobre"
                                             className="service-icon"
                                         />
-
                                     </div>
 
                                     <h3>
@@ -498,18 +357,14 @@ function AppContent() {
                                 </div>
 
 
-                                {/* SERVICIO 3 */}
-
                                 <div className="service-card">
 
                                     <div className="icon-wrapper">
-
                                         <img
                                             src="/camion.png"
                                             alt="Icono Camión"
                                             className="service-icon"
                                         />
-
                                     </div>
 
                                     <h3>
@@ -525,18 +380,14 @@ function AppContent() {
                                 </div>
 
 
-                                {/* SERVICIO 4 */}
-
                                 <div className="service-card">
 
                                     <div className="icon-wrapper">
-
                                         <img
                                             src="/icono-de-la-tienda-web.png"
                                             alt="Icono Carrito"
                                             className="service-icon"
                                         />
-
                                     </div>
 
                                     <h3>
@@ -555,21 +406,18 @@ function AppContent() {
                             </section>
 
 
-                            {/* ═══════════════════════
-                                CÓMO FUNCIONA
-                            ═══════════════════════ */}
+                            {/* CÓMO FUNCIONA */}
 
                             <ComoFunciona />
 
                         </>
-
                     }
                 />
 
 
-                {/* ═══════════════════════════════
-                    OTRAS RUTAS
-                ═══════════════════════════════ */}
+                {/* ==================================================
+                    OTRAS PÁGINAS PÚBLICAS
+                ================================================== */}
 
                 <Route
                     path="/nosotros"
@@ -592,69 +440,88 @@ function AppContent() {
                 />
 
 
-                {/* ADMIN */}
+                {/* ==================================================
+                    PANEL ADMINISTRATIVO
+                ================================================== */}
 
                 <Route
                     path="/admin"
-                    element={<Admin />}
+                    element={
+                        <RutaProtegida rolesPermitidos={[1]}>
+                            <Admin />
+                        </RutaProtegida>
+                    }
                 />
+
+
+                {/* ==================================================
+                    PANEL DE USUARIO
+                ================================================== */}
 
                 <Route
                     path="/usuario"
-                    element={<Usuario />}
-                /> 
+                    element={
+                        <RutaProtegida rolesPermitidos={[2]}>
+                            <Usuario />
+                        </RutaProtegida>
+                    }
+                />
 
+
+                {/* ==================================================
+                    PANEL DE CONDUCTOR
+                ================================================== */}
 
                 <Route
                     path="/conductor"
-                    element={<Conductor />}
+                    element={
+                        <RutaProtegida rolesPermitidos={[3]}>
+                            <Conductor />
+                        </RutaProtegida>
+                    }
+                />
+
+
+                {/* ==================================================
+                    RUTA NO ENCONTRADA
+                ================================================== */}
+
+                <Route
+                    path="*"
+                    element={<Navigate to="/" replace />}
                 />
 
             </Routes>
 
 
-            {/* ═══════════════════════════════════
-                FOOTER
-            ═══════════════════════════════════ */}
-
             {/* FOOTER */}
 
-            {!esPanelUsuario && !esPanelAdmin && !esPanelConductor && <Footer />}
+            {!estaEnPanel && <Footer />}
 
 
-            {/* ═══════════════════════════════════
-                MODAL DE AUTENTICACIÓN
-            ═══════════════════════════════════ */}
+            {/* MODAL DE AUTENTICACIÓN */}
 
-            {!esPanelUsuario && !esPanelAdmin && !esPanelConductor && (
+            {!estaLogueado && !estaEnPanel && (
                 <AuthModal
                     isOpen={mostrarModal}
                     onClose={() => setMostrarModal(false)}
                     onLogin={handleLogin}
                 />
-)}
+            )}
 
         </div>
-
     );
-
 }
 
 
-// ─────────────────────────────────────────────
+// ============================================================
 // COMPONENTE PRINCIPAL
-// ─────────────────────────────────────────────
+// ============================================================
 
 export default function App() {
-
     return (
-
         <BrowserRouter>
-
             <AppContent />
-
         </BrowserRouter>
-
     );
-
 }
