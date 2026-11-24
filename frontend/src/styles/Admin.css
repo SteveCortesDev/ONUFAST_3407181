@@ -135,7 +135,7 @@
     background-color: #3a3d4a;
 }
 
-/* TARJETAS DE ESTADÍSTICAS */
+/* TARJETAS DE ESTADÃSTICAS */
 .admin-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -395,4 +395,29 @@
 .status-devuelto {
     background-color: #e67e22;
     color: white;
+}
+
+/* ============================================
+   CORRECCIÃ“N DE CONTRASTE - PANEL ADMIN
+   ============================================ */
+
+/* Contadores de conductores y vehÃ­culos */
+.admin-main p {
+    color: #ffffff;
+}
+
+/* TÃ­tulos de secciones */
+.admin-main h2,
+.admin-main h3 {
+    color: #ffffff;
+}
+
+/* Contador de envÃ­os y resultados */
+.admin-main strong {
+    color: #ffffff;
+}
+
+/* Tarjetas de vehÃ­culos */
+.admin-card p {
+    color: #e0e0e0;
 }

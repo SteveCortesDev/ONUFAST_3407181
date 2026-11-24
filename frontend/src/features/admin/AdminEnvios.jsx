@@ -278,8 +278,10 @@ export default function AdminEnvios() {
                             flex: '1',
                             minWidth: '220px',
                             padding: '10px',
-                            borderRadius: '6px',
-                            border: '1px solid #ccc'
+                            borderRadius: '5px',
+                            border: '1px solid #333',
+                            background: '#222',
+                            color: 'white'
                         }}
                     />
 
