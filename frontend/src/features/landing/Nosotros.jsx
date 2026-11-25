@@ -10,17 +10,17 @@ const aboutCards = [
   {
     title: 'Nuestra Historia',
     text: 'ONUFAST nace con la misión de revolucionar la logística en Colombia, conectando personas y negocios con rapidez y seguridad.',
-    image: 'public/logo_calidad_onufast.jpg',
+    image: '/logo_calidad_onufast.jpg',
   },
   {
     title: 'Nuestra Misión',
     text: 'Entregar felicidad a tu puerta: rápido, seguro y confiable. Cada paquete es una promesa que cumplimos.',
-    image: 'public/nuestra_mision.jpg',
+    image: '/nuestra_mision.jpg',
   },
   {
     title: 'Nuestra Visión',
     text: 'Ser la empresa de logística más confiable de Latinoamérica, expandiendo fronteras sin perder el toque humano.',
-    image: 'public/vision_onufast.jpg',
+    image: '/vision_onufast.jpg',
   },
 ];
 
@@ -63,13 +63,11 @@ export default function Nosotros() {
             <div className="about-card nosotros-about-card" key={card.title}>
               <div className="nosotros-card-img">
                 {card.image ? (
-                  <img 
-                    src={card.image} 
-                    alt={card.title} 
+                  <img
+                    src={card.image}
+                    alt={card.title}
                     onError={(e) => {
-                      // ✅ Fallback si la imagen no carga
                       e.target.style.display = 'none';
-                      e.target.parentElement.innerHTML = <span class="nosotros-card-emoji">📸</span>;
                     }}
                   />
                 ) : (
