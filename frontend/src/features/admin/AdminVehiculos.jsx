@@ -23,18 +23,18 @@ export default function AdminVehiculos() {
 
     const [formulario, setFormulario] = useState(formularioInicial);
 
-    // Cargar vehículos desde el backend
+    // Cargar vehículos
     const cargarVehiculos = async () => {
         try {
             setCargando(true);
             setError('');
 
             const respuesta = await api.get('/vehiculos/');
-            setVehiculos(respuesta.data);
+
+            setVehiculos(Array.isArray(respuesta.data) ? respuesta.data : []);
 
         } catch (err) {
             console.error('Error al cargar vehículos:', err);
-
             setError(
                 err.response?.data?.detail ||
                 'No se pudieron cargar los vehículos.'
@@ -48,7 +48,7 @@ export default function AdminVehiculos() {
         cargarVehiculos();
     }, []);
 
-    // Actualizar los campos del formulario
+    // Manejar cambios
     const manejarCambio = (e) => {
         const { name, value } = e.target;
 
@@ -58,7 +58,7 @@ export default function AdminVehiculos() {
         }));
     };
 
-    // Abrir formulario para registrar
+    // Abrir registro
     const abrirRegistro = () => {
         setFormulario(formularioInicial);
         setEditando(false);
@@ -68,15 +68,15 @@ export default function AdminVehiculos() {
         setMensaje('');
     };
 
-    // Abrir formulario para editar
+    // Abrir edición
     const abrirEdicion = (vehiculo) => {
         setFormulario({
-            placa: vehiculo.placa,
-            tipo_vehiculo: vehiculo.tipo_vehiculo,
-            marca: vehiculo.marca,
-            modelo: vehiculo.modelo,
-            capacidad_kg: vehiculo.capacidad_kg,
-            estado: vehiculo.estado
+            placa: vehiculo.placa ?? '',
+            tipo_vehiculo: vehiculo.tipo_vehiculo ?? '',
+            marca: vehiculo.marca ?? '',
+            modelo: vehiculo.modelo ?? '',
+            capacidad_kg: vehiculo.capacidad_kg ?? '',
+            estado: vehiculo.estado ?? 'Disponible'
         });
 
         setIdEditar(vehiculo.id_vehiculo);
@@ -84,6 +84,15 @@ export default function AdminVehiculos() {
         setMostrarFormulario(true);
         setError('');
         setMensaje('');
+    };
+
+    // Cerrar formulario
+    const cerrarFormulario = () => {
+        setMostrarFormulario(false);
+        setFormulario(formularioInicial);
+        setEditando(false);
+        setIdEditar(null);
+        setError('');
     };
 
     // Registrar o actualizar vehículo
@@ -103,15 +112,34 @@ export default function AdminVehiculos() {
                 estado: formulario.estado
             };
 
-            if (
-                !datos.placa ||
-                !datos.tipo_vehiculo ||
-                !datos.marca ||
-                !datos.modelo ||
-                !datos.capacidad_kg ||
-                datos.capacidad_kg <= 0
-            ) {
-                setError('Completa todos los campos con datos válidos.');
+            // Validaciones del backend
+            if (datos.placa.length < 5 || datos.placa.length > 10) {
+                setError('La placa debe tener entre 5 y 10 caracteres.');
+                return;
+            }
+
+            if (datos.tipo_vehiculo.length < 2 || datos.tipo_vehiculo.length > 30) {
+                setError('El tipo de vehículo debe tener entre 2 y 30 caracteres.');
+                return;
+            }
+
+            if (datos.marca.length < 2 || datos.marca.length > 50) {
+                setError('La marca debe tener entre 2 y 50 caracteres.');
+                return;
+            }
+
+            if (datos.modelo.length < 1 || datos.modelo.length > 50) {
+                setError('El modelo debe tener entre 1 y 50 caracteres.');
+                return;
+            }
+
+            if (!Number.isFinite(datos.capacidad_kg) || datos.capacidad_kg <= 0) {
+                setError('La capacidad debe ser un número mayor que cero.');
+                return;
+            }
+
+            if (!['Disponible', 'En ruta', 'Mantenimiento'].includes(datos.estado)) {
+                setError('Selecciona un estado válido.');
                 return;
             }
 
@@ -123,19 +151,18 @@ export default function AdminVehiculos() {
                 setMensaje('Vehículo registrado correctamente.');
             }
 
-            setMostrarFormulario(false);
-            setFormulario(formularioInicial);
-            setEditando(false);
-            setIdEditar(null);
-
+            cerrarFormulario();
             await cargarVehiculos();
 
         } catch (err) {
             console.error('Error al guardar vehículo:', err);
 
+            const detalle = err.response?.data?.detail;
+
             setError(
-                err.response?.data?.detail ||
-                'No se pudo guardar el vehículo.'
+                Array.isArray(detalle)
+                    ? detalle.map((item) => item.msg).join(' | ')
+                    : detalle || 'No se pudo guardar el vehículo.'
             );
         }
     };
@@ -167,104 +194,149 @@ export default function AdminVehiculos() {
         }
     };
 
-    // Color según el estado
+    // Clases de estado
     const obtenerClaseEstado = (estado) => {
-        if (estado === 'Disponible') return 'status-entregado';
-        if (estado === 'En ruta') return 'status-en-camino';
-        return 'status-cancelado';
+        if (estado === 'Disponible') return 'vehiculo-disponible';
+        if (estado === 'En ruta') return 'vehiculo-en-ruta';
+        return 'vehiculo-mantenimiento';
     };
 
     return (
-        <div>
-            <div className="admin-header">
-                <h1>🚛 Gestión de Vehículos</h1>
+        <div className="vehiculos-container">
+
+            <div className="vehiculos-encabezado">
+                <div>
+                    <span className="vehiculos-subtitulo">
+                        PANEL DE ADMINISTRACIÓN
+                    </span>
+                    <h1>Gestión de vehículos</h1>
+                    <p>Administra y consulta los vehículos registrados en ONUFAST.</p>
+                </div>
 
                 <button
-                    className="admin-btn"
+                    className="vehiculos-btn vehiculos-btn-principal"
                     onClick={abrirRegistro}
                 >
-                    + Agregar Vehículo
+                    <span>＋</span> Agregar vehículo
                 </button>
             </div>
 
-            <div className="admin-section">
+            {mensaje && (
+                <div className="vehiculos-alerta vehiculos-alerta-exito">
+                    {mensaje}
+                </div>
+            )}
 
-                {mensaje && (
-                    <div className="admin-card">
-                        <p style={{ color: 'green' }}>{mensaje}</p>
+            {error && (
+                <div className="vehiculos-alerta vehiculos-alerta-error">
+                    {error}
+                </div>
+            )}
+
+            {mostrarFormulario && (
+                <section className="vehiculos-formulario">
+
+                    <div className="vehiculos-formulario-header">
+                        <div>
+                            <span className="vehiculos-subtitulo">
+                                {editando ? 'ACTUALIZACIÓN' : 'NUEVO REGISTRO'}
+                            </span>
+                            <h2>
+                                {editando ? 'Editar vehículo' : 'Registrar vehículo'}
+                            </h2>
+                            <p>
+                                Ingresa la información correspondiente al vehículo.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="vehiculos-cerrar"
+                            onClick={cerrarFormulario}
+                            aria-label="Cerrar formulario"
+                        >
+                            ×
+                        </button>
                     </div>
-                )}
 
-                {error && (
-                    <div className="admin-card">
-                        <p style={{ color: 'red' }}>{error}</p>
-                    </div>
-                )}
+                    <form onSubmit={guardarVehiculo}>
 
-                {mostrarFormulario && (
-                    <div className="admin-card" style={{ marginBottom: '20px' }}>
-                        <h3>
-                            {editando ? 'Editar vehículo' : 'Registrar vehículo'}
-                        </h3>
+                        <div className="vehiculos-grupo">
+                            <h3>01. Identificación del vehículo</h3>
+                            <p>Información básica para identificar el vehículo.</p>
 
-                        <form onSubmit={guardarVehiculo}>
-                            <div className="admin-grid">
-
-                                <div>
-                                    <label>Placa</label>
+                            <div className="vehiculos-grid-form">
+                                <div className="vehiculos-campo">
+                                    <label htmlFor="placa">Placa</label>
                                     <input
+                                        id="placa"
                                         type="text"
                                         name="placa"
                                         value={formulario.placa}
                                         onChange={manejarCambio}
                                         placeholder="Ej: ABC123"
-                                        maxLength="10"
+                                        minLength={5}
+                                        maxLength={10}
                                         required
                                     />
                                 </div>
 
-                                <div>
-                                    <label>Tipo de vehículo</label>
+                                <div className="vehiculos-campo">
+                                    <label htmlFor="tipo_vehiculo">Tipo de vehículo</label>
                                     <input
+                                        id="tipo_vehiculo"
                                         type="text"
                                         name="tipo_vehiculo"
                                         value={formulario.tipo_vehiculo}
                                         onChange={manejarCambio}
                                         placeholder="Ej: Camioneta"
-                                        maxLength="30"
+                                        minLength={2}
+                                        maxLength={30}
                                         required
                                     />
                                 </div>
+                            </div>
+                        </div>
 
-                                <div>
-                                    <label>Marca</label>
+                        <div className="vehiculos-grupo">
+                            <h3>02. Características</h3>
+                            <p>Datos técnicos y características del vehículo.</p>
+
+                            <div className="vehiculos-grid-form">
+                                <div className="vehiculos-campo">
+                                    <label htmlFor="marca">Marca</label>
                                     <input
+                                        id="marca"
                                         type="text"
                                         name="marca"
                                         value={formulario.marca}
                                         onChange={manejarCambio}
                                         placeholder="Ej: Chevrolet"
-                                        maxLength="50"
+                                        minLength={2}
+                                        maxLength={50}
                                         required
                                     />
                                 </div>
 
-                                <div>
-                                    <label>Modelo</label>
+                                <div className="vehiculos-campo">
+                                    <label htmlFor="modelo">Modelo</label>
                                     <input
+                                        id="modelo"
                                         type="text"
                                         name="modelo"
                                         value={formulario.modelo}
                                         onChange={manejarCambio}
                                         placeholder="Ej: N300"
-                                        maxLength="50"
+                                        minLength={1}
+                                        maxLength={50}
                                         required
                                     />
                                 </div>
 
-                                <div>
-                                    <label>Capacidad (kg)</label>
+                                <div className="vehiculos-campo">
+                                    <label htmlFor="capacidad_kg">Capacidad de carga (kg)</label>
                                     <input
+                                        id="capacidad_kg"
                                         type="number"
                                         name="capacidad_kg"
                                         value={formulario.capacidad_kg}
@@ -276,9 +348,10 @@ export default function AdminVehiculos() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label>Estado</label>
+                                <div className="vehiculos-campo">
+                                    <label htmlFor="estado">Estado del vehículo</label>
                                     <select
+                                        id="estado"
                                         name="estado"
                                         value={formulario.estado}
                                         onChange={manejarCambio}
@@ -289,101 +362,106 @@ export default function AdminVehiculos() {
                                         <option value="Mantenimiento">Mantenimiento</option>
                                     </select>
                                 </div>
-
                             </div>
+                        </div>
 
-                            <div style={{
-                                display: 'flex',
-                                gap: '10px',
-                                marginTop: '20px',
-                                flexWrap: 'wrap'
-                            }}>
-                                <button
-                                    type="submit"
-                                    className="admin-btn"
-                                >
-                                    {editando ? 'Guardar cambios' : 'Registrar vehículo'}
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className="admin-btn"
-                                    onClick={() => setMostrarFormulario(false)}
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
-
-                <h3>Vehículos registrados</h3>
-
-                {cargando ? (
-                    <p>Cargando vehículos...</p>
-                ) : vehiculos.length === 0 ? (
-                    <div className="admin-card">
-                        <p>No hay vehículos registrados.</p>
-                    </div>
-                ) : (
-                    <div className="admin-grid">
-                        {vehiculos.map((vehiculo) => (
-                            <div
-                                key={vehiculo.id_vehiculo}
-                                className="admin-card"
+                        <div className="vehiculos-formulario-acciones">
+                            <button
+                                type="button"
+                                className="vehiculos-btn vehiculos-btn-secundario"
+                                onClick={cerrarFormulario}
                             >
-                                <h4>🚛 {vehiculo.tipo_vehiculo}</h4>
+                                Cancelar
+                            </button>
 
-                                <p>
-                                    <strong>Placa:</strong> {vehiculo.placa}
-                                </p>
+                            <button
+                                type="submit"
+                                className="vehiculos-btn vehiculos-btn-principal"
+                            >
+                                {editando ? 'Guardar cambios' : 'Registrar vehículo'}
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            )}
 
-                                <p>
-                                    <strong>Marca:</strong> {vehiculo.marca}
-                                </p>
+            <div className="vehiculos-listado-header">
+                <div>
+                    <h2>Vehículos registrados</h2>
+                    <p>Consulta y administra la flota de transporte.</p>
+                </div>
 
-                                <p>
-                                    <strong>Modelo:</strong> {vehiculo.modelo}
-                                </p>
+                <span className="vehiculos-contador">
+                    {vehiculos.length} vehículos
+                </span>
+            </div>
 
-                                <p>
-                                    <strong>Capacidad:</strong>{' '}
-                                    {vehiculo.capacidad_kg} kg
-                                </p>
+            {cargando ? (
+                <div className="vehiculos-vacio">
+                    Cargando vehículos...
+                </div>
+            ) : vehiculos.length === 0 ? (
+                <div className="vehiculos-vacio">
+                    <h3>No hay vehículos registrados</h3>
+                    <p>Agrega un vehículo para comenzar a gestionar la flota.</p>
+                </div>
+            ) : (
+                <div className="vehiculos-grid-tarjetas">
+                    {vehiculos.map((vehiculo) => (
+                        <article
+                            key={vehiculo.id_vehiculo}
+                            className="vehiculos-tarjeta"
+                        >
+                            <div className="vehiculos-tarjeta-header">
+                                <div className="vehiculos-icono">🚚</div>
 
-                                <p>
-                                    <strong>Estado:</strong>{' '}
-                                    <span className={`status-badge ${obtenerClaseEstado(vehiculo.estado)}`}>
-                                        {vehiculo.estado}
-                                    </span>
-                                </p>
+                                <span className={`vehiculos-estado ${obtenerClaseEstado(vehiculo.estado)}`}>
+                                    {vehiculo.estado}
+                                </span>
+                            </div>
 
-                                <div style={{
-                                    display: 'flex',
-                                    gap: '10px',
-                                    flexWrap: 'wrap',
-                                    marginTop: '15px'
-                                }}>
-                                    <button
-                                        className="admin-btn"
-                                        onClick={() => abrirEdicion(vehiculo)}
-                                    >
-                                        Editar
-                                    </button>
+                            <h3>{vehiculo.tipo_vehiculo}</h3>
 
-                                    <button
-                                        className="admin-btn"
-                                        onClick={() => eliminarVehiculo(vehiculo.id_vehiculo)}
-                                    >
-                                        Eliminar
-                                    </button>
+                            <div className="vehiculos-placa">
+                                {vehiculo.placa}
+                            </div>
+
+                            <div className="vehiculos-datos">
+                                <div>
+                                    <span>Marca</span>
+                                    <strong>{vehiculo.marca}</strong>
+                                </div>
+
+                                <div>
+                                    <span>Modelo</span>
+                                    <strong>{vehiculo.modelo}</strong>
+                                </div>
+
+                                <div>
+                                    <span>Capacidad</span>
+                                    <strong>{vehiculo.capacidad_kg} kg</strong>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
 
-            </div>
+                            <div className="vehiculos-tarjeta-acciones">
+                                <button
+                                    className="vehiculos-btn vehiculos-btn-editar"
+                                    onClick={() => abrirEdicion(vehiculo)}
+                                >
+                                    Editar
+                                </button>
+
+                                <button
+                                    className="vehiculos-btn vehiculos-btn-eliminar"
+                                    onClick={() => eliminarVehiculo(vehiculo.id_vehiculo)}
+                                >
+                                    Eliminar
+                                </button>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

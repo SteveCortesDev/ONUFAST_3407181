@@ -421,3 +421,412 @@
 .admin-card p {
     color: #e0e0e0;
 }
+
+/* CONTRASTE DEL MODAL DE DETALLE DE ENVÍOS */
+
+.admin-main .admin-envio-modal {
+    background: #ffffff;
+    color: #222222;
+}
+
+.admin-main .admin-envio-modal h2,
+.admin-main .admin-envio-modal h3,
+.admin-main .admin-envio-modal p,
+.admin-main .admin-envio-modal strong {
+    color: #222222;
+}
+
+.admin-main .admin-envio-modal select,
+.admin-main .admin-envio-modal option {
+    color: #222222;
+    background-color: #ffffff;
+}
+
+/* =========================================
+   GESTIÓN DE VEHÍCULOS - ONUFAST
+========================================= */
+
+.vehiculos-container {
+    width: 100%;
+    color: #f5f5f5;
+}
+
+.vehiculos-container * {
+    box-sizing: border-box;
+}
+
+.vehiculos-encabezado,
+.vehiculos-listado-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.vehiculos-encabezado h1,
+.vehiculos-listado-header h2 {
+    color: #ffffff !important;
+    margin: 5px 0;
+}
+
+.vehiculos-encabezado p,
+.vehiculos-listado-header p {
+    color: #bdbdbd !important;
+    margin: 5px 0;
+}
+
+.vehiculos-subtitulo {
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.vehiculos-btn {
+    border: none;
+    border-radius: 9px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.vehiculos-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.12);
+}
+
+.vehiculos-btn-principal {
+    background: #dc2626;
+    color: #ffffff !important;
+}
+
+.vehiculos-btn-secundario {
+    background: #343434;
+    color: #ffffff !important;
+    border: 1px solid #555;
+}
+
+.vehiculos-alerta {
+    padding: 14px 17px;
+    border-radius: 9px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.vehiculos-alerta-exito {
+    background: #123b2b;
+    border: 1px solid #238653;
+    color: #9af0bd;
+}
+
+.vehiculos-alerta-error {
+    background: #451d1d;
+    border: 1px solid #b94343;
+    color: #ffb5b5;
+}
+
+/* Formulario */
+
+.vehiculos-formulario {
+    background: #171717;
+    border: 1px solid #383838;
+    border-top: 3px solid #dc2626;
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.vehiculos-formulario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.vehiculos-formulario-header h2 {
+    color: #ffffff !important;
+    margin: 7px 0;
+    font-size: 23px;
+}
+
+.vehiculos-formulario-header p {
+    color: #aaa !important;
+    margin: 0;
+}
+
+.vehiculos-cerrar {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: #292929;
+    color: #fff;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.vehiculos-grupo {
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #202020;
+    border: 1px solid #383838;
+    border-radius: 11px;
+}
+
+.vehiculos-grupo h3 {
+    color: #ffffff !important;
+    font-size: 16px;
+    margin: 0 0 6px;
+}
+
+.vehiculos-grupo > p {
+    color: #aaa !important;
+    font-size: 13px;
+    margin: 0 0 20px;
+}
+
+.vehiculos-grid-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.vehiculos-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.vehiculos-campo label {
+    color: #f1f1f1 !important;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.vehiculos-campo input,
+.vehiculos-campo select {
+    width: 100%;
+    min-height: 45px;
+    padding: 11px 13px;
+    border: 1px solid #555 !important;
+    border-radius: 8px;
+    background: #303030 !important;
+    color: #ffffff !important;
+    font-size: 14px;
+    outline: none;
+    color-scheme: dark;
+}
+
+.vehiculos-campo input::placeholder {
+    color: #a5a5a5 !important;
+    opacity: 1;
+}
+
+.vehiculos-campo input:focus,
+.vehiculos-campo select:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.17);
+}
+
+.vehiculos-campo select option {
+    background: #303030;
+    color: #ffffff;
+}
+
+.vehiculos-formulario-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+/* Listado y tarjetas */
+
+.vehiculos-contador {
+    background: #292929;
+    color: #ffffff;
+    border: 1px solid #444;
+    padding: 8px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.vehiculos-grid-tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.vehiculos-tarjeta {
+    background: #191919;
+    border: 1px solid #383838;
+    border-radius: 13px;
+    padding: 20px;
+    transition: 0.2s ease;
+}
+
+.vehiculos-tarjeta:hover {
+    border-color: #dc2626;
+    transform: translateY(-3px);
+}
+
+.vehiculos-tarjeta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.vehiculos-icono {
+    width: 43px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #292929;
+    border-radius: 10px;
+    font-size: 23px;
+}
+
+.vehiculos-tarjeta h3 {
+    color: #ffffff !important;
+    font-size: 18px;
+    margin: 0 0 8px;
+}
+
+.vehiculos-placa {
+    display: inline-block;
+    background: #303030;
+    border: 1px solid #555;
+    color: #ffffff;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+}
+
+.vehiculos-datos {
+    display: grid;
+    gap: 12px;
+    border-top: 1px solid #383838;
+    padding-top: 15px;
+}
+
+.vehiculos-datos div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.vehiculos-datos span {
+    color: #aaa;
+    font-size: 13px;
+}
+
+.vehiculos-datos strong {
+    color: #ffffff !important;
+    font-size: 13px;
+    text-align: right;
+}
+
+.vehiculos-estado {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.vehiculo-disponible {
+    background: #16432c;
+    color: #8df0b2;
+}
+
+.vehiculo-en-ruta {
+    background: #453719;
+    color: #f6d77c;
+}
+
+.vehiculo-mantenimiento {
+    background: #482222;
+    color: #ffaaaa;
+}
+
+.vehiculos-tarjeta-acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.vehiculos-btn-editar {
+    flex: 1;
+    background: #333333;
+    color: #ffffff !important;
+    border: 1px solid #555;
+}
+
+.vehiculos-btn-eliminar {
+    flex: 1;
+    background: #501f1f;
+    color: #ffb1b1 !important;
+    border: 1px solid #853333;
+}
+
+.vehiculos-vacio {
+    padding: 35px 20px;
+    text-align: center;
+    background: #191919;
+    border: 1px dashed #555;
+    border-radius: 12px;
+    color: #ffffff;
+}
+
+.vehiculos-vacio h3 {
+    color: #ffffff !important;
+}
+
+.vehiculos-vacio p {
+    color: #aaa !important;
+}
+
+/* Adaptación para celulares */
+
+@media (max-width: 650px) {
+    .vehiculos-grid-form {
+        grid-template-columns: 1fr;
+    }
+
+    .vehiculos-formulario {
+        padding: 16px;
+    }
+
+    .vehiculos-grupo {
+        padding: 15px;
+    }
+
+    .vehiculos-encabezado {
+        align-items: stretch;
+    }
+
+    .vehiculos-encabezado .vehiculos-btn {
+        width: 100%;
+    }
+
+    .vehiculos-formulario-acciones {
+        flex-direction: column-reverse;
+    }
+
+    .vehiculos-formulario-acciones button {
+        width: 100%;
+    }
+}

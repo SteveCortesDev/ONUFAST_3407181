@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../shared/api';
 
@@ -21,10 +22,12 @@ export default function AdminEnvios() {
     const [guardandoEstado, setGuardandoEstado] = useState(false);
     const [eliminando, setEliminando] = useState(false);
 
+    // CARGAR ENVÍOS, CONDUCTORES Y RUTAS
     const cargarEnvios = async (limpiarMensajes = true) => {
         try {
             setCargando(true);
             setError('');
+
             if (limpiarMensajes) {
                 setMensaje('');
             }
@@ -40,8 +43,16 @@ export default function AdminEnvios() {
                 : resEnvios.data.envios || [];
 
             setEnvios(datosEnvios);
-            setConductores(Array.isArray(resConductores.data) ? resConductores.data : []);
-            setRutas(Array.isArray(resRutas.data) ? resRutas.data : []);
+            setConductores(
+                Array.isArray(resConductores.data)
+                    ? resConductores.data
+                    : []
+            );
+            setRutas(
+                Array.isArray(resRutas.data)
+                    ? resRutas.data
+                    : []
+            );
         } catch (err) {
             console.error('Error al cargar los envíos:', err);
 
@@ -64,19 +75,30 @@ export default function AdminEnvios() {
         cargarEnvios();
     }, []);
 
+    // OBTENER CONDUCTOR ASIGNADO
     const obtenerConductorEnvio = (envio) => {
-        if (envio.nombre_conductor && envio.nombre_conductor !== 'Por definir') {
+        if (
+            envio.nombre_conductor &&
+            envio.nombre_conductor !== 'Por definir'
+        ) {
             return envio.nombre_conductor;
         }
-        const rutaMatch = rutas.find((r) => Number(r.id_rutas) === Number(envio.id_rutas));
+
+        const rutaMatch = rutas.find(
+            (r) => Number(r.id_rutas) === Number(envio.id_rutas)
+        );
+
         return rutaMatch?.nombre_conductor || 'Sin asignar';
     };
 
+    // ASIGNAR PAQUETE A CONDUCTOR
     const asignarPaqueteAConductor = async (e) => {
         e.preventDefault();
 
         if (!idEnvioAsignar || !idConductorAsignar) {
-            setError('Selecciona un paquete y un conductor para realizar la asignación.');
+            setError(
+                'Selecciona un paquete y un conductor para realizar la asignación.'
+            );
             return;
         }
 
@@ -92,10 +114,16 @@ export default function AdminEnvios() {
 
             setIdEnvioAsignar('');
             setIdConductorAsignar('');
+
             await cargarEnvios(false);
-            setMensaje(resp.data?.mensaje || 'Paquete asignado al conductor correctamente.');
+
+            setMensaje(
+                resp.data?.mensaje ||
+                'Paquete asignado al conductor correctamente.'
+            );
         } catch (err) {
             console.error('Error al asignar paquete a conductor:', err);
+
             setError(
                 err.response?.data?.detail ||
                 'No fue posible asignar el paquete al conductor.'
@@ -105,6 +133,7 @@ export default function AdminEnvios() {
         }
     };
 
+    // BUSCAR Y FILTRAR ENVÍOS
     const enviosFiltrados = useMemo(() => {
         return envios.filter((envio) => {
             const texto = busqueda.toLowerCase().trim();
@@ -132,6 +161,7 @@ export default function AdminEnvios() {
         ...new Set(envios.map((envio) => envio.estado || 'Sin estado'))
     ];
 
+    // CLASE CSS DEL ESTADO
     const obtenerClaseEstado = (estado) => {
         return (estado || 'sin-estado')
             .toLowerCase()
@@ -140,6 +170,7 @@ export default function AdminEnvios() {
             .replace(/\s+/g, '-');
     };
 
+    // FORMATEAR FECHA
     const formatearFecha = (fecha) => {
         if (!fecha) return 'No disponible';
 
@@ -152,6 +183,7 @@ export default function AdminEnvios() {
         return fechaValida.toLocaleString('es-CO');
     };
 
+    // ABRIR DETALLES
     const abrirDetalles = (envio) => {
         setEnvioSeleccionado(envio);
         setNuevoEstado(envio.estado || '');
@@ -159,6 +191,7 @@ export default function AdminEnvios() {
         setMensaje('');
     };
 
+    // ACTUALIZAR ESTADO
     const actualizarEstado = async () => {
         if (!envioSeleccionado || !nuevoEstado) {
             setError('Selecciona un estado válido.');
@@ -221,6 +254,7 @@ export default function AdminEnvios() {
         }
     };
 
+    // ELIMINAR ENVÍO
     const eliminarEnvio = async () => {
         if (!envioSeleccionado) return;
 
@@ -251,7 +285,9 @@ export default function AdminEnvios() {
 
             setEnvioSeleccionado(null);
             setNuevoEstado('');
-            setMensaje(`El envío #${idEliminado} fue eliminado correctamente.`);
+            setMensaje(
+                `El envío #${idEliminado} fue eliminado correctamente.`
+            );
         } catch (err) {
             console.error('Error al eliminar el envío:', err);
 
@@ -270,6 +306,7 @@ export default function AdminEnvios() {
         }
     };
 
+    // INTERFAZ
     return (
         <div>
             <div className="admin-header">
@@ -301,7 +338,9 @@ export default function AdminEnvios() {
                         border: '1px solid #303440'
                     }}
                 >
-                    <strong style={{ color: '#fff' }}>Asignar paquete a conductor:</strong>
+                    <strong style={{ color: '#fff' }}>
+                        Asignar paquete a conductor:
+                    </strong>
 
                     <select
                         value={idEnvioAsignar}
@@ -316,10 +355,21 @@ export default function AdminEnvios() {
                             color: '#fff'
                         }}
                     >
-                        <option value="">Selecciona el paquete (envío)...</option>
+                        <option value="">
+                            Selecciona el paquete (envío)...
+                        </option>
+
                         {envios.map((envio) => (
-                            <option key={envio.id_envio} value={envio.id_envio}>
-                                #{envio.id_envio} · {envio.codigo_rastreo} · {envio.nombre_destinatario || envio.cliente} ({envio.paquete?.direccion || envio.destino || 'Sin dirección'})
+                            <option
+                                key={envio.id_envio}
+                                value={envio.id_envio}
+                            >
+                                #{envio.id_envio} · {envio.codigo_rastreo} ·{' '}
+                                {envio.nombre_destinatario || envio.cliente} (
+                                {envio.paquete?.direccion ||
+                                    envio.destino ||
+                                    'Sin dirección'}
+                                )
                             </option>
                         ))}
                     </select>
@@ -336,7 +386,10 @@ export default function AdminEnvios() {
                             color: '#fff'
                         }}
                     >
-                        <option value="">Selecciona el conductor...</option>
+                        <option value="">
+                            Selecciona el conductor...
+                        </option>
+
                         {conductores.map((cond) => (
                             <option
                                 key={cond.id_usuario}
@@ -353,12 +406,13 @@ export default function AdminEnvios() {
                         className="admin-btn"
                         disabled={asignandoPaquete}
                     >
-                        {asignandoPaquete ? 'Asignando...' : 'Asignar paquete'}
+                        {asignandoPaquete
+                            ? 'Asignando...'
+                            : 'Asignar paquete'}
                     </button>
                 </form>
 
                 {/* BUSCADOR Y FILTRO */}
-
                 <div
                     style={{
                         display: 'flex',
@@ -369,17 +423,15 @@ export default function AdminEnvios() {
                 >
                     <input
                         type="text"
-                        placeholder="Buscar por código, cliente, destino o conductor..."
+                        placeholder="Buscar por código, cliente, origen, destino o conductor..."
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                         style={{
                             flex: '1',
                             minWidth: '220px',
                             padding: '10px',
-                            borderRadius: '5px',
-                            border: '1px solid #333',
-                            background: '#222',
-                            color: 'white'
+                            borderRadius: '6px',
+                            border: '1px solid #ccc'
                         }}
                     />
 
@@ -403,7 +455,6 @@ export default function AdminEnvios() {
                 </div>
 
                 {/* CONTADOR */}
-
                 <p style={{ marginBottom: '15px' }}>
                     Total de envíos: <strong>{envios.length}</strong>
                     {' | '}
@@ -411,7 +462,6 @@ export default function AdminEnvios() {
                 </p>
 
                 {/* MENSAJES */}
-
                 {error && (
                     <div
                         style={{
@@ -441,7 +491,6 @@ export default function AdminEnvios() {
                 )}
 
                 {/* TABLA */}
-
                 {cargando ? (
                     <p>Cargando envíos desde la base de datos...</p>
                 ) : (
@@ -452,6 +501,7 @@ export default function AdminEnvios() {
                                     <th>ID</th>
                                     <th>Código</th>
                                     <th>Cliente</th>
+                                    <th>Origen</th>
                                     <th>Destino</th>
                                     <th>Conductor</th>
                                     <th>Estado</th>
@@ -474,7 +524,13 @@ export default function AdminEnvios() {
                                             </td>
 
                                             <td>
-                                                {envio.paquete?.direccion || envio.destino || 'Por definir'}
+                                                {envio.origen || 'Por definir'}
+                                            </td>
+
+                                            <td>
+                                                {envio.paquete?.direccion ||
+                                                    envio.destino ||
+                                                    'Por definir'}
                                             </td>
 
                                             <td>
@@ -483,7 +539,9 @@ export default function AdminEnvios() {
 
                                             <td>
                                                 <span
-                                                    className={`status-badge status-${obtenerClaseEstado(envio.estado)}`}
+                                                    className={`status-badge status-${obtenerClaseEstado(
+                                                        envio.estado
+                                                    )}`}
                                                 >
                                                     {envio.estado || 'Sin estado'}
                                                 </span>
@@ -506,7 +564,7 @@ export default function AdminEnvios() {
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan="7"
+                                            colSpan="8"
                                             style={{
                                                 textAlign: 'center',
                                                 padding: '25px'
@@ -542,10 +600,11 @@ export default function AdminEnvios() {
                     }}
                 >
                     <div
+                        className="admin-envio-modal"
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            background: '#fff',
-                            color: '#222',
+                            background: '#ffffff',
+                            color: '#222222',
                             padding: '25px',
                             borderRadius: '10px',
                             width: '100%',
@@ -597,12 +656,14 @@ export default function AdminEnvios() {
 
                         <p>
                             <strong>Destinatario:</strong>{' '}
-                            {envioSeleccionado.nombre_destinatario || 'No disponible'}
+                            {envioSeleccionado.nombre_destinatario ||
+                                'No disponible'}
                         </p>
 
                         <p>
                             <strong>Documento:</strong>{' '}
-                            {envioSeleccionado.documento_destinatario || 'No disponible'}
+                            {envioSeleccionado.documento_destinatario ||
+                                'No disponible'}
                         </p>
 
                         <p>
@@ -676,7 +737,9 @@ export default function AdminEnvios() {
                                     nuevoEstado === envioSeleccionado.estado
                                 }
                             >
-                                {guardandoEstado ? 'Guardando...' : 'Guardar estado'}
+                                {guardandoEstado
+                                    ? 'Guardando...'
+                                    : 'Guardar estado'}
                             </button>
                         </div>
 
@@ -688,59 +751,71 @@ export default function AdminEnvios() {
                             <>
                                 <p>
                                     <strong>Descripción:</strong>{' '}
-                                    {envioSeleccionado.paquete.descripcion || 'No disponible'}
+                                    {envioSeleccionado.paquete.descripcion ||
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Peso:</strong>{' '}
-                                    {envioSeleccionado.paquete.peso ?? 'No disponible'}
+                                    {envioSeleccionado.paquete.peso ??
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Alto:</strong>{' '}
-                                    {envioSeleccionado.paquete.alto ?? 'No disponible'}
+                                    {envioSeleccionado.paquete.alto ??
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Largo:</strong>{' '}
-                                    {envioSeleccionado.paquete.largo ?? 'No disponible'}
+                                    {envioSeleccionado.paquete.largo ??
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Ancho:</strong>{' '}
-                                    {envioSeleccionado.paquete.ancho ?? 'No disponible'}
+                                    {envioSeleccionado.paquete.ancho ??
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Dirección:</strong>{' '}
-                                    {envioSeleccionado.paquete.direccion || 'No disponible'}
+                                    {envioSeleccionado.paquete.direccion ||
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Barrio:</strong>{' '}
-                                    {envioSeleccionado.paquete.barrio || 'No disponible'}
+                                    {envioSeleccionado.paquete.barrio ||
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Teléfono:</strong>{' '}
-                                    {envioSeleccionado.paquete.telefono_destinatario || 'No disponible'}
+                                    {envioSeleccionado.paquete.telefono_destinatario ||
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Referencias:</strong>{' '}
-                                    {envioSeleccionado.paquete.referencias || 'No disponible'}
+                                    {envioSeleccionado.paquete.referencias ||
+                                        'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Precio:</strong>{' '}
                                     {envioSeleccionado.paquete.precio_envio != null
-                                        ? `$${Number(envioSeleccionado.paquete.precio_envio).toLocaleString('es-CO')}`
+                                        ? `$${Number(
+                                            envioSeleccionado.paquete.precio_envio
+                                        ).toLocaleString('es-CO')}`
                                         : 'No disponible'}
                                 </p>
 
                                 <p>
                                     <strong>Método de pago:</strong>{' '}
-                                    {envioSeleccionado.paquete.metodo_pago || 'No disponible'}
+                                    {envioSeleccionado.paquete.metodo_pago ||
+                                        'No disponible'}
                                 </p>
                             </>
                         ) : (
@@ -764,7 +839,7 @@ export default function AdminEnvios() {
                                 disabled={guardandoEstado || eliminando}
                                 style={{
                                     background: '#c62828',
-                                    color: '#fff',
+                                    color: '#ffffff',
                                     border: 'none',
                                     padding: '10px 15px',
                                     borderRadius: '6px',
@@ -772,7 +847,9 @@ export default function AdminEnvios() {
                                     opacity: eliminando ? 0.6 : 1
                                 }}
                             >
-                                {eliminando ? 'Eliminando...' : '🗑 Eliminar envío'}
+                                {eliminando
+                                    ? 'Eliminando...'
+                                    : '🗑 Eliminar envío'}
                             </button>
 
                             <button
