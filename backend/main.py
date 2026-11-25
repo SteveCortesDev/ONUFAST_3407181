@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from core.database import engine, SessionLocal, Base
 import models
+from models.rol import Rol
 from routers import (
     auth,
     usuarios,
@@ -21,6 +22,30 @@ try:
     Base.metadata.create_all(bind=engine)
 except Exception as e:
     print(f"Advertencia al crear tablas automáticamente: {e}")
+
+
+def seed_roles():
+    roles_base = [
+        {"id_rol": 1, "nombre_rol": "Administrador"},
+        {"id_rol": 2, "nombre_rol": "Cliente"},
+        {"id_rol": 3, "nombre_rol": "Conductor"},
+        {"id_rol": 5, "nombre_rol": "Bodega"},
+    ]
+    db = SessionLocal()
+    try:
+        for r in roles_base:
+            existente = db.query(Rol).filter(Rol.id_rol == r["id_rol"]).first()
+            if not existente:
+                db.add(Rol(id_rol=r["id_rol"], nombre_rol=r["nombre_rol"]))
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Advertencia al crear roles iniciales: {e}")
+    finally:
+        db.close()
+
+
+seed_roles()
 
 app = FastAPI(
     title="ONUFAST API",
