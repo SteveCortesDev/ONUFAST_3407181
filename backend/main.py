@@ -2,8 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from core.database import engine, SessionLocal, Base
+from core.security import hash_password
 import models
 from models.rol import Rol
+from models.usuario import Usuario
+from models.usuario_roles import UsuarioRol
+from models.tipo_envio import TipoEnvio
+from models.estado_envio import EstadoEnvio
 from routers import (
     auth,
     usuarios,
@@ -24,28 +29,81 @@ except Exception as e:
     print(f"Advertencia al crear tablas automáticamente: {e}")
 
 
-def seed_roles():
+def seed_initial_data():
     roles_base = [
         {"id_rol": 1, "nombre_rol": "Administrador"},
         {"id_rol": 2, "nombre_rol": "Cliente"},
         {"id_rol": 3, "nombre_rol": "Conductor"},
         {"id_rol": 5, "nombre_rol": "Bodega"},
     ]
+    tipos_base = [
+        {"nombre": "Estándar", "descripcion": "Envío estándar regular", "precio_base": 15000.0},
+        {"nombre": "Express", "descripcion": "Envío prioritario 24-48h", "precio_base": 35000.0},
+    ]
+    estados_base = [
+        {"nombre": "Pendiente"},
+        {"nombre": "En bodega"},
+        {"nombre": "En tránsito"},
+        {"nombre": "Entregado"},
+    ]
+    admin_correo = "admin@onufast.com"
+    admin_clave = "Admin123*"
+
     db = SessionLocal()
     try:
         for r in roles_base:
-            existente = db.query(Rol).filter(Rol.id_rol == r["id_rol"]).first()
-            if not existente:
+            if not db.query(Rol).filter(Rol.id_rol == r["id_rol"]).first():
                 db.add(Rol(id_rol=r["id_rol"], nombre_rol=r["nombre_rol"]))
+
+        if db.query(TipoEnvio).count() == 0:
+            for t in tipos_base:
+                db.add(TipoEnvio(**t))
+
+        if db.query(EstadoEnvio).count() == 0:
+            for est in estados_base:
+                db.add(EstadoEnvio(**est))
+
+        admin_user = db.query(Usuario).filter(Usuario.correo == admin_correo).first()
+        if not admin_user:
+            admin_user = Usuario(
+                nombre="Admin",
+                apellido="ONUFAST",
+                clave=hash_password(admin_clave),
+                correo=admin_correo,
+                telefono="3000000000",
+                jornada="Completa",
+                activo=True,
+            )
+            db.add(admin_user)
+            db.flush()
+
+        rol_admin = db.query(Rol).filter(Rol.id_rol == 1).first()
+        if rol_admin:
+            tiene_rol = (
+                db.query(UsuarioRol)
+                .filter(
+                    UsuarioRol.id_usuario == admin_user.id_usuario,
+                    UsuarioRol.id_rol == rol_admin.id_rol,
+                )
+                .first()
+            )
+            if not tiene_rol:
+                db.add(
+                    UsuarioRol(
+                        id_usuario=admin_user.id_usuario,
+                        id_rol=rol_admin.id_rol,
+                    )
+                )
+
         db.commit()
     except Exception as e:
         db.rollback()
-        print(f"Advertencia al crear roles iniciales: {e}")
+        print(f"Advertencia al sembrar datos iniciales: {e}")
     finally:
         db.close()
 
 
-seed_roles()
+seed_initial_data()
 
 app = FastAPI(
     title="ONUFAST API",
