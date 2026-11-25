@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "@/shared/api";
 import { barriosBogota } from "@/features/envios/barriosBogota";
+import SelectorUbicacionMapa from "@/shared/components/SelectorUbicacionMapa";
 
 const extraerMensajeError = (error) => {
     const detail = error.response?.data?.detail;
@@ -15,37 +16,41 @@ const PASOS = [
     { numero: 1, icono: "🚚", titulo: "Tipo de envío", campos: ["id_tipenvio", "nombre_destinatario", "documento_destinatario", "telefono_destinatario"] },
     { numero: 2, icono: "📦", titulo: "Información del paquete", campos: ["descripcion", "peso", "alto", "largo", "ancho"] },
     { numero: 3, icono: "📍", titulo: "Dónde es el envío", campos: ["origen", "destino", "direccion", "barrio"] },
-    { numero: 4, icono: "💳", titulo: "Pago y Confirmación", campos: [] } 
+    { numero: 4, icono: "💳", titulo: "Pago y Confirmación", campos: [] }
 ];
+
+const FORMULARIO_INICIAL = {
+    id_tipenvio: "",
+    nombre_destinatario: "",
+    documento_destinatario: "",
+    telefono_destinatario: "",
+    peso: "",
+    alto: "",
+    largo: "",
+    ancho: "",
+    descripcion: "",
+    origen: "Bogotá",
+    destino: "Bogotá",
+    direccion: "",
+    barrio: "",
+    referencias: "",
+    latitud_destino: 4.711,
+    longitud_destino: -74.0721,
+    metodo_pago: "Efectivo",
+    precio_envio: 0
+};
 
 export default function RegistrarPaquete({ cargarEnvios }) {
     const [tiposEnvio, setTiposEnvio] = useState([]);
     const [cargandoTipos, setCargandoTipos] = useState(true);
     const [paso, setPaso] = useState(1);
 
-    const [formPaquete, setFormPaquete] = useState({
-        id_tipenvio: "",
-        nombre_destinatario: "",
-        documento_destinatario: "",
-        telefono_destinatario: "",
-        peso: "",
-        alto: "",
-        largo: "",
-        ancho: "",
-        descripcion: "",
-        origen: "Bogotá",
-        destino: "Bogotá",
-        direccion: "",
-        barrio: "",
-        referencias: "",
-        metodo_pago: "Efectivo",
-        precio_envio: 0
-    });
+    const [formPaquete, setFormPaquete] = useState(FORMULARIO_INICIAL);
 
     const [enviandoPaquete, setEnviandoPaquete] = useState(false);
     const [mensajePaquete, setMensajePaquete] = useState("");
     const [errorPaquete, setErrorPaquete] = useState("");
-    const [pagoExitoso, setPagoExitoso] = useState(null); 
+    const [pagoExitoso, setPagoExitoso] = useState(null);
 
     useEffect(() => {
         cargarTiposEnvio();
@@ -54,12 +59,12 @@ export default function RegistrarPaquete({ cargarEnvios }) {
     useEffect(() => {
         const peso = parseFloat(formPaquete.peso) || 0;
         const tipo = parseInt(formPaquete.id_tipenvio) || 0;
-        
+
         if (peso > 0 && tipo > 0) {
-            let precioBase = tipo === 1 ? 35000 : 15000; 
-            let precioPeso = peso * 1500; 
-            let total = precioBase + precioPeso;
-            
+            const precioBase = tipo === 1 ? 35000 : 15000;
+            const precioPeso = peso * 1500;
+            const total = precioBase + precioPeso;
+
             setFormPaquete(prev => ({ ...prev, precio_envio: total }));
         }
     }, [formPaquete.peso, formPaquete.id_tipenvio]);
@@ -79,6 +84,14 @@ export default function RegistrarPaquete({ cargarEnvios }) {
     const handleChangePaquete = (e) => {
         const { name, value } = e.target;
         setFormPaquete((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleUbicacionDestino = ({ latitud, longitud }) => {
+        setFormPaquete((prev) => ({
+            ...prev,
+            latitud_destino: latitud,
+            longitud_destino: longitud
+        }));
     };
 
     const pasoActual = PASOS[paso - 1];
@@ -113,15 +126,14 @@ export default function RegistrarPaquete({ cargarEnvios }) {
         return tipo ? tipo.descripcion : "—";
     };
 
-            const enviarPaquete = async (e) => {
+    const enviarPaquete = async (e) => {
         if (e) e.preventDefault();
-        
+
         setEnviandoPaquete(true);
         setErrorPaquete("");
         setMensajePaquete("");
 
         try {
-            // Simulamos que el banco valida la tarjeta (1.5 segundos)
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             const response = await api.post("/envios/registrar-paquete", {
@@ -139,14 +151,15 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                 direccion: formPaquete.direccion,
                 barrio: formPaquete.barrio,
                 referencias: formPaquete.referencias || null,
+                latitud_destino: formPaquete.latitud_destino !== "" ? Number(formPaquete.latitud_destino) : null,
+                longitud_destino: formPaquete.longitud_destino !== "" ? Number(formPaquete.longitud_destino) : null,
                 precio_envio: Number(formPaquete.precio_envio),
                 metodo_pago: formPaquete.metodo_pago
             });
 
-            // Guardamos el código generado en el estado y mostramos la pantalla de éxito
             setPagoExitoso(response.data.codigo_rastreo);
             if (cargarEnvios) cargarEnvios();
-            
+
         } catch (error) {
             setErrorPaquete(extraerMensajeError(error));
         } finally {
@@ -154,7 +167,6 @@ export default function RegistrarPaquete({ cargarEnvios }) {
         }
     };
 
-        // SI EL PAGO FUE EXITOSO, MOSTRAMOS ESTA PANTALLA
     if (pagoExitoso) {
         return (
             <section className="wizard-card" style={{ textAlign: "center", padding: "50px 20px" }}>
@@ -163,7 +175,7 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                 <p style={{ fontSize: "18px", color: "#555", marginBottom: "30px" }}>
                     Tu paquete ha sido registrado en nuestro sistema.
                 </p>
-                
+
                 <div style={{ background: "#f0f2f5", padding: "20px", borderRadius: "10px", display: "inline-block", marginBottom: "30px" }}>
                     <p style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#666" }}>Tu código de rastreo es:</p>
                     <h2 style={{ margin: 0, fontSize: "28px", letterSpacing: "2px", color: "#c9252c" }}>
@@ -172,17 +184,12 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                 </div>
 
                 <br />
-                
-                <button 
-                    className="wizard-btn-continuar" 
+
+                <button
+                    className="wizard-btn-continuar"
                     onClick={() => {
-                        // Limpiamos todo para crear otro paquete
                         setPagoExitoso(null);
-                        setFormPaquete({
-                            id_tipenvio: "", nombre_destinatario: "", documento_destinatario: "", telefono_destinatario: "",
-                            peso: "", alto: "", largo: "", ancho: "", descripcion: "", origen: "Bogotá", destino: "Bogotá",
-                            direccion: "", barrio: "", referencias: "", metodo_pago: "Efectivo", precio_envio: 0
-                        });
+                        setFormPaquete(FORMULARIO_INICIAL);
                         setPaso(1);
                     }}
                     style={{ padding: "12px 30px", fontSize: "16px" }}
@@ -222,7 +229,7 @@ export default function RegistrarPaquete({ cargarEnvios }) {
             </div>
 
             <form className="wizard-form" onSubmit={enviarPaquete}>
-                
+
                 {paso === 1 && (
                     <div className="wizard-grid">
                         <div>
@@ -280,27 +287,35 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                             <label>Referencias (Opcional)</label>
                             <input type="text" name="referencias" value={formPaquete.referencias} onChange={handleChangePaquete} placeholder="Ej: Casa de rejas negras" />
                         </div>
+
+                        <SelectorUbicacionMapa
+                            latitud={formPaquete.latitud_destino}
+                            longitud={formPaquete.longitud_destino}
+                            onChangeUbicacion={handleUbicacionDestino}
+                            height={290}
+                        />
                     </div>
                 )}
 
                 {paso === 4 && (
                     <div className="wizard-grid" style={{ gap: "30px" }}>
-                        
                         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                            
                             <div style={{ background: "#f9f9f9", padding: "15px", borderRadius: "8px", border: "1px solid #ddd" }}>
                                 <h4 style={{ margin: "0 0 10px 0", color: "#333" }}>📍 Detalles de Entrega</h4>
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Destinatario:</strong> {formPaquete.nombre_destinatario}</p>
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Teléfono:</strong> {formPaquete.telefono_destinatario}</p>
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Dirección:</strong> {formPaquete.direccion}</p>
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Barrio:</strong> {formPaquete.barrio}</p>
+                                <p style={{ margin: "5px 0", fontSize: "14px" }}>
+                                    <strong>Coordenadas destino:</strong> {Number(formPaquete.latitud_destino).toFixed(6)}, {Number(formPaquete.longitud_destino).toFixed(6)}
+                                </p>
                             </div>
 
                             <div>
                                 <label style={{ fontWeight: "bold", display: "block", marginBottom: "8px" }}>Método de pago</label>
-                                <select 
-                                    name="metodo_pago" 
-                                    value={formPaquete.metodo_pago} 
+                                <select
+                                    name="metodo_pago"
+                                    value={formPaquete.metodo_pago}
                                     onChange={handleChangePaquete}
                                     style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #ccc" }}
                                 >
@@ -324,7 +339,6 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f0f2f5", borderRadius: "12px", padding: "20px" }}>
-                            
                             <div style={{ perspective: "1000px", margin: "20px 0" }}>
                                 <div style={{
                                     width: "120px", height: "120px",
@@ -341,7 +355,7 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                                     <div style={{ position: "absolute", left: "50%", width: "20px", height: "100%", background: "#8d5a2b", opacity: 0.3 }}></div>
                                 </div>
                             </div>
-                            
+
                             <p style={{ margin: "0 0 15px 0", fontSize: "14px", color: "#666", textAlign: "center" }}>
                                 <strong>Dimensiones:</strong><br/>
                                 {formPaquete.alto}cm x {formPaquete.largo}cm x {formPaquete.ancho}cm<br/>
@@ -369,26 +383,26 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                     </div>
                 )}
 
-                                <div className="wizard-botones">
-                    <button 
-                        type="button" 
-                        className="wizard-btn-atras" 
-                        onClick={irAlPasoAnterior} 
-                        disabled={paso === 1 || enviandoPaquete} 
+                <div className="wizard-botones">
+                    <button
+                        type="button"
+                        className="wizard-btn-atras"
+                        onClick={irAlPasoAnterior}
+                        disabled={paso === 1 || enviandoPaquete}
                         style={{ visibility: paso === 1 ? "hidden" : "visible" }}
                     >
                         ← Atrás
                     </button>
-                    
+
                     {paso < PASOS.length ? (
                         <button type="button" className="wizard-btn-continuar" onClick={irAlSiguientePaso}>
                             Continuar →
                         </button>
                     ) : (
-                        <button 
-                            type="button" 
-                            className="wizard-btn-continuar" 
-                            onClick={enviarPaquete} 
+                        <button
+                            type="button"
+                            className="wizard-btn-continuar"
+                            onClick={enviarPaquete}
                             disabled={enviandoPaquete}
                         >
                             {enviandoPaquete ? "Procesando pago... ⏳" : "Pagar y Generar Guía"}

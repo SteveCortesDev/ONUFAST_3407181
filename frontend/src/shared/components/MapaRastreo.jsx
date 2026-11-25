@@ -5,6 +5,8 @@ import "leaflet/dist/leaflet.css";
 export default function MapaRastreo({
   latitud,
   longitud,
+  latitudDestino = null,
+  longitudDestino = null,
   titulo = "Ubicación en tiempo real",
   subtitulo = "",
   historial = [],
@@ -15,7 +17,9 @@ export default function MapaRastreo({
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
+  const destinoMarkerRef = useRef(null);
   const polylineRef = useRef(null);
+  const lineaDestinoRef = useRef(null);
 
   const tieneCoordenadas =
     typeof latitud === "number" &&
@@ -23,15 +27,21 @@ export default function MapaRastreo({
     !Number.isNaN(latitud) &&
     !Number.isNaN(longitud);
 
-  const latMostrar = tieneCoordenadas ? latitud : 4.711;
-  const lngMostrar = tieneCoordenadas ? longitud : -74.0721;
+  const tieneDestino =
+    typeof latitudDestino === "number" &&
+    typeof longitudDestino === "number" &&
+    !Number.isNaN(latitudDestino) &&
+    !Number.isNaN(longitudDestino);
+
+  const latMostrar = tieneCoordenadas ? latitud : (tieneDestino ? latitudDestino : 4.711);
+  const lngMostrar = tieneCoordenadas ? longitud : (tieneDestino ? longitudDestino : -74.0721);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
     const map = L.map(mapContainerRef.current, {
       center: [latMostrar, lngMostrar],
-      zoom: tieneCoordenadas ? 13 : 2,
+      zoom: tieneCoordenadas || tieneDestino ? 13 : 2,
       worldCopyJump: true,
     });
 
@@ -54,18 +64,48 @@ export default function MapaRastreo({
       iconAnchor: [11, 11],
     });
 
+    const destinoIcon = L.divIcon({
+      className: "onufast-dest-marker-wrapper",
+      html: `<div style="
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #2563eb;
+        border: 3px solid #ffffff;
+        box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.25), 0 4px 10px rgba(0,0,0,0.35);
+      "></div>`,
+      iconSize: [22, 22],
+      iconAnchor: [11, 11],
+    });
+
     const marker = L.marker([latMostrar, lngMostrar], { icon: markerIcon }).addTo(map);
     marker.bindPopup(`<strong>${titulo}</strong><br/>Lat: ${latMostrar.toFixed(6)}, Lng: ${lngMostrar.toFixed(6)}`);
+
+    const destinoMarker = L.marker([latMostrar, lngMostrar], { icon: destinoIcon });
+    if (tieneDestino) {
+      destinoMarker.setLatLng([latitudDestino, longitudDestino]);
+      destinoMarker.bindPopup(`<strong>🏠 Punto de entrega</strong><br/>Lat: ${latitudDestino.toFixed(6)}, Lng: ${longitudDestino.toFixed(6)}`);
+      destinoMarker.addTo(map);
+    }
 
     const polyline = L.polyline([], {
       color: "#e9232b",
       weight: 3,
-      opacity: 0.8,
+      opacity: 0.85,
+    }).addTo(map);
+
+    const lineaDestino = L.polyline([], {
+      color: "#2563eb",
+      weight: 2.5,
+      dashArray: "6, 8",
+      opacity: 0.75,
     }).addTo(map);
 
     mapInstanceRef.current = map;
     markerRef.current = marker;
+    destinoMarkerRef.current = destinoMarker;
     polylineRef.current = polyline;
+    lineaDestinoRef.current = lineaDestino;
 
     setTimeout(() => {
       map.invalidateSize();
@@ -75,15 +115,19 @@ export default function MapaRastreo({
       map.remove();
       mapInstanceRef.current = null;
       markerRef.current = null;
+      destinoMarkerRef.current = null;
       polylineRef.current = null;
+      lineaDestinoRef.current = null;
     };
   }, []);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
     const marker = markerRef.current;
+    const destinoMarker = destinoMarkerRef.current;
     const polyline = polylineRef.current;
-    if (!map || !marker || !polyline) return;
+    const lineaDestino = lineaDestinoRef.current;
+    if (!map || !marker || !polyline || !lineaDestino) return;
 
     const nuevaPos = [latMostrar, lngMostrar];
     marker.setLatLng(nuevaPos);
@@ -91,8 +135,24 @@ export default function MapaRastreo({
       `<strong>${titulo}</strong><br/>Lat: ${latMostrar.toFixed(6)}, Lng: ${lngMostrar.toFixed(6)}`
     );
 
+    if (destinoMarker) {
+      if (tieneDestino) {
+        destinoMarker.setLatLng([latitudDestino, longitudDestino]);
+        destinoMarker.bindPopup(
+          `<strong>🏠 Punto de entrega</strong><br/>Lat: ${latitudDestino.toFixed(6)}, Lng: ${longitudDestino.toFixed(6)}`
+        );
+        if (!map.hasLayer(destinoMarker)) {
+          destinoMarker.addTo(map);
+        }
+      } else if (map.hasLayer(destinoMarker)) {
+        map.removeLayer(destinoMarker);
+      }
+    }
+
     if (tieneCoordenadas) {
       map.setView(nuevaPos, Math.max(map.getZoom(), 13), { animate: true });
+    } else if (tieneDestino) {
+      map.setView([latitudDestino, longitudDestino], Math.max(map.getZoom(), 14), { animate: true });
     }
 
     const puntos = Array.isArray(historial)
@@ -112,7 +172,13 @@ export default function MapaRastreo({
     }
 
     polyline.setLatLngs(puntos);
-  }, [latMostrar, lngMostrar, tieneCoordenadas, titulo, historial, activo]);
+
+    if (tieneCoordenadas && tieneDestino) {
+      lineaDestino.setLatLngs([nuevaPos, [latitudDestino, longitudDestino]]);
+    } else {
+      lineaDestino.setLatLngs([]);
+    }
+  }, [latMostrar, lngMostrar, tieneCoordenadas, tieneDestino, latitudDestino, longitudDestino, titulo, historial, activo]);
 
   return (
     <div
@@ -183,9 +249,14 @@ export default function MapaRastreo({
         }}
       >
         <div>
-          <strong>Latitud:</strong> {tieneCoordenadas ? latMostrar.toFixed(6) : "Sin coordenada"}
-          {" | "}
-          <strong>Longitud:</strong> {tieneCoordenadas ? lngMostrar.toFixed(6) : "Sin coordenada"}
+          <strong>Conductor:</strong>{" "}
+          {tieneCoordenadas ? `${latMostrar.toFixed(6)}, ${lngMostrar.toFixed(6)}` : "Sin coordenada"}
+          {tieneDestino && (
+            <>
+              {" · "}
+              <strong>Destino:</strong> {latitudDestino.toFixed(6)}, {longitudDestino.toFixed(6)}
+            </>
+          )}
         </div>
 
         <div>

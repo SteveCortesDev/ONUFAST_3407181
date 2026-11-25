@@ -1,4 +1,3 @@
-
 from typing import List
 from datetime import datetime
 
@@ -10,6 +9,8 @@ from pydantic import BaseModel
 from core.database import get_db
 from core.security import get_current_user, TokenData
 
+from models.envio import Envio
+from models.paquete import Paquete
 from models.rutas import Ruta
 from models.usuario import Usuario
 from models.usuario_roles import UsuarioRol
@@ -35,6 +36,11 @@ class AsignarConductorRequest(BaseModel):
 
 class AsignarVehiculoRequest(BaseModel):
     id_vehiculo: int | None = None
+
+
+class AsignarEnvioConductorRequest(BaseModel):
+    id_envio: int
+    id_conductor: int
 
 
 # ============================================================
@@ -336,6 +342,106 @@ def asignar_conductor_ruta(
         raise HTTPException(
             status_code=500,
             detail="No fue posible asignar el conductor"
+        )
+
+
+# ============================================================
+# ASIGNAR UN PAQUETE (ENVÍO) A UN CONDUCTOR AUTOMÁTICAMENTE
+# POST /rutas/asignar-envio
+# SOLO ADMINISTRADOR
+# ============================================================
+
+@router.post(
+    "/asignar-envio",
+    summary="Asignar un envío a un conductor creando o reutilizando su ruta activa"
+)
+def asignar_envio_a_conductor(
+    payload: AsignarEnvioConductorRequest,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    verificar_administrador(current_user, db)
+
+    envio = db.query(Envio).filter(
+        Envio.id_envio == payload.id_envio
+    ).first()
+
+    if not envio:
+        raise HTTPException(
+            status_code=404,
+            detail="Envío no encontrado"
+        )
+
+    conductor = obtener_conductor(payload.id_conductor, db)
+    paquete = db.query(Paquete).filter(Paquete.id_envio == envio.id_envio).first()
+
+    origen_texto = (paquete.origen if paquete and paquete.origen else None) or "Bogotá"
+    destino_texto = (paquete.destino if paquete and paquete.destino else None) or "Bogotá"
+
+    ruta = (
+        db.query(Ruta)
+        .filter(
+            Ruta.id_conductor == conductor.id_usuario,
+            Ruta.codigo_ruta != "SIN-ASIGNAR",
+            Ruta.estado != "Finalizada"
+        )
+        .order_by(Ruta.id_rutas.desc())
+        .first()
+    )
+
+    if not ruta:
+        nombre_completo = f"{conductor.nombre} {conductor.apellido}".strip()
+        codigo_auto = f"RUTA-COND-{conductor.id_usuario}-{envio.id_envio}"
+        ruta = Ruta(
+            fecha_creacion=datetime.now(),
+            tiempo_estimado="Por definir",
+            distancia_ruta=1.0,
+            ciudad_origen=origen_texto,
+            ciudad_destino=destino_texto,
+            cantidad_paquetes=0,
+            codigo_ruta=codigo_auto,
+            tipo_vehiculo="Por definir",
+            nombre_conductor=nombre_completo,
+            estado="Pendiente",
+            id_conductor=conductor.id_usuario,
+            id_vehiculo=None
+        )
+        db.add(ruta)
+        db.flush()
+
+    ruta_anterior_id = envio.id_rutas
+    envio.id_rutas = ruta.id_rutas
+
+    total_paquetes_ruta = db.query(Envio).filter(Envio.id_rutas == ruta.id_rutas).count()
+    ruta.cantidad_paquetes = total_paquetes_ruta
+
+    if ruta_anterior_id and ruta_anterior_id != ruta.id_rutas:
+        ruta_anterior = db.query(Ruta).filter(Ruta.id_rutas == ruta_anterior_id).first()
+        if ruta_anterior and ruta_anterior.codigo_ruta != "SIN-ASIGNAR":
+            ruta_anterior.cantidad_paquetes = db.query(Envio).filter(
+                Envio.id_rutas == ruta_anterior.id_rutas
+            ).count()
+
+    try:
+        db.commit()
+        db.refresh(envio)
+        db.refresh(ruta)
+
+        return {
+            "mensaje": f"Envío {envio.codigo_rastreo} asignado a {conductor.nombre} {conductor.apellido}".strip(),
+            "id_envio": envio.id_envio,
+            "codigo_rastreo": envio.codigo_rastreo,
+            "id_rutas": ruta.id_rutas,
+            "codigo_ruta": ruta.codigo_ruta,
+            "id_conductor": conductor.id_usuario,
+            "nombre_conductor": f"{conductor.nombre} {conductor.apellido}".strip()
+        }
+
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="No fue posible asignar el paquete al conductor"
         )
 
 

@@ -123,6 +123,8 @@ export default function Rastreo() {
                 <MapaRastreo
                   latitud={ubActual?.latitud}
                   longitud={ubActual?.longitud}
+                  latitudDestino={resultado.latitud_destino}
+                  longitudDestino={resultado.longitud_destino}
                   titulo={`Seguimiento en vivo · ${resultado.codigo_rastreo}`}
                   subtitulo={`Origen: ${resultado.origen || "—"} → Destino: ${resultado.destino || "—"}`}
                   historial={resultado.historial_ubicaciones || []}

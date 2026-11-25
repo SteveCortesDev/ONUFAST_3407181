@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Numeric, ForeignKey
+from sqlalchemy import Column, Integer, String, Numeric, Float, ForeignKey
 from core.database import Base
+
 
 class Paquete(Base):
     __tablename__ = "paquete"
@@ -18,12 +19,14 @@ class Paquete(Base):
     origen = Column(String(100), nullable=True)
     destino = Column(String(100), nullable=True)
 
-    # 👇 NUEVOS CAMPOS 👇
+    # CAMPOS DE ENTREGA
     direccion = Column(String(200), nullable=True)
     barrio = Column(String(100), nullable=True)
     telefono_destinatario = Column(String(20), nullable=True)
     referencias = Column(String(200), nullable=True)
-    
-    # 👇 CAMPOS DE PAGO Y PRECIO 👇
+    latitud_destino = Column(Float, nullable=True)
+    longitud_destino = Column(Float, nullable=True)
+
+    # CAMPOS DE PAGO Y PRECIO
     precio_envio = Column(Numeric(12, 2), default=0.0)
     metodo_pago = Column(String(50), default="Efectivo")

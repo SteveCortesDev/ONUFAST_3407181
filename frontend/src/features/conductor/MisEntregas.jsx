@@ -104,7 +104,6 @@ export default function MisEntregas() {
   const [actualizando, setActualizando] = useState(null);
   const [error, setError] = useState("");
 
-  // Estados de rastreo GPS del conductor
   const [entregaActivaId, setEntregaActivaId] = useState(null);
   const [intervaloSegundos, setIntervaloSegundos] = useState(5);
   const [coordenadaActual, setCoordenadaActual] = useState(null);
@@ -322,7 +321,6 @@ export default function MisEntregas() {
 
   return (
     <div className="mis-entregas">
-      {/* ENCABEZADO */}
       <header className="entregas-titulo">
         <div>
           <h1>Mis entregas</h1>
@@ -335,7 +333,6 @@ export default function MisEntregas() {
         </div>
       </header>
 
-      {/* ESTADÍSTICAS */}
       <section className="entregas-resumen" aria-label="Resumen de entregas">
         <div className="entrega-resumen-card">
           <span className="resumen-icono amarillo">
@@ -368,7 +365,6 @@ export default function MisEntregas() {
         </div>
       </section>
 
-      {/* PANEL DE CONTROL GPS Y MAPA GLOBAL */}
       <section className="entregas-gps-panel">
         <div className="entregas-gps-controles">
           <div>
@@ -409,6 +405,8 @@ export default function MisEntregas() {
         <MapaRastreo
           latitud={coordenadaActual?.latitud}
           longitud={coordenadaActual?.longitud}
+          latitudDestino={entregaSeleccionadaMapa?.latitud_destino}
+          longitudDestino={entregaSeleccionadaMapa?.longitud_destino}
           titulo={
             entregaSeleccionadaMapa
               ? `Mapa en vivo · ${entregaSeleccionadaMapa.codigo} (${entregaSeleccionadaMapa.destinatario})`
@@ -426,7 +424,6 @@ export default function MisEntregas() {
         />
       </section>
 
-      {/* BARRA DE HERRAMIENTAS: buscar, filtrar y actualizar */}
       <section className="entregas-barra">
         <div className="entregas-buscador">
           <IconBuscar size={18} />
@@ -467,14 +464,12 @@ export default function MisEntregas() {
         </div>
       </section>
 
-      {/* MENSAJE DE ERROR */}
       {error && (
         <div className="entregas-error" role="alert">
           {error}
         </div>
       )}
 
-      {/* TARJETAS */}
       <section className="entregas-tarjetas" aria-live="polite">
         {cargando ? (
           [1, 2, 3, 4].map((n) => (

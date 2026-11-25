@@ -1,9 +1,15 @@
-
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../shared/api';
 
 export default function AdminEnvios() {
     const [envios, setEnvios] = useState([]);
+    const [conductores, setConductores] = useState([]);
+    const [rutas, setRutas] = useState([]);
+
+    const [idEnvioAsignar, setIdEnvioAsignar] = useState('');
+    const [idConductorAsignar, setIdConductorAsignar] = useState('');
+    const [asignandoPaquete, setAsignandoPaquete] = useState(false);
+
     const [busqueda, setBusqueda] = useState('');
     const [filtroEstado, setFiltroEstado] = useState('Todos');
     const [envioSeleccionado, setEnvioSeleccionado] = useState(null);
@@ -15,22 +21,27 @@ export default function AdminEnvios() {
     const [guardandoEstado, setGuardandoEstado] = useState(false);
     const [eliminando, setEliminando] = useState(false);
 
-    // =====================================================
-    // CARGAR ENVÍOS DESDE EL BACKEND
-    // =====================================================
-
-    const cargarEnvios = async () => {
+    const cargarEnvios = async (limpiarMensajes = true) => {
         try {
             setCargando(true);
             setError('');
+            if (limpiarMensajes) {
+                setMensaje('');
+            }
 
-            const respuesta = await api.get('/envios/admin/listado');
+            const [resEnvios, resConductores, resRutas] = await Promise.all([
+                api.get('/envios/admin/listado'),
+                api.get('/usuarios/conductores'),
+                api.get('/rutas/')
+            ]);
 
-            const datos = Array.isArray(respuesta.data)
-                ? respuesta.data
-                : respuesta.data.envios || [];
+            const datosEnvios = Array.isArray(resEnvios.data)
+                ? resEnvios.data
+                : resEnvios.data.envios || [];
 
-            setEnvios(datos);
+            setEnvios(datosEnvios);
+            setConductores(Array.isArray(resConductores.data) ? resConductores.data : []);
+            setRutas(Array.isArray(resRutas.data) ? resRutas.data : []);
         } catch (err) {
             console.error('Error al cargar los envíos:', err);
 
@@ -53,20 +64,60 @@ export default function AdminEnvios() {
         cargarEnvios();
     }, []);
 
-    // =====================================================
-    // FILTRAR Y BUSCAR ENVÍOS
-    // =====================================================
+    const obtenerConductorEnvio = (envio) => {
+        if (envio.nombre_conductor && envio.nombre_conductor !== 'Por definir') {
+            return envio.nombre_conductor;
+        }
+        const rutaMatch = rutas.find((r) => Number(r.id_rutas) === Number(envio.id_rutas));
+        return rutaMatch?.nombre_conductor || 'Sin asignar';
+    };
+
+    const asignarPaqueteAConductor = async (e) => {
+        e.preventDefault();
+
+        if (!idEnvioAsignar || !idConductorAsignar) {
+            setError('Selecciona un paquete y un conductor para realizar la asignación.');
+            return;
+        }
+
+        try {
+            setAsignandoPaquete(true);
+            setError('');
+            setMensaje('');
+
+            const resp = await api.post('/rutas/asignar-envio', {
+                id_envio: Number(idEnvioAsignar),
+                id_conductor: Number(idConductorAsignar)
+            });
+
+            setIdEnvioAsignar('');
+            setIdConductorAsignar('');
+            await cargarEnvios(false);
+            setMensaje(resp.data?.mensaje || 'Paquete asignado al conductor correctamente.');
+        } catch (err) {
+            console.error('Error al asignar paquete a conductor:', err);
+            setError(
+                err.response?.data?.detail ||
+                'No fue posible asignar el paquete al conductor.'
+            );
+        } finally {
+            setAsignandoPaquete(false);
+        }
+    };
 
     const enviosFiltrados = useMemo(() => {
         return envios.filter((envio) => {
             const texto = busqueda.toLowerCase().trim();
+            const conductorNombre = obtenerConductorEnvio(envio);
 
             const coincideBusqueda =
                 String(envio.id_envio || '').includes(texto) ||
                 (envio.codigo_rastreo || '').toLowerCase().includes(texto) ||
                 (envio.cliente || '').toLowerCase().includes(texto) ||
+                (envio.nombre_destinatario || '').toLowerCase().includes(texto) ||
                 (envio.origen || '').toLowerCase().includes(texto) ||
-                (envio.destino || '').toLowerCase().includes(texto);
+                (envio.destino || '').toLowerCase().includes(texto) ||
+                conductorNombre.toLowerCase().includes(texto);
 
             const estado = envio.estado || 'Sin estado';
 
@@ -75,15 +126,11 @@ export default function AdminEnvios() {
 
             return coincideBusqueda && coincideEstado;
         });
-    }, [envios, busqueda, filtroEstado]);
+    }, [envios, rutas, busqueda, filtroEstado]);
 
     const estadosDisponibles = [
         ...new Set(envios.map((envio) => envio.estado || 'Sin estado'))
     ];
-
-    // =====================================================
-    // CLASE CSS PARA LOS ESTADOS
-    // =====================================================
 
     const obtenerClaseEstado = (estado) => {
         return (estado || 'sin-estado')
@@ -92,10 +139,6 @@ export default function AdminEnvios() {
             .replace(/[\u0300-\u036f]/g, '')
             .replace(/\s+/g, '-');
     };
-
-    // =====================================================
-    // FORMATEAR FECHA
-    // =====================================================
 
     const formatearFecha = (fecha) => {
         if (!fecha) return 'No disponible';
@@ -109,20 +152,12 @@ export default function AdminEnvios() {
         return fechaValida.toLocaleString('es-CO');
     };
 
-    // =====================================================
-    // ABRIR DETALLES
-    // =====================================================
-
     const abrirDetalles = (envio) => {
         setEnvioSeleccionado(envio);
         setNuevoEstado(envio.estado || '');
         setError('');
         setMensaje('');
     };
-
-    // =====================================================
-    // ACTUALIZAR ESTADO DEL ENVÍO
-    // =====================================================
 
     const actualizarEstado = async () => {
         if (!envioSeleccionado || !nuevoEstado) {
@@ -186,10 +221,6 @@ export default function AdminEnvios() {
         }
     };
 
-    // =====================================================
-    // ELIMINAR ENVÍO
-    // =====================================================
-
     const eliminarEnvio = async () => {
         if (!envioSeleccionado) return;
 
@@ -239,10 +270,6 @@ export default function AdminEnvios() {
         }
     };
 
-    // =====================================================
-    // INTERFAZ
-    // =====================================================
-
     return (
         <div>
             <div className="admin-header">
@@ -250,7 +277,7 @@ export default function AdminEnvios() {
 
                 <button
                     className="admin-btn"
-                    onClick={cargarEnvios}
+                    onClick={() => cargarEnvios()}
                     disabled={cargando}
                 >
                     {cargando ? 'Cargando...' : '↻ Actualizar'}
@@ -258,6 +285,77 @@ export default function AdminEnvios() {
             </div>
 
             <div className="admin-section">
+
+                {/* ASIGNACIÓN RÁPIDA DE PAQUETE A CONDUCTOR */}
+                <form
+                    onSubmit={asignarPaqueteAConductor}
+                    style={{
+                        display: 'flex',
+                        gap: '12px',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        padding: '14px',
+                        marginBottom: '20px',
+                        borderRadius: '8px',
+                        background: '#1b1d24',
+                        border: '1px solid #303440'
+                    }}
+                >
+                    <strong style={{ color: '#fff' }}>Asignar paquete a conductor:</strong>
+
+                    <select
+                        value={idEnvioAsignar}
+                        onChange={(e) => setIdEnvioAsignar(e.target.value)}
+                        style={{
+                            flex: '1',
+                            minWidth: '220px',
+                            padding: '10px',
+                            borderRadius: '6px',
+                            border: '1px solid #444',
+                            background: '#222',
+                            color: '#fff'
+                        }}
+                    >
+                        <option value="">Selecciona el paquete (envío)...</option>
+                        {envios.map((envio) => (
+                            <option key={envio.id_envio} value={envio.id_envio}>
+                                #{envio.id_envio} · {envio.codigo_rastreo} · {envio.nombre_destinatario || envio.cliente} ({envio.paquete?.direccion || envio.destino || 'Sin dirección'})
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={idConductorAsignar}
+                        onChange={(e) => setIdConductorAsignar(e.target.value)}
+                        style={{
+                            minWidth: '200px',
+                            padding: '10px',
+                            borderRadius: '6px',
+                            border: '1px solid #444',
+                            background: '#222',
+                            color: '#fff'
+                        }}
+                    >
+                        <option value="">Selecciona el conductor...</option>
+                        {conductores.map((cond) => (
+                            <option
+                                key={cond.id_usuario}
+                                value={cond.id_usuario}
+                                disabled={!cond.activo}
+                            >
+                                #{cond.id_usuario} - {cond.nombre}
+                            </option>
+                        ))}
+                    </select>
+
+                    <button
+                        type="submit"
+                        className="admin-btn"
+                        disabled={asignandoPaquete}
+                    >
+                        {asignandoPaquete ? 'Asignando...' : 'Asignar paquete'}
+                    </button>
+                </form>
 
                 {/* BUSCADOR Y FILTRO */}
 
@@ -271,7 +369,7 @@ export default function AdminEnvios() {
                 >
                     <input
                         type="text"
-                        placeholder="Buscar por código, cliente, origen o destino..."
+                        placeholder="Buscar por código, cliente, destino o conductor..."
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                         style={{
@@ -354,8 +452,8 @@ export default function AdminEnvios() {
                                     <th>ID</th>
                                     <th>Código</th>
                                     <th>Cliente</th>
-                                    <th>Origen</th>
                                     <th>Destino</th>
+                                    <th>Conductor</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -376,11 +474,11 @@ export default function AdminEnvios() {
                                             </td>
 
                                             <td>
-                                                {envio.origen || 'Por definir'}
+                                                {envio.paquete?.direccion || envio.destino || 'Por definir'}
                                             </td>
 
                                             <td>
-                                                {envio.destino || 'Por definir'}
+                                                {obtenerConductorEnvio(envio)}
                                             </td>
 
                                             <td>
@@ -424,10 +522,7 @@ export default function AdminEnvios() {
                 )}
             </div>
 
-            {/* =====================================================
-                MODAL DE DETALLES
-            ===================================================== */}
-
+            {/* MODAL DE DETALLES */}
             {envioSeleccionado && (
                 <div
                     onClick={() => {
@@ -521,6 +616,11 @@ export default function AdminEnvios() {
                         </p>
 
                         <p>
+                            <strong>Conductor asignado:</strong>{' '}
+                            {obtenerConductorEnvio(envioSeleccionado)}
+                        </p>
+
+                        <p>
                             <strong>Tipo de envío:</strong>{' '}
                             {envioSeleccionado.tipo_envio || 'No disponible'}
                         </p>
@@ -534,8 +634,6 @@ export default function AdminEnvios() {
                             <strong>Fecha de creación:</strong>{' '}
                             {formatearFecha(envioSeleccionado.fecha_creacion)}
                         </p>
-
-                        {/* CAMBIAR ESTADO */}
 
                         <hr style={{ margin: '20px 0' }} />
 
@@ -583,8 +681,6 @@ export default function AdminEnvios() {
                         </div>
 
                         <hr style={{ margin: '20px 0' }} />
-
-                        {/* INFORMACIÓN DEL PAQUETE */}
 
                         <h3>Información del paquete</h3>
 
@@ -652,8 +748,6 @@ export default function AdminEnvios() {
                                 Este envío no tiene información de paquete registrada.
                             </p>
                         )}
-
-                        {/* BOTONES DE ACCIÓN */}
 
                         <hr style={{ margin: '20px 0' }} />
 

@@ -1,4 +1,3 @@
-
 import uuid
 from typing import List
 from datetime import datetime
@@ -167,7 +166,10 @@ def mis_entregas(
     for envio in envios:
         paquete = db.query(
             Paquete.destino,
-            Paquete.descripcion
+            Paquete.direccion,
+            Paquete.descripcion,
+            Paquete.latitud_destino,
+            Paquete.longitud_destino
         ).filter(
             Paquete.id_envio == envio.id_envio
         ).first()
@@ -189,13 +191,19 @@ def mis_entregas(
             "id_envio": envio.id_envio,
             "codigo": envio.codigo_rastreo,
             "destinatario": envio.nombre_destinatario,
-            "direccion": paquete.destino if paquete else "No registrada",
-            "ciudad": paquete.destino if paquete else "No registrada",
+            "direccion": (
+                paquete.direccion
+                if paquete and paquete.direccion
+                else (paquete.destino if paquete and paquete.destino else "No registrada")
+            ),
+            "ciudad": paquete.destino if paquete and paquete.destino else "No registrada",
             "documento": envio.documento_destinatario,
             "descripcion": (
                 paquete.descripcion
-                if paquete else "Paquete no registrado"
+                if paquete and paquete.descripcion else "Paquete no registrado"
             ),
+            "latitud_destino": paquete.latitud_destino if paquete else None,
+            "longitud_destino": paquete.longitud_destino if paquete else None,
             "estado": estado
         })
 
@@ -402,6 +410,8 @@ def listar_envios_admin(
             "id_estadoenvio": envio.id_estadoenvio,
             "id_tipenvio": envio.id_tipenvio,
             "id_rutas": envio.id_rutas,
+            "codigo_ruta": ruta.codigo_ruta if ruta else "SIN-ASIGNAR",
+            "nombre_conductor": ruta.nombre_conductor if ruta else "Sin asignar",
             "paquete": {
                 "id_paquete": paquete.id_paquete,
                 "peso": float(paquete.peso),
@@ -413,6 +423,8 @@ def listar_envios_admin(
                 "barrio": paquete.barrio,
                 "telefono_destinatario": paquete.telefono_destinatario,
                 "referencias": paquete.referencias,
+                "latitud_destino": paquete.latitud_destino,
+                "longitud_destino": paquete.longitud_destino,
                 "precio_envio": float(paquete.precio_envio or 0),
                 "metodo_pago": paquete.metodo_pago
             } if paquete else None
@@ -514,6 +526,8 @@ def registrar_paquete(
             barrio=payload.barrio,
             telefono_destinatario=payload.telefono_destinatario,
             referencias=payload.referencias,
+            latitud_destino=payload.latitud_destino,
+            longitud_destino=payload.longitud_destino,
             precio_envio=payload.precio_envio,
             metodo_pago=payload.metodo_pago
         )

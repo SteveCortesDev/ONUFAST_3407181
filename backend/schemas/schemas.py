@@ -1,5 +1,4 @@
-﻿
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+﻿from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -111,6 +110,12 @@ class PaqueteRequest(BaseModel):
     descripcion: Optional[str] = Field(None, max_length=200)
     origen: Optional[str] = Field(None, max_length=100)
     destino: Optional[str] = Field(None, max_length=100)
+    direccion: Optional[str] = Field(None, max_length=200)
+    barrio: Optional[str] = Field(None, max_length=100)
+    telefono_destinatario: Optional[str] = Field(None, max_length=20)
+    referencias: Optional[str] = Field(None, max_length=200)
+    latitud_destino: Optional[float] = Field(default=None, ge=-90.0, le=90.0)
+    longitud_destino: Optional[float] = Field(default=None, ge=-180.0, le=180.0)
 
 
 class PaqueteResponse(BaseModel):
@@ -125,6 +130,12 @@ class PaqueteResponse(BaseModel):
     descripcion: Optional[str] = None
     origen: Optional[str] = None
     destino: Optional[str] = None
+    direccion: Optional[str] = None
+    barrio: Optional[str] = None
+    telefono_destinatario: Optional[str] = None
+    referencias: Optional[str] = None
+    latitud_destino: Optional[float] = None
+    longitud_destino: Optional[float] = None
 
 
 # ============================================================
@@ -191,7 +202,6 @@ class RutaRequest(BaseModel):
     cantidad_paquetes: int = Field(..., ge=0)
     codigo_ruta: str = Field(..., max_length=100)
 
-    # Conductor y vehículo asignados
     id_conductor: Optional[int] = None
     id_vehiculo: Optional[int] = None
 
@@ -278,6 +288,8 @@ class RegistrarPaqueteRequest(BaseModel):
     barrio: str = Field(..., max_length=100)
     telefono_destinatario: str = Field(..., max_length=20)
     referencias: Optional[str] = Field(None, max_length=200)
+    latitud_destino: Optional[float] = Field(default=None, ge=-90.0, le=90.0)
+    longitud_destino: Optional[float] = Field(default=None, ge=-180.0, le=180.0)
     precio_envio: float = Field(..., ge=0)
     metodo_pago: str = Field(..., max_length=50)
 

@@ -138,6 +138,8 @@ def _construir_respuesta_rastreo(db: Session, envio: Envio) -> dict:
         "destino": paquete.destino if paquete and paquete.destino else (ruta.ciudad_destino if ruta else "No especificado"),
         "direccion": paquete.direccion if paquete and paquete.direccion else None,
         "barrio": paquete.barrio if paquete and paquete.barrio else None,
+        "latitud_destino": paquete.latitud_destino if paquete else None,
+        "longitud_destino": paquete.longitud_destino if paquete else None,
         "descripcion": paquete.descripcion if paquete else None,
         "tipo_envio": tipo.descripcion if tipo else "No especificado",
         "estado": estado_texto,
