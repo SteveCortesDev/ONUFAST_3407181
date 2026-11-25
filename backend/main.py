@@ -28,7 +28,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://TU-FRONTEND.onrender.com",
+        "https://onufast-3407181-1.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
