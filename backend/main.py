@@ -34,17 +34,22 @@ def seed_initial_data():
         {"id_rol": 1, "nombre_rol": "Administrador"},
         {"id_rol": 2, "nombre_rol": "Cliente"},
         {"id_rol": 3, "nombre_rol": "Conductor"},
-        {"id_rol": 5, "nombre_rol": "Bodega"},
+        {"id_rol": 4, "nombre_rol": "Conductor Auxiliar"},
+        {"id_rol": 5, "nombre_rol": "Encargado de Bodega"},
+        {"id_rol": 6, "nombre_rol": "Despachador"},
+        {"id_rol": 7, "nombre_rol": "Atención al Cliente"},
     ]
     tipos_base = [
-        {"nombre": "Estándar", "descripcion": "Envío estándar regular", "precio_base": 15000.0},
-        {"nombre": "Express", "descripcion": "Envío prioritario 24-48h", "precio_base": 35000.0},
+        {"descripcion": "Express"},
+        {"descripcion": "Normal"},
     ]
     estados_base = [
-        {"nombre": "Pendiente"},
-        {"nombre": "En bodega"},
-        {"nombre": "En tránsito"},
-        {"nombre": "Entregado"},
+        {"estado": "Cancelado"},
+        {"estado": "Confirmado"},
+        {"estado": "En bodega"},
+        {"estado": "En camino"},
+        {"estado": "Entregado"},
+        {"estado": "Devuelto"},
     ]
     admin_correo = "admin@onufast.com"
     admin_clave = "Admin123*"
@@ -57,11 +62,11 @@ def seed_initial_data():
 
         if db.query(TipoEnvio).count() == 0:
             for t in tipos_base:
-                db.add(TipoEnvio(**t))
+                db.add(TipoEnvio(descripcion=t["descripcion"]))
 
         if db.query(EstadoEnvio).count() == 0:
             for est in estados_base:
-                db.add(EstadoEnvio(**est))
+                db.add(EstadoEnvio(estado=est["estado"]))
 
         admin_user = db.query(Usuario).filter(Usuario.correo == admin_correo).first()
         if not admin_user:
@@ -71,7 +76,7 @@ def seed_initial_data():
                 clave=hash_password(admin_clave),
                 correo=admin_correo,
                 telefono="3000000000",
-                jornada="Completa",
+                jornada="Mañana",
                 activo=True,
             )
             db.add(admin_user)
