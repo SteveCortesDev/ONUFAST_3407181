@@ -25,6 +25,7 @@ class Ruta(Base):
 
     # Relación con el conductor asignado
     id_conductor = Column(
+        "id_usuario_conductor",
         Integer,
         ForeignKey("usuario.id_usuario", ondelete="SET NULL"),
         nullable=True

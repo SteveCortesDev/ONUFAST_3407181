@@ -182,15 +182,9 @@ export default function PerfilConductor() {
       {/* PORTADA */}
       <header className="perfil-portada">
         <div className="perfil-avatar">
-          {fotoFallo ? (
-            <span className="perfil-avatar-inicial">{inicial}</span>
-          ) : (
-            <img
-              src="#"
-              alt={`Foto de perfil de ${nombre}`}
-              onError={() => setFotoFallo(true)}
-            />
-          )}
+          <span className="perfil-avatar-inicial">
+          {inicial}
+          </span>
         </div>
 
         <div className="perfil-nombre">

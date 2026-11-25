@@ -170,6 +170,10 @@ export default function DashboardConductor() {
             api.get("/usuarios/perfil"),
           ]);
 
+        console.log("RUTAS:", respuestaRutas.data);
+console.log("ENTREGAS:", respuestaEntregas.data);
+console.log("PERFIL:", respuestaPerfil.data);
+
         setRutas(obtenerLista(respuestaRutas.data));
         setEntregas(obtenerLista(respuestaEntregas.data));
         setPerfil(respuestaPerfil.data);

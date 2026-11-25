@@ -29,8 +29,8 @@ const FORMULARIO_INICIAL = {
     largo: "",
     ancho: "",
     descripcion: "",
-    origen: "Bogotá",
-    destino: "Bogotá",
+   origen: "",
+destino: "",
     direccion: "",
     barrio: "",
     referencias: "",
@@ -269,33 +269,80 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                     </div>
                 )}
 
-                {paso === 3 && (
-                    <div className="wizard-grid">
-                        <div style={{ gridColumn: "1 / -1" }}>
-                            <label>Dirección exacta</label>
-                            <input type="text" name="direccion" value={formPaquete.direccion} onChange={handleChangePaquete} placeholder="Ej: Calle 123 # 45 - 67 Apto 201" />
-                        </div>
-                        <div>
-                            <label>Barrio (Bogotá)</label>
-                            <select name="barrio" value={formPaquete.barrio} onChange={handleChangePaquete}>
-                                <option value="">Selecciona tu barrio...</option>
-                                {barriosBogota.map((b, i) => <option key={i} value={b}>{b}</option>)}
-                                <option value="Otro">Otro (Escribir abajo)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Referencias (Opcional)</label>
-                            <input type="text" name="referencias" value={formPaquete.referencias} onChange={handleChangePaquete} placeholder="Ej: Casa de rejas negras" />
-                        </div>
+               {paso === 3 && (
+    <div className="wizard-grid">
+        <div>
+            <label>Barrio o sector de origen (Bogotá)</label>
+            <select
+                name="origen"
+                value={formPaquete.origen}
+                onChange={handleChangePaquete}
+            >
+                <option value="">Selecciona el origen...</option>
+                {barriosBogota.map((b) => (
+                    <option key={b} value={b}>{b}</option>
+                ))}
+            </select>
+        </div>
 
-                        <SelectorUbicacionMapa
-                            latitud={formPaquete.latitud_destino}
-                            longitud={formPaquete.longitud_destino}
-                            onChangeUbicacion={handleUbicacionDestino}
-                            height={290}
-                        />
-                    </div>
-                )}
+        <div>
+            <label>Barrio o sector de destino (Bogotá)</label>
+            <select
+                name="destino"
+                value={formPaquete.destino}
+                onChange={handleChangePaquete}
+            >
+                <option value="">Selecciona el destino...</option>
+                {barriosBogota.map((b) => (
+                    <option key={b} value={b}>{b}</option>
+                ))}
+            </select>
+        </div>
+
+        <div style={{ gridColumn: "1 / -1" }}>
+            <label>Dirección exacta de entrega</label>
+            <input
+                type="text"
+                name="direccion"
+                value={formPaquete.direccion}
+                onChange={handleChangePaquete}
+                placeholder="Ej: Calle 123 # 45 - 67 Apto 201"
+            />
+        </div>
+
+        <div>
+            <label>Barrio o sector del destinatario</label>
+            <select
+                name="barrio"
+                value={formPaquete.barrio}
+                onChange={handleChangePaquete}
+            >
+                <option value="">Selecciona el sector...</option>
+                {barriosBogota.map((b) => (
+                    <option key={b} value={b}>{b}</option>
+                ))}
+            </select>
+        </div>
+
+        <div>
+            <label>Referencias (Opcional)</label>
+            <input
+                type="text"
+                name="referencias"
+                value={formPaquete.referencias}
+                onChange={handleChangePaquete}
+                placeholder="Ej: Casa de rejas negras"
+            />
+        </div>
+
+        <SelectorUbicacionMapa
+            latitud={formPaquete.latitud_destino}
+            longitud={formPaquete.longitud_destino}
+            onChangeUbicacion={handleUbicacionDestino}
+            height={290}
+        />
+    </div>
+)}
 
                 {paso === 4 && (
                     <div className="wizard-grid" style={{ gap: "30px" }}>
@@ -305,7 +352,10 @@ export default function RegistrarPaquete({ cargarEnvios }) {
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Destinatario:</strong> {formPaquete.nombre_destinatario}</p>
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Teléfono:</strong> {formPaquete.telefono_destinatario}</p>
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Dirección:</strong> {formPaquete.direccion}</p>
-                                <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Barrio:</strong> {formPaquete.barrio}</p>
+                                <p><strong>Origen:</strong> {formPaquete.origen}</p>
+<p><strong>Destino:</strong> {formPaquete.destino}</p>
+                                <p style={{ margin: "5px 0", fontSize: "14px" }}><strong>Barrio:</strong> {formPaquete.barrio}</p> <p><strong>Origen:</strong> {formPaquete.origen}</p>
+<p><strong>Destino:</strong> {formPaquete.destino}</p>
                                 <p style={{ margin: "5px 0", fontSize: "14px" }}>
                                     <strong>Coordenadas destino:</strong> {Number(formPaquete.latitud_destino).toFixed(6)}, {Number(formPaquete.longitud_destino).toFixed(6)}
                                 </p>
