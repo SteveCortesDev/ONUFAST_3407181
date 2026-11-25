@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
-from core.database import engine, SessionLocal
+from core.database import engine, SessionLocal, Base
 import models
 from routers import (
     auth,
@@ -16,6 +16,11 @@ from routers import (
     bodega,
     rastreo_gps,
 )
+
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Advertencia al crear tablas automáticamente: {e}")
 
 app = FastAPI(
     title="ONUFAST API",
