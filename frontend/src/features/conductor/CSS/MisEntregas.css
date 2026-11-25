@@ -151,6 +151,70 @@
 }
 
 /* ==========================================
+   PANEL GPS CONDUCTOR
+========================================== */
+
+.entregas-gps-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--e-borde);
+  border-radius: 14px;
+  background: var(--e-tarjeta);
+  box-shadow: var(--e-sombra);
+}
+
+.entregas-gps-controles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gps-intervalo-botones {
+  display: inline-flex;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.gps-intervalo-botones button {
+  padding: 7px 12px;
+  border: 1px solid var(--e-borde);
+  border-radius: 8px;
+  background: #f6f6f9;
+  color: var(--e-texto);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gps-intervalo-botones button.activo {
+  background: #17161c;
+  color: #ffffff;
+  border-color: #17161c;
+}
+
+.btn-detener-gps {
+  padding: 9px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--e-rojo);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gps-estado-texto {
+  margin: 0;
+  font-size: 13px;
+  color: var(--e-texto-2);
+  font-weight: 600;
+}
+
+/* ==========================================
    BARRA: BUSCADOR + ACTUALIZAR + FILTROS
 ========================================== */
 
@@ -207,8 +271,6 @@
   color: var(--e-texto-3);
 }
 
-/* Botón actualizar */
-
 .entregas-actualizar {
   display: inline-flex;
   align-items: center;
@@ -245,8 +307,6 @@
     transform: rotate(360deg);
   }
 }
-
-/* Filtros en chips: un toque en lugar de abrir un select */
 
 .entregas-filtros {
   display: flex;
@@ -306,7 +366,6 @@
   color: #ffffff;
 }
 
-/* Foco visible con teclado */
 .mis-entregas button:focus-visible {
   outline: 2px solid var(--e-rojo);
   outline-offset: 2px;
@@ -329,8 +388,6 @@
 
 /* ==========================================
    TARJETAS DE ENTREGAS
-   Una franja de color a la izquierda indica el
-   estado de un vistazo, sin leer la etiqueta
 ========================================== */
 
 .entregas-tarjetas {
@@ -388,8 +445,6 @@
   overflow-wrap: anywhere;
 }
 
-/* Estados */
-
 .entrega-estado {
   display: inline-flex;
   align-items: center;
@@ -426,12 +481,6 @@
   background: #e8f7ee;
   color: #1c7a45;
 }
-
-/* ==========================================
-   INFORMACIÓN DEL PAQUETE
-   La dirección va primero y destacada: es lo
-   que el conductor necesita para llegar
-========================================== */
 
 .entrega-informacion {
   display: grid;
@@ -485,12 +534,10 @@
   color: var(--e-rojo);
 }
 
-/* ==========================================
-   BOTONES DE ACCIÓN
-   Altos (46px) para tocarlos fácil desde el celular
-========================================== */
-
 .entrega-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: auto;
 }
 
@@ -668,7 +715,6 @@
     font-size: 24px;
   }
 
-  /* Resumen: 3 columnas compactas con el icono arriba */
   .entregas-resumen {
     gap: 10px;
   }
@@ -730,7 +776,6 @@
   }
 }
 
-/* Respeta a quien tiene desactivadas las animaciones */
 @media (prefers-reduced-motion: reduce) {
   .esq,
   .entregas-actualizar .girando {

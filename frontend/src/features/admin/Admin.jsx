@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +7,7 @@ import AdminUsuarios from './AdminUsuarios';
 import AdminVehiculos from './AdminVehiculos';
 import AdminConductores from './AdminConductores';
 import AdminBodega from './AdminBodega';
+import AdminRutas from './AdminRutas';
 
 import api from '@/shared/api';
 import '@/styles/Admin.css';
@@ -101,6 +101,7 @@ export default function Admin() {
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard', icon: '📊' },
         { id: 'envios', label: 'Envíos', icon: '📦' },
+        { id: 'rutas', label: 'Rutas', icon: '🗺️' },
         { id: 'usuarios', label: 'Usuarios', icon: '👥' },
         { id: 'vehiculos', label: 'Vehículos', icon: '🚛' },
         { id: 'conductores', label: 'Conductores', icon: '👨‍✈️' },
@@ -152,6 +153,8 @@ export default function Admin() {
                 {seccionActiva === 'dashboard' && <AdminDashboard />}
 
                 {seccionActiva === 'envios' && <AdminEnvios />}
+
+                {seccionActiva === 'rutas' && <AdminRutas />}
 
                 {seccionActiva === 'usuarios' && <AdminUsuarios />}
 

@@ -1,5 +1,6 @@
-﻿import { useState, useEffect } from "react";
-import api from "@/shared/api"; // Ajusta esta ruta si tu archivo estÃ¡ en otra carpeta
+﻿import { useState, useEffect, useRef } from "react";
+import api from "@/shared/api";
+import MapaRastreo from "@/shared/components/MapaRastreo";
 import "./CSS/MisEntregas.css";
 
 /* ==========================================
@@ -82,14 +83,12 @@ const IconBandeja = (p) => (
    CONSTANTES
 ========================================== */
 
-// Clase CSS segÃºn el estado que llega del servidor
 const CLASE_ESTADO = {
   Pendiente: "pendiente",
   "En camino": "en-camino",
   Entregado: "entregado",
 };
 
-// Opciones del filtro (el "valor" es el mismo que usaba el select)
 const FILTROS = [
   { valor: "Todas", texto: "Todas" },
   { valor: "Pendiente", texto: "Pendientes" },
@@ -105,11 +104,15 @@ export default function MisEntregas() {
   const [actualizando, setActualizando] = useState(null);
   const [error, setError] = useState("");
 
-  // ==========================================
-  // CONSULTAR ENTREGAS DEL CONDUCTOR
-  // silencioso = true: refresca los datos sin tapar
-  // la lista con el estado de "cargando"
-  // ==========================================
+  // Estados de rastreo GPS del conductor
+  const [entregaActivaId, setEntregaActivaId] = useState(null);
+  const [intervaloSegundos, setIntervaloSegundos] = useState(5);
+  const [coordenadaActual, setCoordenadaActual] = useState(null);
+  const [historialCoords, setHistorialCoords] = useState([]);
+  const [estadoGpsTexto, setEstadoGpsTexto] = useState("");
+
+  const timerRef = useRef(null);
+
   const cargarEntregas = async (silencioso = false) => {
     try {
       if (!silencioso) setCargando(true);
@@ -133,14 +136,132 @@ export default function MisEntregas() {
     }
   };
 
-  // Cargar los datos cuando se abre la pantalla
   useEffect(() => {
     cargarEntregas();
   }, []);
 
-  // ==========================================
-  // ACTUALIZAR ESTADO DE LA ENTREGA
-  // ==========================================
+  const obtenerPosicionNavegador = () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error("Tu navegador no soporta geolocalización."));
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          resolve({
+            latitud: Number(pos.coords.latitude.toFixed(6)),
+            longitud: Number(pos.coords.longitude.toFixed(6)),
+            precision_m: pos.coords.accuracy ?? null,
+            velocidad: pos.coords.speed ?? null,
+          });
+        },
+        (err) => {
+          reject(new Error(err.message || "No se pudo obtener la ubicación GPS."));
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 0,
+        }
+      );
+    });
+  };
+
+  const enviarCoordenadaActual = async (idEnvio) => {
+    try {
+      const coords = await obtenerPosicionNavegador();
+      const resp = await api.post(`/rastreo-gps/envios/${idEnvio}/ubicacion`, coords);
+      const ub = resp.data?.ubicacion_actual;
+
+      if (ub) {
+        setCoordenadaActual(ub);
+        setHistorialCoords((prev) => [...prev.slice(-29), ub]);
+        setEstadoGpsTexto(
+          `Transmitiendo cada ${intervaloSegundos}s · Lat: ${ub.latitud.toFixed(5)}, Lng: ${ub.longitud.toFixed(5)}`
+        );
+      }
+    } catch (err) {
+      console.error("Error enviando coordenada GPS:", err);
+      setEstadoGpsTexto(err.message || "Error al capturar posición GPS");
+    }
+  };
+
+  const detenerTransmisionGps = async (idEnvioActual = entregaActivaId, notificarBackend = false) => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    if (notificarBackend && idEnvioActual) {
+      try {
+        await api.post(`/rastreo-gps/envios/${idEnvioActual}/finalizar`);
+      } catch (err) {
+        console.error("Error al detener GPS en servidor:", err);
+      }
+    }
+
+    setEntregaActivaId(null);
+    setEstadoGpsTexto("Transmisión GPS detenida.");
+  };
+
+  useEffect(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    if (!entregaActivaId) return;
+
+    enviarCoordenadaActual(entregaActivaId);
+
+    timerRef.current = setInterval(() => {
+      enviarCoordenadaActual(entregaActivaId);
+    }, intervaloSegundos * 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [entregaActivaId, intervaloSegundos]);
+
+  const empezarRutaEntrega = async (entrega) => {
+    const id = entrega.id_envio ?? entrega.id;
+    try {
+      setActualizando(id);
+      setError("");
+
+      let coordsIniciales = { latitud: 4.711, longitud: -74.0721 };
+      try {
+        coordsIniciales = await obtenerPosicionNavegador();
+      } catch (geoErr) {
+        setEstadoGpsTexto(
+          `GPS del navegador no disponible (${geoErr.message}). Usando coordenada inicial de respaldo.`
+        );
+      }
+
+      const resp = await api.post(`/rastreo-gps/envios/${id}/iniciar`, coordsIniciales);
+      const ub = resp.data?.ubicacion_actual;
+
+      setEntregaActivaId(id);
+      if (ub) {
+        setCoordenadaActual(ub);
+        setHistorialCoords([ub]);
+      }
+
+      await cargarEntregas(true);
+    } catch (err) {
+      console.error("Error al empezar ruta:", err);
+      setError(
+        err.response?.data?.detail || "No fue posible iniciar la ruta del paquete."
+      );
+    } finally {
+      setActualizando(null);
+    }
+  };
+
   const actualizarEstado = async (id, nuevoEstado) => {
     try {
       setActualizando(id);
@@ -150,7 +271,10 @@ export default function MisEntregas() {
         estado: nuevoEstado,
       });
 
-      // Actualizar la lista con los datos del servidor (sin parpadeo)
+      if (nuevoEstado === "Entregado") {
+        await detenerTransmisionGps(id, true);
+      }
+
       await cargarEntregas(true);
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
@@ -164,9 +288,6 @@ export default function MisEntregas() {
     }
   };
 
-  // ==========================================
-  // BUSCADOR Y FILTROS
-  // ==========================================
   const entregasFiltradas = entregas.filter((entrega) => {
     const texto = busqueda.toLowerCase();
 
@@ -180,16 +301,12 @@ export default function MisEntregas() {
     return coincideBusqueda && coincideEstado;
   });
 
-  // ==========================================
-  // ESTADÃSTICAS
-  // ==========================================
   const contar = (estado) => entregas.filter((e) => e.estado === estado).length;
 
   const pendientes = contar("Pendiente");
   const enCamino = contar("En camino");
   const completadas = contar("Entregado");
 
-  // Cantidad que se muestra junto a cada opción del filtro
   const cantidadPorFiltro = {
     Todas: entregas.length,
     Pendiente: pendientes,
@@ -197,16 +314,19 @@ export default function MisEntregas() {
     Entregado: completadas,
   };
 
-  // ==========================================
-  // INTERFAZ
-  // ==========================================
+  const entregaSeleccionadaMapa =
+    entregas.find((e) => (e.id_envio ?? e.id) === entregaActivaId) ||
+    entregas.find((e) => e.estado === "En camino") ||
+    entregas[0] ||
+    null;
+
   return (
     <div className="mis-entregas">
       {/* ENCABEZADO */}
       <header className="entregas-titulo">
         <div>
           <h1>Mis entregas</h1>
-          <p>Consulta los paquetes asignados y actualiza su estado.</p>
+          <p>Consulta los paquetes asignados, inicia la ruta y transmite tu ubicación en tiempo real.</p>
         </div>
 
         <div className="entregas-total">
@@ -215,7 +335,7 @@ export default function MisEntregas() {
         </div>
       </header>
 
-      {/* ESTADÃSTICAS */}
+      {/* ESTADÍSTICAS */}
       <section className="entregas-resumen" aria-label="Resumen de entregas">
         <div className="entrega-resumen-card">
           <span className="resumen-icono amarillo">
@@ -246,6 +366,64 @@ export default function MisEntregas() {
             <p>Entregadas</p>
           </div>
         </div>
+      </section>
+
+      {/* PANEL DE CONTROL GPS Y MAPA GLOBAL */}
+      <section className="entregas-gps-panel">
+        <div className="entregas-gps-controles">
+          <div>
+            <strong>Frecuencia de envío de coordenadas:</strong>
+            <div className="gps-intervalo-botones">
+              <button
+                type="button"
+                className={intervaloSegundos === 5 ? "activo" : ""}
+                onClick={() => setIntervaloSegundos(5)}
+              >
+                Cada 5 seg
+              </button>
+              <button
+                type="button"
+                className={intervaloSegundos === 10 ? "activo" : ""}
+                onClick={() => setIntervaloSegundos(10)}
+              >
+                Cada 10 seg
+              </button>
+            </div>
+          </div>
+
+          {entregaActivaId && (
+            <button
+              type="button"
+              className="btn-detener-gps"
+              onClick={() => detenerTransmisionGps(entregaActivaId, true)}
+            >
+              Detener transmisión GPS
+            </button>
+          )}
+        </div>
+
+        {estadoGpsTexto && (
+          <p className="gps-estado-texto">{estadoGpsTexto}</p>
+        )}
+
+        <MapaRastreo
+          latitud={coordenadaActual?.latitud}
+          longitud={coordenadaActual?.longitud}
+          titulo={
+            entregaSeleccionadaMapa
+              ? `Mapa en vivo · ${entregaSeleccionadaMapa.codigo} (${entregaSeleccionadaMapa.destinatario})`
+              : "Mapa global de entregas ONUFAST"
+          }
+          subtitulo={
+            entregaSeleccionadaMapa
+              ? `Destino: ${entregaSeleccionadaMapa.direccion || entregaSeleccionadaMapa.ciudad || "No especificado"}`
+              : "Inicia una ruta en tus paquetes asignados para transmitir coordenadas."
+          }
+          historial={historialCoords}
+          activo={Boolean(entregaActivaId)}
+          actualizadoEn={coordenadaActual?.actualizado_en}
+          height={340}
+        />
       </section>
 
       {/* BARRA DE HERRAMIENTAS: buscar, filtrar y actualizar */}
@@ -299,7 +477,6 @@ export default function MisEntregas() {
       {/* TARJETAS */}
       <section className="entregas-tarjetas" aria-live="polite">
         {cargando ? (
-          // Esqueletos: muestran la forma de las tarjetas mientras llegan los datos
           [1, 2, 3, 4].map((n) => (
             <div className="entrega-card entrega-esqueleto" key={n} aria-hidden="true">
               <span className="esq esq-linea corta" />
@@ -312,6 +489,7 @@ export default function MisEntregas() {
           entregasFiltradas.map((entrega) => {
             const id = entrega.id_envio ?? entrega.id;
             const claseEstado = CLASE_ESTADO[entrega.estado] || "otro";
+            const transmitiendoEsta = entregaActivaId === id;
 
             return (
               <article className={`entrega-card ${claseEstado}`} key={id}>
@@ -337,16 +515,16 @@ export default function MisEntregas() {
 
                   <div>
                     <span>Ciudad</span>
-                    <strong>{entrega.ciudad || "â€”"}</strong>
+                    <strong>{entrega.ciudad || "—"}</strong>
                   </div>
 
                   <div>
                     <span>Documento</span>
-                    <strong>{entrega.documento || "â€”"}</strong>
+                    <strong>{entrega.documento || "—"}</strong>
                   </div>
 
                   <div className="entrega-descripcion">
-                    <span>Descripción</span>
+                    <span>Descripción del paquete</span>
                     <strong>{entrega.descripcion || "Sin descripcion"}</strong>
                   </div>
                 </div>
@@ -357,23 +535,36 @@ export default function MisEntregas() {
                       type="button"
                       className="btn-iniciar-entrega"
                       disabled={actualizando === id}
-                      onClick={() => actualizarEstado(id, "En camino")}
+                      onClick={() => empezarRutaEntrega(entrega)}
                     >
-                      {actualizando === id ? "Actualizando..." : "Iniciar entrega"}
+                      {actualizando === id ? "Iniciando ruta..." : "Empezar ruta"}
                     </button>
                   )}
 
                   {entrega.estado === "En camino" && (
-                    <button
-                      type="button"
-                      className="btn-finalizar-entrega"
-                      disabled={actualizando === id}
-                      onClick={() => actualizarEstado(id, "Entregado")}
-                    >
-                      {actualizando === id
-                        ? "Actualizando..."
-                        : "Marcar como entregado"}
-                    </button>
+                    <>
+                      {!transmitiendoEsta && (
+                        <button
+                          type="button"
+                          className="btn-iniciar-entrega"
+                          disabled={actualizando === id}
+                          onClick={() => empezarRutaEntrega(entrega)}
+                        >
+                          Empezar ruta / Transmitir GPS
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        className="btn-finalizar-entrega"
+                        disabled={actualizando === id}
+                        onClick={() => actualizarEstado(id, "Entregado")}
+                      >
+                        {actualizando === id
+                          ? "Actualizando..."
+                          : "Marcar como entregado"}
+                      </button>
+                    </>
                   )}
 
                   {entrega.estado === "Entregado" && (
@@ -398,8 +589,8 @@ export default function MisEntregas() {
             </h3>
             <p>
               {entregas.length === 0
-                ? "Cuando te asignen paquetes, aparecerÃ¡n aquÃ­."
-                : "Prueba con otra bÃºsqueda o cambia el filtro de estado."}
+                ? "Cuando te asignen paquetes, aparecerán aquí."
+                : "Prueba con otra búsqueda o cambia el filtro de estado."}
             </p>
           </div>
         )}

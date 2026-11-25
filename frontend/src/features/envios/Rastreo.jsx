@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "@/shared/api";
+import MapaRastreo from "@/shared/components/MapaRastreo";
 import "@/styles/Pages.css";
 
 
@@ -18,38 +19,58 @@ export default function Rastreo() {
     return "Ocurrió un error inesperado.";
   };
 
-  const handleRastrear = async (e) => {
-    e.preventDefault();
-    if (!codigo.trim()) return;
+  const consultarRastreo = async (codigoObjetivo, silencioso = false) => {
+    const limpio = (codigoObjetivo || '').trim().toUpperCase();
+    if (!limpio) return;
 
-    setCargando(true);
-    setError('');
-    setResultado(null);
+    if (!silencioso) {
+      setCargando(true);
+      setError('');
+      setResultado(null);
+    }
 
     try {
-  const response = await api.get(`/envios/rastreo/${codigo.trim()}`);
-
-  console.log("RESPUESTA DEL RASTREO:", response.data);
-
-  setResultado(response.data);
-} catch (err) {
-  setError(extraerMensajeError(err));
-} finally {
-  setCargando(false);
-}
+      const response = await api.get(`/rastreo-gps/codigo/${limpio}`);
+      setResultado(response.data);
+    } catch (err) {
+      if (!silencioso) {
+        setError(extraerMensajeError(err));
+      }
+    } finally {
+      if (!silencioso) {
+        setCargando(false);
+      }
+    }
   };
 
-  // Determina qué pasos del timeline ya se completaron según el estado real
-  const estadoActual = resultado?.estado?.toUpperCase() || "";
-  const pasoRecoleccion = true; // si existe el envío, ya fue recolectado
+  const handleRastrear = async (e) => {
+    e.preventDefault();
+    await consultarRastreo(codigo, false);
+  };
+
+  useEffect(() => {
+    if (!resultado?.codigo_rastreo) return;
+
+    const timer = setInterval(() => {
+      consultarRastreo(resultado.codigo_rastreo, true);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [resultado?.codigo_rastreo]);
+
+  const estadoMostrado = resultado?.estado || resultado?.estado_paquete || "";
+  const estadoActual = estadoMostrado.toUpperCase();
+  const pasoRecoleccion = true;
   const pasoTransito = ["EN CAMINO", "EN_CAMINO", "ENTREGADO"].includes(estadoActual);
   const pasoEntrega = estadoActual === "ENTREGADO";
+
+  const ubActual = resultado?.ubicacion_actual || null;
 
   return (
     <div className="page-container">
       <section className="page-hero">
         <h1>Rastrear Envío</h1>
-        <p>Ingresa tu código de seguimiento para conocer el estado de tu paquete</p>
+        <p>Ingresa tu código de seguimiento para conocer el estado y ubicación en tiempo real de tu paquete</p>
       </section>
 
       <section className="page-content">
@@ -86,14 +107,30 @@ export default function Rastreo() {
               </div>
 
               <div className="rastreo-estado">
-                <span className="estado-badge">{resultado.estado}</span>
+                <span className="estado-badge">{estadoMostrado || "Sin estado"}</span>
               </div>
 
               <p><strong>📦 Tipo de envío:</strong> {resultado.tipo_envio}</p>
               <p><strong>👤 Destinatario:</strong> {resultado.nombre_destinatario}</p>
               <p><strong>📍 Origen:</strong> {resultado.origen || "No especificado"}</p>
               <p><strong>📍 Destino:</strong> {resultado.destino || "No especificado"}</p>
+              {resultado.direccion && (
+                <p><strong>🏠 Dirección:</strong> {resultado.direccion}</p>
+              )}
               <p><strong>📅 Fecha de creación:</strong> {new Date(resultado.fecha_creacion).toLocaleDateString('es-CO')}</p>
+
+              <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+                <MapaRastreo
+                  latitud={ubActual?.latitud}
+                  longitud={ubActual?.longitud}
+                  titulo={`Seguimiento en vivo · ${resultado.codigo_rastreo}`}
+                  subtitulo={`Origen: ${resultado.origen || "—"} → Destino: ${resultado.destino || "—"}`}
+                  historial={resultado.historial_ubicaciones || []}
+                  activo={Boolean(resultado.viaje_activo)}
+                  actualizadoEn={ubActual?.actualizado_en}
+                  height={360}
+                />
+              </div>
 
               <div className="rastreo-timeline">
                 <div className={`timeline-item ${pasoRecoleccion ? "completado" : "pendiente"}`}>

@@ -1,6 +1,3 @@
-
-from core.database import Base
-
 from .rol import Rol
 from .usuario import Usuario
 from .usuario_roles import UsuarioRol
@@ -12,3 +9,4 @@ from .tipo_envio import TipoEnvio
 from .factura import Factura
 from .paquete import Paquete
 from .vehiculo import Vehiculo
+from .ubicacion_envio import UbicacionEnvio

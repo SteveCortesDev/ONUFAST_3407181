@@ -9,6 +9,7 @@ import MenuUsuario from "./MenuUsuario";
 import MiPerfil from "./MiPerfil";
 import MisEnvios from "./MisEnvios";
 import RegistrarPaquete from "./RegistrarPaquete";
+import Rastreo from "@/features/envios/Rastreo";
 
 // ============================================
 // EXTRAER MENSAJE DE ERROR
@@ -84,7 +85,7 @@ export default function Usuario() {
     // GET /usuarios/perfil
     // ============================================
 
-        const cargarPerfil = async () => {
+    const cargarPerfil = async () => {
 
         try {
 
@@ -92,14 +93,11 @@ export default function Usuario() {
             setErrorPerfil("");
 
             const response = await api.get("/usuarios/perfil");
-            
-            // 👇 NUEVA VALIDACIÓN DE SEGURIDAD 👇
+
             if (response.data.id_rol === 1) {
-                // Si es admin, lo pateamos al panel de admin
                 navigate("/admin");
-                return; 
+                return;
             }
-            // 👆 FIN DE LA VALIDACIÓN 👆
 
             setUsuario(response.data);
 
@@ -256,14 +254,11 @@ export default function Usuario() {
 
         <div className="usuario-panel">
 
-
             {/* ========================================
                 HEADER
             ======================================== */}
 
             <header className="usuario-header">
-
-                {/* LOGO */}
 
                 <div className="usuario-logo">
 
@@ -277,9 +272,6 @@ export default function Usuario() {
                     </Link>
 
                 </div>
-
-
-                {/* CUENTA */}
 
                 <div className="usuario-header-right">
 
@@ -308,17 +300,11 @@ export default function Usuario() {
 
             </header>
 
-
             {/* ========================================
                 CUERPO
             ======================================== */}
 
             <div className="usuario-body">
-
-
-                {/* ====================================
-                    MENÚ
-                ==================================== */}
 
                 <MenuUsuario
                     menuActivo={menuActivo}
@@ -327,17 +313,7 @@ export default function Usuario() {
                     cerrarSesion={cerrarSesion}
                 />
 
-
-                {/* ====================================
-                    CONTENIDO
-                ==================================== */}
-
                 <main className="usuario-contenido">
-
-
-                    {/* ==================================
-                        PANEL PRINCIPAL
-                    ================================== */}
 
                     {menuActivo === "panel" && (
 
@@ -361,11 +337,6 @@ export default function Usuario() {
 
                     )}
 
-
-                    {/* ==================================
-                        REGISTRAR PAQUETE
-                    ================================== */}
-
                     {menuActivo === "paquete" && (
 
                         <RegistrarPaquete
@@ -375,11 +346,6 @@ export default function Usuario() {
                         />
 
                     )}
-
-
-                    {/* ==================================
-                        MI PERFIL
-                    ================================== */}
 
                     {menuActivo === "perfil" && (
 
@@ -394,11 +360,6 @@ export default function Usuario() {
                         />
 
                     )}
-
-
-                    {/* ==================================
-                        MIS ENVÍOS
-                    ================================== */}
 
                     {menuActivo === "envios" && (
 
@@ -416,11 +377,6 @@ export default function Usuario() {
                         />
 
                     )}
-
-
-                    {/* ==================================
-                        RASTREO
-                    ================================== */}
 
                     {menuActivo === "rastreo" && (
                         <Rastreo />
