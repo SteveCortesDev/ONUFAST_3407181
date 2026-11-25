@@ -1,6 +1,26 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
+const aNumeroValido = (valor) => {
+  if (valor === null || valor === undefined || valor === "") return null;
+  const num = Number(valor);
+  return Number.isFinite(num) ? num : null;
+};
+
+const calcularDistanciaKm = (lat1, lon1, lat2, lon2) => {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
 export default function MapaRastreo({
   latitud,
@@ -21,27 +41,32 @@ export default function MapaRastreo({
   const polylineRef = useRef(null);
   const lineaDestinoRef = useRef(null);
 
-  const tieneCoordenadas =
-    typeof latitud === "number" &&
-    typeof longitud === "number" &&
-    !Number.isNaN(latitud) &&
-    !Number.isNaN(longitud);
+  const latNum = aNumeroValido(latitud);
+  const lngNum = aNumeroValido(longitud);
+  const latDestNum = aNumeroValido(latitudDestino);
+  const lngDestNum = aNumeroValido(longitudDestino);
 
-  const tieneDestino =
-    typeof latitudDestino === "number" &&
-    typeof longitudDestino === "number" &&
-    !Number.isNaN(latitudDestino) &&
-    !Number.isNaN(longitudDestino);
+  const tieneCoordenadas = latNum !== null && lngNum !== null;
+  const tieneDestino = latDestNum !== null && lngDestNum !== null;
 
-  const latMostrar = tieneCoordenadas ? latitud : (tieneDestino ? latitudDestino : 4.711);
-  const lngMostrar = tieneCoordenadas ? longitud : (tieneDestino ? longitudDestino : -74.0721);
+  const latMostrar = tieneCoordenadas ? latNum : (tieneDestino ? latDestNum : 4.711);
+  const lngMostrar = tieneCoordenadas ? lngNum : (tieneDestino ? lngDestNum : -74.0721);
+
+  const distanciaTexto = useMemo(() => {
+    if (!tieneCoordenadas || !tieneDestino) return null;
+    const km = calcularDistanciaKm(latNum, lngNum, latDestNum, lngDestNum);
+    if (km < 1) {
+      return `${Math.round(km * 1000)} m restantes`;
+    }
+    return `${km.toFixed(2)} km restantes`;
+  }, [tieneCoordenadas, tieneDestino, latNum, lngNum, latDestNum, lngDestNum]);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
     const map = L.map(mapContainerRef.current, {
       center: [latMostrar, lngMostrar],
-      zoom: tieneCoordenadas || tieneDestino ? 13 : 2,
+      zoom: tieneCoordenadas || tieneDestino ? 14 : 2,
       worldCopyJump: true,
     });
 
@@ -83,8 +108,8 @@ export default function MapaRastreo({
 
     const destinoMarker = L.marker([latMostrar, lngMostrar], { icon: destinoIcon });
     if (tieneDestino) {
-      destinoMarker.setLatLng([latitudDestino, longitudDestino]);
-      destinoMarker.bindPopup(`<strong>🏠 Punto de entrega</strong><br/>Lat: ${latitudDestino.toFixed(6)}, Lng: ${longitudDestino.toFixed(6)}`);
+      destinoMarker.setLatLng([latDestNum, lngDestNum]);
+      destinoMarker.bindPopup(`<strong>🏠 Punto de entrega</strong><br/>Lat: ${latDestNum.toFixed(6)}, Lng: ${lngDestNum.toFixed(6)}`);
       destinoMarker.addTo(map);
     }
 
@@ -96,9 +121,9 @@ export default function MapaRastreo({
 
     const lineaDestino = L.polyline([], {
       color: "#2563eb",
-      weight: 2.5,
-      dashArray: "6, 8",
-      opacity: 0.75,
+      weight: 3,
+      dashArray: "7, 8",
+      opacity: 0.85,
     }).addTo(map);
 
     mapInstanceRef.current = map;
@@ -137,9 +162,9 @@ export default function MapaRastreo({
 
     if (destinoMarker) {
       if (tieneDestino) {
-        destinoMarker.setLatLng([latitudDestino, longitudDestino]);
+        destinoMarker.setLatLng([latDestNum, lngDestNum]);
         destinoMarker.bindPopup(
-          `<strong>🏠 Punto de entrega</strong><br/>Lat: ${latitudDestino.toFixed(6)}, Lng: ${longitudDestino.toFixed(6)}`
+          `<strong>🏠 Punto de entrega</strong><br/>Lat: ${latDestNum.toFixed(6)}, Lng: ${lngDestNum.toFixed(6)}`
         );
         if (!map.hasLayer(destinoMarker)) {
           destinoMarker.addTo(map);
@@ -149,22 +174,14 @@ export default function MapaRastreo({
       }
     }
 
-    if (tieneCoordenadas) {
-      map.setView(nuevaPos, Math.max(map.getZoom(), 13), { animate: true });
-    } else if (tieneDestino) {
-      map.setView([latitudDestino, longitudDestino], Math.max(map.getZoom(), 14), { animate: true });
-    }
-
     const puntos = Array.isArray(historial)
       ? historial
-          .filter(
-            (p) =>
-              typeof p?.latitud === "number" &&
-              typeof p?.longitud === "number" &&
-              !Number.isNaN(p.latitud) &&
-              !Number.isNaN(p.longitud)
-          )
-          .map((p) => [p.latitud, p.longitud])
+          .map((p) => {
+            const pLat = aNumeroValido(p?.latitud);
+            const pLng = aNumeroValido(p?.longitud);
+            return pLat !== null && pLng !== null ? [pLat, pLng] : null;
+          })
+          .filter(Boolean)
       : [];
 
     if (puntos.length === 0 && tieneCoordenadas) {
@@ -174,11 +191,31 @@ export default function MapaRastreo({
     polyline.setLatLngs(puntos);
 
     if (tieneCoordenadas && tieneDestino) {
-      lineaDestino.setLatLngs([nuevaPos, [latitudDestino, longitudDestino]]);
+      const posDest = [latDestNum, lngDestNum];
+      lineaDestino.setLatLngs([nuevaPos, posDest]);
+      const bounds = L.latLngBounds([nuevaPos, posDest]);
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
     } else {
       lineaDestino.setLatLngs([]);
+      if (tieneCoordenadas) {
+        map.setView(nuevaPos, Math.max(map.getZoom(), 14), { animate: true });
+      } else if (tieneDestino) {
+        map.setView([latDestNum, lngDestNum], Math.max(map.getZoom(), 14), { animate: true });
+      }
     }
-  }, [latMostrar, lngMostrar, tieneCoordenadas, tieneDestino, latitudDestino, longitudDestino, titulo, historial, activo]);
+  }, [
+    latMostrar,
+    lngMostrar,
+    tieneCoordenadas,
+    tieneDestino,
+    latNum,
+    lngNum,
+    latDestNum,
+    lngDestNum,
+    titulo,
+    historial,
+    activo,
+  ]);
 
   return (
     <div
@@ -211,18 +248,35 @@ export default function MapaRastreo({
           )}
         </div>
 
-        <span
-          style={{
-            padding: "5px 12px",
-            borderRadius: "999px",
-            fontSize: "12px",
-            fontWeight: 700,
-            background: activo ? "#e8f7ee" : "#f0f0f4",
-            color: activo ? "#1c7a45" : "#6b6973",
-          }}
-        >
-          {activo ? "● Transmisión activa" : "○ En espera / Sin transmisión"}
-        </span>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+          {distanciaTexto && (
+            <span
+              style={{
+                padding: "5px 12px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: 700,
+                background: "#eff6ff",
+                color: "#1d4ed8",
+              }}
+            >
+              📏 {distanciaTexto}
+            </span>
+          )}
+
+          <span
+            style={{
+              padding: "5px 12px",
+              borderRadius: "999px",
+              fontSize: "12px",
+              fontWeight: 700,
+              background: activo ? "#e8f7ee" : "#f0f0f4",
+              color: activo ? "#1c7a45" : "#6b6973",
+            }}
+          >
+            {activo ? "● Transmisión activa" : "○ En espera / Sin transmisión"}
+          </span>
+        </div>
       </div>
 
       <div
@@ -250,11 +304,11 @@ export default function MapaRastreo({
       >
         <div>
           <strong>Conductor:</strong>{" "}
-          {tieneCoordenadas ? `${latMostrar.toFixed(6)}, ${lngMostrar.toFixed(6)}` : "Sin coordenada"}
+          {tieneCoordenadas ? `${latNum.toFixed(6)}, ${lngNum.toFixed(6)}` : "Sin coordenada"}
           {tieneDestino && (
             <>
               {" · "}
-              <strong>Destino:</strong> {latitudDestino.toFixed(6)}, {longitudDestino.toFixed(6)}
+              <strong>Destino:</strong> {latDestNum.toFixed(6)}, {lngDestNum.toFixed(6)}
             </>
           )}
         </div>

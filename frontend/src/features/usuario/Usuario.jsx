@@ -309,7 +309,6 @@ export default function Usuario() {
                 <MenuUsuario
                     menuActivo={menuActivo}
                     cambiarMenu={cambiarMenu}
-                    navigate={navigate}
                     cerrarSesion={cerrarSesion}
                 />
 
@@ -332,7 +331,6 @@ export default function Usuario() {
                             cambiarMenu={
                                 cambiarMenu
                             }
-                            navigate={navigate}
                         />
 
                     )}

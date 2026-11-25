@@ -249,17 +249,16 @@ def actualizar_estado_entrega(
             detail="Estado no permitido"
         )
 
-    nuevo_estado = db.query(EstadoEnvio).filter(
+    estado_db = db.query(EstadoEnvio).filter(
         EstadoEnvio.estado == estado
     ).first()
 
-    if not nuevo_estado:
-        raise HTTPException(
-            status_code=404,
-            detail=f"No existe el estado: {estado}"
-        )
+    if not estado_db:
+        estado_db = EstadoEnvio(estado=estado)
+        db.add(estado_db)
+        db.flush()
 
-    envio.id_estadoenvio = nuevo_estado.id_estadoenvio
+    envio.id_estadoenvio = estado_db.id_estadoenvio
     envio.estado_paquete = estado
 
     db.commit()

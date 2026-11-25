@@ -1,7 +1,6 @@
 export default function MenuUsuario({
     menuActivo,
     cambiarMenu,
-    navigate,
     cerrarSesion
 }) {
 
@@ -55,9 +54,13 @@ export default function MenuUsuario({
 
 
             <button
-                className="sidebar-item"
+                className={`sidebar-item ${
+                    menuActivo === "rastreo"
+                        ? "activo"
+                        : ""
+                }`}
                 onClick={() =>
-                    navigate("/rastreo")
+                    cambiarMenu("rastreo")
                 }
             >
                 <span>⌕</span>

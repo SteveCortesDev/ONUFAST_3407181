@@ -3,10 +3,6 @@ import api from "@/shared/api";
 import MapaRastreo from "@/shared/components/MapaRastreo";
 import "./CSS/MisEntregas.css";
 
-/* ==========================================
-   ICONOS SVG (mismo estilo que el resto del panel)
-========================================== */
-
 function Icono({ size = 20, children }) {
   return (
     <svg
@@ -79,10 +75,6 @@ const IconBandeja = (p) => (
   </Icono>
 );
 
-/* ==========================================
-   CONSTANTES
-========================================== */
-
 const CLASE_ESTADO = {
   Pendiente: "pendiente",
   "En camino": "en-camino",
@@ -110,6 +102,9 @@ export default function MisEntregas() {
   const [historialCoords, setHistorialCoords] = useState([]);
   const [estadoGpsTexto, setEstadoGpsTexto] = useState("");
 
+  const ultimaCoordsRef = useRef(null);
+  const ultimoEnvioMsRef = useRef(0);
+  const watchIdRef = useRef(null);
   const timerRef = useRef(null);
 
   const cargarEntregas = async (silencioso = false) => {
@@ -118,7 +113,6 @@ export default function MisEntregas() {
       setError("");
 
       const respuesta = await api.get("/envios/mis-entregas");
-
       setEntregas(respuesta.data);
     } catch (error) {
       console.error("Error al cargar las entregas:", error);
@@ -139,6 +133,13 @@ export default function MisEntregas() {
     cargarEntregas();
   }, []);
 
+  const normalizarPosicion = (pos) => ({
+    latitud: Number(pos.coords.latitude.toFixed(6)),
+    longitud: Number(pos.coords.longitude.toFixed(6)),
+    precision_m: pos.coords.accuracy != null ? Math.round(pos.coords.accuracy) : null,
+    velocidad: pos.coords.speed ?? null,
+  });
+
   const obtenerPosicionNavegador = () => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -147,50 +148,52 @@ export default function MisEntregas() {
       }
 
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          resolve({
-            latitud: Number(pos.coords.latitude.toFixed(6)),
-            longitud: Number(pos.coords.longitude.toFixed(6)),
-            precision_m: pos.coords.accuracy ?? null,
-            velocidad: pos.coords.speed ?? null,
-          });
-        },
-        (err) => {
-          reject(new Error(err.message || "No se pudo obtener la ubicación GPS."));
-        },
+        (pos) => resolve(normalizarPosicion(pos)),
+        (err) => reject(new Error(err.message || "No se pudo obtener la ubicación GPS.")),
         {
           enableHighAccuracy: true,
-          timeout: 8000,
+          timeout: 10000,
           maximumAge: 0,
         }
       );
     });
   };
 
-  const enviarCoordenadaActual = async (idEnvio) => {
-    try {
-      const coords = await obtenerPosicionNavegador();
-      const resp = await api.post(`/rastreo-gps/envios/${idEnvio}/ubicacion`, coords);
-      const ub = resp.data?.ubicacion_actual;
+  const enviarCoordsAlBackend = async (idEnvio, coords) => {
+    const resp = await api.post(`/rastreo-gps/envios/${idEnvio}/ubicacion`, coords);
+    const ub = resp.data?.ubicacion_actual;
 
-      if (ub) {
-        setCoordenadaActual(ub);
-        setHistorialCoords((prev) => [...prev.slice(-29), ub]);
-        setEstadoGpsTexto(
-          `Transmitiendo cada ${intervaloSegundos}s · Lat: ${ub.latitud.toFixed(5)}, Lng: ${ub.longitud.toFixed(5)}`
-        );
-      }
-    } catch (err) {
-      console.error("Error enviando coordenada GPS:", err);
-      setEstadoGpsTexto(err.message || "Error al capturar posición GPS");
+    if (ub) {
+      const ubConPrecision = {
+        ...ub,
+        precision_m: coords.precision_m ?? ub.precision_m ?? null,
+      };
+      setCoordenadaActual(ubConPrecision);
+      setHistorialCoords((prev) => [...prev.slice(-29), ubConPrecision]);
+      ultimoEnvioMsRef.current = Date.now();
+      const avisoPrecision =
+        typeof coords.precision_m === "number"
+          ? ` (±${coords.precision_m} m${coords.precision_m > 500 ? ", ubicación aproximada por red/IP" : ""})`
+          : "";
+      setEstadoGpsTexto(
+        `Transmitiendo cada ${intervaloSegundos}s${avisoPrecision} · Lat: ${ub.latitud.toFixed(5)}, Lng: ${ub.longitud.toFixed(5)}`
+      );
     }
   };
 
   const detenerTransmisionGps = async (idEnvioActual = entregaActivaId, notificarBackend = false) => {
+    if (watchIdRef.current !== null && navigator.geolocation) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+
+    ultimaCoordsRef.current = null;
+    ultimoEnvioMsRef.current = 0;
 
     if (notificarBackend && idEnvioActual) {
       try {
@@ -205,6 +208,10 @@ export default function MisEntregas() {
   };
 
   useEffect(() => {
+    if (watchIdRef.current !== null && navigator.geolocation) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -212,13 +219,54 @@ export default function MisEntregas() {
 
     if (!entregaActivaId) return;
 
-    enviarCoordenadaActual(entregaActivaId);
+    if (navigator.geolocation) {
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        async (pos) => {
+          const coords = normalizarPosicion(pos);
+          ultimaCoordsRef.current = coords;
+          setCoordenadaActual((prev) => ({
+            ...(prev || {}),
+            latitud: coords.latitud,
+            longitud: coords.longitud,
+            precision_m: coords.precision_m,
+            actualizado_en: new Date().toISOString(),
+          }));
 
-    timerRef.current = setInterval(() => {
-      enviarCoordenadaActual(entregaActivaId);
+          const ahora = Date.now();
+          if (ahora - ultimoEnvioMsRef.current >= intervaloSegundos * 1000) {
+            try {
+              await enviarCoordsAlBackend(entregaActivaId, coords);
+            } catch (err) {
+              console.error("Error enviando coordenada GPS:", err);
+            }
+          }
+        },
+        (err) => {
+          setEstadoGpsTexto(`GPS: ${err.message || "Sin señal continua"}`);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    }
+
+    timerRef.current = setInterval(async () => {
+      try {
+        const coords = ultimaCoordsRef.current || (await obtenerPosicionNavegador());
+        await enviarCoordsAlBackend(entregaActivaId, coords);
+      } catch (err) {
+        console.error("Error enviando coordenada GPS:", err);
+        setEstadoGpsTexto(err.message || "Error al capturar posición GPS");
+      }
     }, intervaloSegundos * 1000);
 
     return () => {
+      if (watchIdRef.current !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
+      }
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
@@ -232,7 +280,7 @@ export default function MisEntregas() {
       setActualizando(id);
       setError("");
 
-      let coordsIniciales = { latitud: 4.711, longitud: -74.0721 };
+      let coordsIniciales = { latitud: 4.711, longitud: -74.0721, precision_m: null };
       try {
         coordsIniciales = await obtenerPosicionNavegador();
       } catch (geoErr) {
@@ -241,13 +289,20 @@ export default function MisEntregas() {
         );
       }
 
+      ultimaCoordsRef.current = coordsIniciales;
+      ultimoEnvioMsRef.current = Date.now();
+
       const resp = await api.post(`/rastreo-gps/envios/${id}/iniciar`, coordsIniciales);
       const ub = resp.data?.ubicacion_actual;
 
       setEntregaActivaId(id);
       if (ub) {
-        setCoordenadaActual(ub);
-        setHistorialCoords([ub]);
+        const ubConPrecision = {
+          ...ub,
+          precision_m: coordsIniciales.precision_m ?? null,
+        };
+        setCoordenadaActual(ubConPrecision);
+        setHistorialCoords([ubConPrecision]);
       }
 
       await cargarEntregas(true);

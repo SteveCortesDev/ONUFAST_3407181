@@ -4,8 +4,7 @@ function PanelUsuario({
     envios,
     cargandoEnvios,
     errorEnvios,
-    cambiarMenu,
-    navigate
+    cambiarMenu
 }) {
 
     return (
@@ -157,7 +156,7 @@ function PanelUsuario({
                         </p>
 
                         <button
-                            onClick={() => navigate("/rastreo")}
+                            onClick={() => cambiarMenu("rastreo")}
                         >
                             Rastrear →
                         </button>
