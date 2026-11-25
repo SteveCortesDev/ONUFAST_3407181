@@ -27,6 +27,7 @@ import Ubicacion from '@/features/landing/Ubicacion';
 import Admin from '@/features/admin/Admin';
 import Usuario from '@/features/usuario/Usuario';
 import Conductor from '@/features/conductor/Conductor';
+import Bodega from '@/features/bodega/Bodega';
 
 import api from '@/shared/api';
 
@@ -67,6 +68,9 @@ function RutaProtegida({ children, rolesPermitidos = [] }) {
             case 3:
                 return <Navigate to="/conductor" replace />;
 
+            case 5:
+                return <Navigate to="/bodega" replace />;
+
             default:
                 return <Navigate to="/" replace />;
         }
@@ -93,11 +97,15 @@ function AppContent() {
     const esPanelUsuario = location.pathname === '/usuario';
     const esPanelAdmin = location.pathname === '/admin';
     const esPanelConductor = location.pathname === '/conductor';
+    const esPanelBodega = location.pathname === '/bodega';
 
     const estaLogueado = !!localStorage.getItem('token');
 
     const estaEnPanel =
-        esPanelUsuario || esPanelAdmin || esPanelConductor;
+        esPanelUsuario ||
+        esPanelAdmin ||
+        esPanelConductor ||
+        esPanelBodega;
 
 
     // ========================================================
@@ -146,6 +154,10 @@ function AppContent() {
                     navigate('/conductor', { replace: true });
                     break;
 
+                case 5:
+                    navigate('/bodega', { replace: true });
+                    break;
+
                 default:
                     console.error('Rol no reconocido:', idRol);
                     alert(
@@ -165,6 +177,8 @@ function AppContent() {
                 navigate('/usuario', { replace: true });
             } else if (idRol === 3) {
                 navigate('/conductor', { replace: true });
+            } else if (idRol === 5) {
+                navigate('/bodega', { replace: true });
             } else {
                 alert(
                     'No fue posible obtener tu perfil. Intenta iniciar sesión nuevamente.'
@@ -588,6 +602,20 @@ function AppContent() {
                     element={
                         <RutaProtegida rolesPermitidos={[3]}>
                             <Conductor />
+                        </RutaProtegida>
+                    }
+                />
+
+
+                {/* ==================================================
+                    PANEL DE BODEGA
+                ================================================== */}
+
+                <Route
+                    path="/bodega"
+                    element={
+                        <RutaProtegida rolesPermitidos={[1, 5]}>
+                            <Bodega />
                         </RutaProtegida>
                     }
                 />

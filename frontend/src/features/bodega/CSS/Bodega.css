@@ -1,0 +1,1040 @@
+/* ============================================
+   PANEL DE BODEGA — ONUFAST
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+.bodega-container {
+  display: flex;
+  min-height: 100vh;
+  background: #ededed;
+  font-family: Arial, sans-serif;
+}
+
+/* ───────────── BARRA LATERAL ───────────── */
+
+.bodega-sidebar {
+  width: 255px;
+  min-height: 100vh;
+  background: #1a191f;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 18px;
+  flex-shrink: 0;
+}
+
+.bodega-logo {
+  text-align: center;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #38373d;
+}
+
+.bodega-logo img {
+  width: 155px;
+  max-height: 75px;
+  object-fit: contain;
+}
+
+.bodega-info {
+  text-align: center;
+  padding: 25px 0;
+}
+
+.bodega-avatar {
+  width: 65px;
+  height: 65px;
+  background: #c9252c;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  font-weight: bold;
+  margin: 0 auto 12px;
+}
+
+.bodega-avatar.pequeño {
+  width: 42px;
+  height: 42px;
+  font-size: 17px;
+  margin: 0;
+}
+
+.bodega-info h3 {
+  margin: 5px 0;
+  font-size: 16px;
+  word-break: break-word;
+}
+
+.bodega-info span {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.bodega-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.bodega-menu button,
+.bodega-logout {
+  border: none;
+  background: transparent;
+  color: #ccc;
+  padding: 14px;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.bodega-menu button span {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.bodega-menu button:hover,
+.bodega-menu button.activo {
+  background: #c9252c;
+  color: white;
+}
+
+.bodega-logout {
+  margin-top: auto;
+  color: #ff7777;
+}
+
+.bodega-logout:hover {
+  background: #38373d;
+}
+
+/* ───────────── CONTENIDO ───────────── */
+
+.bodega-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.bodega-header {
+  background: white;
+  min-height: 95px;
+  padding: 20px 35px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.bodega-header h2 {
+  margin: 0 0 7px;
+  color: #1a191f;
+}
+
+.bodega-header p {
+  margin: 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.bodega-header-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.bodega-content {
+  padding: 30px 35px;
+}
+
+/* ───────────── TARJETAS Y TÍTULOS ───────────── */
+
+.bodega-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  margin-bottom: 25px;
+}
+
+.bodega-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.bodega-card-header h2 {
+  color: #1a191f;
+  font-size: 19px;
+  margin: 0 0 7px;
+}
+
+.bodega-card-header p {
+  color: #888;
+  font-size: 13px;
+  margin: 0;
+}
+
+.bodega-card-icono {
+  font-size: 25px;
+}
+
+.bodega-acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+/* ───────────── BOTONES ───────────── */
+
+.btn-primario,
+.btn-secundario {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primario {
+  background: #c9252c;
+  color: white;
+}
+
+.btn-primario:hover {
+  background: #a81d23;
+}
+
+.btn-secundario {
+  background: #f1f1f1;
+  color: #1a191f;
+}
+
+.btn-secundario:hover {
+  background: #e2e2e2;
+}
+
+.btn-primario:disabled,
+.btn-secundario:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-quitar {
+  border: none;
+  background: #fbe9ea;
+  color: #c9252c;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.btn-quitar:hover {
+  background: #c9252c;
+  color: white;
+}
+
+/* ───────────── DASHBOARD ───────────── */
+
+.dashboard-bodega {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.bodega-bienvenida {
+  background: linear-gradient(120deg, #1a191f, #34313b);
+  color: white;
+  padding: 30px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.bodega-etiqueta {
+  color: #ff7777;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.bodega-bienvenida h1 {
+  font-size: 27px;
+  margin: 12px 0;
+}
+
+.bodega-bienvenida p {
+  color: #d0cdd3;
+  font-size: 14px;
+  max-width: 520px;
+  margin: 0;
+}
+
+.bienvenida-icono {
+  font-size: 65px;
+}
+
+.estadisticas-bodega {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.estadistica-card {
+  background: white;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.estadistica-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.estadistica-superior span {
+  color: #666;
+  font-size: 12px;
+}
+
+.estadistica-icono {
+  font-size: 23px;
+}
+
+.estadistica-card h2 {
+  color: #1a191f;
+  font-size: 30px;
+  margin: 18px 0 5px;
+}
+
+.estadistica-card p {
+  color: #999;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* ───────────── TABLAS ───────────── */
+
+.tabla-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-bodega {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 720px;
+}
+
+.tabla-bodega th {
+  text-align: left;
+  padding: 12px;
+  background: #f7f7f8;
+  color: #555;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #eaeaea;
+  white-space: nowrap;
+}
+
+.tabla-bodega td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+  vertical-align: middle;
+}
+
+.tabla-bodega tbody tr:hover {
+  background: #fafafa;
+}
+
+.tabla-vacia {
+  text-align: center;
+  color: #999;
+  padding: 26px !important;
+}
+
+/* ───────────── BADGES ───────────── */
+
+.badge {
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.badge.amarillo {
+  background: #fff4d6;
+  color: #9a6b00;
+}
+
+.badge.azul {
+  background: #e3eefb;
+  color: #1f5f9e;
+}
+
+.badge.verde {
+  background: #e4f5e9;
+  color: #1c7a3e;
+}
+
+.badge.gris {
+  background: #ececef;
+  color: #5c5c66;
+}
+
+/* ───────────── RUTAS (RESUMEN) ───────────── */
+
+.rutas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.ruta-resumen,
+.ruta-card {
+  background: #fafafa;
+  border: 1px solid #ededed;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ruta-resumen-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.ruta-resumen-superior strong {
+  font-size: 12px;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+.ruta-resumen h3 {
+  margin: 12px 0;
+  color: #1a191f;
+  font-size: 18px;
+}
+
+.ruta-dato {
+  margin: 4px 0;
+  color: #666;
+  font-size: 12px;
+}
+
+.ruta-progreso {
+  margin-top: 15px;
+}
+
+.ruta-barra {
+  width: 100%;
+  height: 7px;
+  background: #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.ruta-barra span {
+  display: block;
+  height: 100%;
+  background: #c9252c;
+  border-radius: 10px;
+  transition: width 0.3s;
+}
+
+.ruta-progreso small {
+  color: #888;
+  font-size: 11px;
+}
+
+/* ───────────── FORMULARIO ───────────── */
+
+.formulario-bodega {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.campo-completo {
+  grid-column: 1 / -1;
+}
+
+.campo label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #555;
+}
+
+.campo input,
+.campo select,
+.buscador-bodega,
+.ruta-agregar select,
+.select-estado {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: white;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.campo input:focus,
+.campo select:focus,
+.buscador-bodega:focus,
+.ruta-agregar select:focus {
+  border-color: #c9252c;
+}
+
+.select-estado {
+  padding: 7px 8px;
+  font-size: 12px;
+  min-width: 120px;
+}
+
+.formulario-acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.formulario-error,
+.formulario-exito,
+.aviso-bodega {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.formulario-error {
+  background: #fbe9ea;
+  color: #a81d23;
+}
+
+.formulario-exito {
+  background: #e4f5e9;
+  color: #1c7a3e;
+}
+
+.aviso-bodega {
+  background: #fff4d6;
+  color: #9a6b00;
+  margin-bottom: 18px;
+}
+
+/* ───────────── FILTROS ───────────── */
+
+.filtros-bodega {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.buscador-bodega {
+  max-width: 430px;
+}
+
+.chips-filtro {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #555;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.chip:hover {
+  border-color: #c9252c;
+  color: #c9252c;
+}
+
+.chip.activo {
+  background: #c9252c;
+  border-color: #c9252c;
+  color: white;
+  font-weight: bold;
+}
+
+/* ───────────── DESPACHOS ───────────── */
+
+.despachos-bodega .rutas-grid {
+  margin-bottom: 25px;
+}
+
+.ruta-card {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ruta-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ruta-card-header strong {
+  font-size: 12px;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+.ruta-card-header h3 {
+  margin: 6px 0 0;
+  color: #1a191f;
+  font-size: 18px;
+}
+
+.ruta-datos p {
+  margin: 3px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.ruta-lista {
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+}
+
+.ruta-lista h4 {
+  font-size: 12px;
+  color: #555;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ruta-vacia {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+.ruta-paquete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.ruta-paquete > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ruta-paquete strong {
+  font-size: 12px;
+  color: #1a191f;
+}
+
+.ruta-paquete span {
+  font-size: 11px;
+  color: #888;
+}
+
+.ruta-agregar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ruta-agregar select {
+  flex: 1;
+  min-width: 0;
+  padding: 9px;
+  font-size: 12px;
+}
+
+.ruta-agregar .btn-secundario {
+  padding: 9px 14px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ruta-nota {
+  font-size: 11px;
+  color: #9a6b00;
+  margin: 0;
+}
+
+.btn-despachar {
+  margin-top: auto;
+}
+
+.ruta-despachada {
+  margin: 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: #e4f5e9;
+  color: #1c7a3e;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.despacho-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.despacho-resumen > div {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.despacho-resumen strong {
+  font-size: 26px;
+  color: #1a191f;
+}
+
+.despacho-resumen span {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ───────────── PERFIL ───────────── */
+
+.perfil-titulo {
+  margin-bottom: 20px;
+}
+
+.perfil-titulo h2 {
+  margin: 0 0 6px;
+  color: #1a191f;
+}
+
+.perfil-titulo p {
+  margin: 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.perfil-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.perfil-portada {
+  background: linear-gradient(120deg, #1a191f, #34313b);
+  color: white;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.perfil-avatar {
+  width: 85px;
+  height: 85px;
+  background: #c9252c;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: bold;
+  border: 3px solid white;
+  flex-shrink: 0;
+}
+
+.perfil-nombre h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.perfil-nombre span {
+  color: #d0cdd3;
+  font-size: 13px;
+}
+
+.perfil-informacion {
+  padding: 28px 30px;
+}
+
+.perfil-informacion h3 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  color: #1a191f;
+}
+
+.perfil-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.perfil-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.perfil-dato span {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.perfil-dato strong {
+  font-size: 14px;
+  color: #1a191f;
+  word-break: break-word;
+}
+
+.perfil-nota {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 0 30px 28px;
+  padding: 15px;
+  background: #f4f6fb;
+  border-radius: 10px;
+  color: #55607a;
+}
+
+.perfil-nota p {
+  margin: 0;
+  font-size: 12px;
+}
+
+/* ───────────── RESPONSIVE ───────────── */
+
+@media (max-width: 1100px) {
+  .estadisticas-bodega,
+  .despacho-resumen {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rutas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 750px) {
+  .bodega-sidebar {
+    width: 190px;
+    padding: 20px 10px;
+  }
+
+  .bodega-header {
+    padding: 18px;
+  }
+
+  .bodega-content {
+    padding: 20px;
+  }
+
+  .formulario-bodega {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rutas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .bodega-container {
+    flex-direction: column;
+  }
+
+  .bodega-sidebar {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .bodega-logo img {
+    width: 120px;
+  }
+
+  .bodega-info {
+    display: none;
+  }
+
+  .bodega-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .bodega-menu button {
+    flex: 1;
+    text-align: center;
+    padding: 10px 5px;
+    font-size: 12px;
+  }
+
+  .bodega-menu button span {
+    display: none;
+  }
+
+  .bodega-logout {
+    margin-top: 10px;
+  }
+
+  .bodega-header-user span {
+    display: none;
+  }
+
+  .bodega-bienvenida {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .bienvenida-icono {
+    font-size: 45px;
+  }
+
+  .estadisticas-bodega,
+  .despacho-resumen {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ───────────── CONEXIÓN CON LA BASE DE DATOS ───────────── */
+
+.badge.rojo {
+  background: #fdeaea;
+  color: #a32020;
+}
+
+.btn-mini {
+  background: #c9252c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-mini:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primario:disabled,
+.btn-secundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bodega-estado-pantalla {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 55px 26px !important;
+}
+
+.bodega-estado-pantalla h2 {
+  font-size: 20px;
+  color: #1c1c1c;
+}
+
+.bodega-estado-pantalla p {
+  max-width: 430px;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bodega-estado-pantalla .bodega-card-icono {
+  font-size: 34px;
+}
+
+.bodega-nota {
+  font-size: 12px !important;
+  color: #888 !important;
+}
+
+.bodega-cargando {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  padding: 30px 0;
+}
+
+.bodega-aviso.error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #fdeaea;
+  color: #a32020;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 13px;
+}

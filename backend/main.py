@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
@@ -15,7 +14,8 @@ from routers import (
     tipo_envio,
     estado_envio,
     factura,
-    vehiculos
+    vehiculos,
+    bodega
 )
 
 from core.database import engine
@@ -80,6 +80,7 @@ app.include_router(tipo_envio.router)
 app.include_router(estado_envio.router)
 app.include_router(factura.router)
 app.include_router(vehiculos.router)
+app.include_router(bodega.router)
 
 
 # ============================================================
